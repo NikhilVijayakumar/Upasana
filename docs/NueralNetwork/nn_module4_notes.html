@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks – Module 4 Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface2: #f4f2ee;
+    --border: #e5e0d8;
+    --border2: #d0c8bc;
+    --text: #1a1814;
+    --text2: #4a4540;
+    --text3: #7a7268;
+    --accent: #1e5fa8;
+    --accent-bg: #edf3fc;
+    --accent-border: #b8d0ef;
+    --green: #1a6b3c;
+    --green-bg: #edf7f2;
+    --green-border: #a8d9bc;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5c5c;
+    --teal-bg: #eaf6f6;
+    --teal-border: #8fd4d4;
+    --rose: #7a1a3c;
+    --rose-bg: #fdf0f5;
+    --rose-border: #e8a8c4;
+    --code-bg: #f0ede8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: #1c1a12;
+    color: #f5f2ec;
+    padding: 3rem 4rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: linear-gradient(135deg, transparent 60%, #2a2518 100%);
+    pointer-events: none;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #c4a84a; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2;
+    color: #f5f2ec; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: #8a8068; margin-top: 1rem;
+  }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem;
+    font-family: 'Inter', sans-serif; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--surface);
+  }
+  .part-cnn   { background: #1e4a8c; }
+  .part-ae    { background: #1a6b3c; }
+  .part-gen   { background: #6b1a1a; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; border-left: 4px solid #1c1a12; }
+  .section-header.cnn-h  { border-color: #1e4a8c; }
+  .section-header.ae-h   { border-color: #1a6b3c; }
+  .section-header.gen-h  { border-color: #6b1a1a; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key { background: var(--accent-bg); border-color: var(--accent); }
+  .callout-key .callout-title { color: var(--accent); }
+  .callout-key p { color: #2a4a7a; }
+
+  .callout-formula { background: var(--purple-bg); border-color: var(--purple); }
+  .callout-formula .callout-title { color: var(--purple); }
+  .callout-formula p { color: #3a2460; }
+
+  .callout-tip { background: var(--green-bg); border-color: var(--green); }
+  .callout-tip .callout-title { color: var(--green); }
+  .callout-tip p { color: #14502c; }
+
+  .callout-warn { background: var(--amber-bg); border-color: var(--amber); }
+  .callout-warn .callout-title { color: var(--amber); }
+  .callout-warn p { color: #5a3800; }
+
+  .callout-exam { background: var(--red-bg); border-color: var(--red); }
+  .callout-exam .callout-title { color: var(--red); }
+  .callout-exam p { color: #6a1010; }
+
+  .callout-teal { background: var(--teal-bg); border-color: var(--teal); }
+  .callout-teal .callout-title { color: var(--teal); }
+  .callout-teal p { color: #084040; }
+
+  .callout-rose { background: var(--rose-bg); border-color: var(--rose); }
+  .callout-rose .callout-title { color: var(--rose); }
+  .callout-rose p { color: #5a1028; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #1c1a12; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green); font-weight: 500; }
+  .formula .rd  { color: var(--red); font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── ARCH TABLE (special for model architectures) ── */
+  .arch-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+  .arch-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; background: #1c1a12; color: #d4c8a8; padding: 0.6rem 0.9rem; text-align: left; border: 1px solid #333; letter-spacing: 0.06em; text-transform: uppercase; }
+  .arch-table td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; }
+  .arch-table tr:nth-child(even) td { background: var(--surface2); }
+  .arch-table td.layer-name { color: var(--accent); font-weight: 500; }
+  .arch-table td.output-dim { color: var(--purple); }
+  .arch-table td.notes-col  { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #1c1a12; color: #e8e4d0; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── INCEPTION MODULE VISUAL ── */
+  .inception-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 1.25rem 0; }
+  .inc-branch { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 0.6rem; text-align: center; }
+  .inc-branch .branch-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .inc-branch .branch-ops { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); line-height: 1.6; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; color: var(--text); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+    .inception-grid { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Neural Networks &amp; Deep Learning</div>
+  <h1><span>Module 4:</span> State-of-the-Art Models, Autoencoders &amp; Generative Networks</h1>
+  <div class="subtitle">AlexNet · VGG16 · Inception · Xception · Autoencoder · Variational AE · GAN</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> AlexNet — Architecture Deep Dive</a>
+    <a href="#s2"><span class="num">2.</span> VGG16 — Depth Through Simplicity</a>
+    <a href="#s3"><span class="num">3.</span> Inception (GoogLeNet)</a>
+    <a href="#s4"><span class="num">4.</span> Xception</a>
+    <a href="#s5"><span class="num">5.</span> Model Comparison Summary</a>
+    <a href="#s6"><span class="num">6.</span> Autoencoder — Architecture &amp; Theory</a>
+    <a href="#s7"><span class="num">7.</span> Autoencoder Types &amp; Applications</a>
+    <a href="#s8"><span class="num">8.</span> Variational Autoencoder (VAE)</a>
+    <a href="#s9"><span class="num">9.</span> AE vs VAE Comparison</a>
+    <a href="#s10"><span class="num">10.</span> GAN — Core Architecture</a>
+    <a href="#s11"><span class="num">11.</span> GAN Training Dynamics</a>
+    <a href="#s12"><span class="num">12.</span> GAN Variants</a>
+    <a href="#s13"><span class="num">13.</span> Applications &amp; Comparison</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: POPULAR MODELS ████████████ -->
+<div class="part-banner part-cnn">Part 1 — Popular &amp; State-of-the-Art CNN Architectures</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header cnn-h">
+    <div class="section-num">Section 1</div>
+    <h2>AlexNet — The Architecture That Started Deep Learning</h2>
+  </div>
+
+  <h3>1.1 Background and Significance</h3>
+  <p>AlexNet (Krizhevsky, Sutskever, Hinton — 2012) won the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) with a top-5 error of <strong>15.3%</strong>, compared to the next best entry at 26.2% — an <strong>11 percentage point gap</strong> that shocked the computer vision community and triggered the deep learning revolution.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Dataset:</strong> ImageNet — 1.2 million images, 1000 classes. This was the largest visual recognition challenge at the time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hardware:</strong> Trained on two NVIDIA GTX 580 3GB GPUs for ~6 days. The model was split across both GPUs due to memory constraints — a novel engineering decision at the time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it mattered:</strong> Proved that (1) deep CNNs could dramatically outperform hand-crafted feature methods on large-scale visual recognition, and (2) GPU training makes large-scale deep learning feasible.</div></li>
+  </ul>
+
+  <h3>1.2 AlexNet — Layer-by-Layer Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  Input: 227×227×3 (RGB image)
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │ CONV1:  96 filters, 11×11, stride 4  →  55×55×96           │
+  │ ReLU + Local Response Normalization (LRN) + MaxPool 3×3/2   │  27×27×96
+  ├─────────────────────────────────────────────────────────────┤
+  │ CONV2:  256 filters, 5×5, pad 2      →  27×27×256          │
+  │ ReLU + LRN + MaxPool 3×3/2                                  │  13×13×256
+  ├─────────────────────────────────────────────────────────────┤
+  │ CONV3:  384 filters, 3×3, pad 1      →  13×13×384  + ReLU  │
+  │ CONV4:  384 filters, 3×3, pad 1      →  13×13×384  + ReLU  │
+  │ CONV5:  256 filters, 3×3, pad 1      →  13×13×256          │
+  │         MaxPool 3×3/2                                        │  6×6×256
+  ├─────────────────────────────────────────────────────────────┤
+  │ Flatten: 6×6×256 = 9216                                     │
+  │ FC6:    4096 neurons  + ReLU + Dropout(0.5)                 │
+  │ FC7:    4096 neurons  + ReLU + Dropout(0.5)                 │
+  │ FC8:    1000 neurons  + Softmax                             │
+  └─────────────────────────────────────────────────────────────┘
+  Total Parameters: ~62.4 million (57M in FC layers alone!)
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — AlexNet full architecture. Note: most parameters are in the fully connected layers.</div>
+  </div>
+
+  <h3>1.3 AlexNet Key Innovations — Explained</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>ReLU activation (first large-scale use):</strong> Previous networks used Tanh or Sigmoid. ReLU (max(0,z)) does not saturate for positive values → gradients do not vanish → networks train 6× faster according to the paper. This was transformative.</div></li>
+    <li><span class="bullet">▸</span><div><strong>GPU parallelism:</strong> The network was split across 2 GPUs. Conv1, Conv2, Conv4, Conv5 operate independently on each GPU. Conv3, FC layers have full cross-GPU connections. This was forced by hardware constraints but became a template for distributed training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Local Response Normalization (LRN):</strong> After ReLU in Conv1 and Conv2, LRN normalizes responses across neighboring feature maps. Formula: bˢᵢ = aˢᵢ / (k + α Σ (aʲᵢ)²)^β. Inspired by lateral inhibition in biological neurons. Note: LRN is no longer used — Batch Normalization superseded it.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dropout (p=0.5) in FC layers:</strong> First use of Dropout as a regularization technique at this scale. Randomly zero-ing 50% of FC neuron outputs during training prevents co-adaptation — neurons cannot rely on specific other neurons being present. This significantly reduced overfitting.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Data Augmentation:</strong> Training images are augmented on-the-fly: random crops (227×227 from 256×256), horizontal flips, PCA color jitter (changing RGB values along principal color variation directions). Test time: predictions averaged over 10 crops (4 corners + center, ×2 for flip). This effectively multiplied the dataset size.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Large filters in Conv1 (11×11, stride 4):</strong> This was intentional — to capture low-level texture and color patterns at multiple scales from the high-resolution input. Modern networks prefer smaller filters (3×3) as VGG showed, but AlexNet's large first filter was a deliberate choice for the 227×227 input.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Overlapping pooling (3×3, stride 2):</strong> Unlike traditional non-overlapping pooling (2×2, stride 2), AlexNet overlaps pooling windows. Marginally improved accuracy and reduced top-1 error by 0.4%. Harder to overfit with overlapping pooling.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — AlexNet's 5 Key Contributions</div>
+    <p>1. <strong>ReLU</strong> — non-saturating activation → fast training. 2. <strong>GPU training</strong> — multi-GPU split enables large scale. 3. <strong>Dropout</strong> — regularization in FC layers (p=0.5). 4. <strong>Data augmentation</strong> — crops, flips, PCA color jitter. 5. <strong>Overlapping pooling</strong> — minor accuracy boost, reduces overfitting.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header cnn-h">
+    <div class="section-num">Section 2</div>
+    <h2>VGG16 — Depth Through Uniformity</h2>
+  </div>
+
+  <h3>2.1 Core Philosophy</h3>
+  <p>VGGNet (Simonyan &amp; Zisserman, Oxford Visual Geometry Group — 2014) answered one question: <em>What happens if we simply make CNNs deeper with a very uniform, simple architecture?</em> The answer: it works extremely well.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">VGG Design Principle</div>
+    <p>Use only 3×3 Conv filters (smallest filter that can capture spatial relationships in all 8 directions), stride 1, same padding throughout — and 2×2 MaxPool for spatial reduction. Nothing else. This uniformity makes the architecture easy to understand, easy to scale, and easy to transfer-learn from.</p>
+  </div>
+
+  <h3>2.2 Why 3×3 Filters? — The Mathematical Argument</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Two 3×3 = effective 5×5 receptive field:</strong> Two stacked 3×3 Conv layers have the same receptive field as one 5×5 layer. Three stacked 3×3 layers = effective 7×7 field.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fewer parameters:</strong> One 5×5 filter: 25 weights. Two 3×3 filters: 2×9 = 18 weights. <strong>28% fewer parameters</strong> for the same receptive field coverage.</div></li>
+    <li><span class="bullet">▸</span><div><strong>More non-linearity:</strong> Two Conv layers means two ReLU activations instead of one — the network can learn more complex functions with the same receptive field.</div></li>
+    <li><span class="bullet">▸</span><div><strong>One 7×7 vs three 3×3:</strong> 7×7 = 49 weights; three 3×3 = 3×9 = 27 weights — <strong>45% fewer parameters</strong>. This is why modern networks universally prefer small filters.</div></li>
+  </ul>
+
+  <h3>2.3 VGG16 Architecture — Full Layer Table</h3>
+
+  <table class="arch-table">
+    <tr>
+      <th>Block</th><th>Layer</th><th>Operation</th><th>Output Size</th><th>Notes</th>
+    </tr>
+    <tr><td class="layer-name" rowspan="3">Block 1</td><td>Conv1_1</td><td>3×3 Conv, 64 filters, pad=1</td><td class="output-dim">224×224×64</td><td class="notes-col">ReLU after each Conv</td></tr>
+    <tr><td>Conv1_2</td><td>3×3 Conv, 64 filters, pad=1</td><td class="output-dim">224×224×64</td><td class="notes-col"></td></tr>
+    <tr><td>Pool1</td><td>MaxPool 2×2, stride 2</td><td class="output-dim">112×112×64</td><td class="notes-col">Spatial ÷2</td></tr>
+    <tr><td class="layer-name" rowspan="3">Block 2</td><td>Conv2_1</td><td>3×3 Conv, 128 filters, pad=1</td><td class="output-dim">112×112×128</td><td class="notes-col">Channels ×2</td></tr>
+    <tr><td>Conv2_2</td><td>3×3 Conv, 128 filters, pad=1</td><td class="output-dim">112×112×128</td><td class="notes-col"></td></tr>
+    <tr><td>Pool2</td><td>MaxPool 2×2, stride 2</td><td class="output-dim">56×56×128</td><td class="notes-col">Spatial ÷2</td></tr>
+    <tr><td class="layer-name" rowspan="4">Block 3</td><td>Conv3_1</td><td>3×3 Conv, 256 filters, pad=1</td><td class="output-dim">56×56×256</td><td class="notes-col">Channels ×2</td></tr>
+    <tr><td>Conv3_2</td><td>3×3 Conv, 256 filters, pad=1</td><td class="output-dim">56×56×256</td><td class="notes-col"></td></tr>
+    <tr><td>Conv3_3</td><td>3×3 Conv, 256 filters, pad=1</td><td class="output-dim">56×56×256</td><td class="notes-col"></td></tr>
+    <tr><td>Pool3</td><td>MaxPool 2×2, stride 2</td><td class="output-dim">28×28×256</td><td class="notes-col">Spatial ÷2</td></tr>
+    <tr><td class="layer-name" rowspan="4">Block 4</td><td>Conv4_1</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">28×28×512</td><td class="notes-col">Channels ×2</td></tr>
+    <tr><td>Conv4_2</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">28×28×512</td><td class="notes-col"></td></tr>
+    <tr><td>Conv4_3</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">28×28×512</td><td class="notes-col"></td></tr>
+    <tr><td>Pool4</td><td>MaxPool 2×2, stride 2</td><td class="output-dim">14×14×512</td><td class="notes-col">Spatial ÷2</td></tr>
+    <tr><td class="layer-name" rowspan="4">Block 5</td><td>Conv5_1</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">14×14×512</td><td class="notes-col">Same channels</td></tr>
+    <tr><td>Conv5_2</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">14×14×512</td><td class="notes-col"></td></tr>
+    <tr><td>Conv5_3</td><td>3×3 Conv, 512 filters, pad=1</td><td class="output-dim">14×14×512</td><td class="notes-col"></td></tr>
+    <tr><td>Pool5</td><td>MaxPool 2×2, stride 2</td><td class="output-dim">7×7×512</td><td class="notes-col">Spatial ÷2</td></tr>
+    <tr><td class="layer-name" rowspan="3">Head</td><td>FC6</td><td>Flatten → Dense 4096</td><td class="output-dim">4096</td><td class="notes-col">ReLU + Dropout</td></tr>
+    <tr><td>FC7</td><td>Dense 4096</td><td class="output-dim">4096</td><td class="notes-col">ReLU + Dropout</td></tr>
+    <tr><td>FC8</td><td>Dense 1000</td><td class="output-dim">1000</td><td class="notes-col">Softmax output</td></tr>
+  </table>
+
+  <h3>2.4 VGG16 Parameter Analysis</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Total parameters:</strong> ~138 million. Despite the simple design, the parameter count is very high — almost entirely due to the three FC layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>FC layer dominance:</strong> FC6 alone: 7×7×512 × 4096 = 102.7 million parameters. FC7: 4096×4096 = 16.8 million. FC8: 4096×1000 = 4.1 million. Total FC: ~123M out of 138M — <strong>89% of all parameters are in FC layers.</strong></div></li>
+    <li><span class="bullet">▸</span><div><strong>Conv layers:</strong> Only ~15M parameters despite 13 Conv layers. This shows the extreme efficiency of parameter sharing in convolutions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pattern:</strong> Spatial dimensions halve after each pooling (224→112→56→28→14→7). Channel depth doubles after blocks 1,2,3 (64→128→256→512), then stays constant.</div></li>
+  </ul>
+
+  <h3>2.5 VGG16 Strengths and Limitations</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Strengths</div>
+      <p>Simple, uniform architecture — easy to understand and implement. Excellent feature extractor for transfer learning. Deep enough (16 weight layers) to learn rich hierarchical representations.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Limitations</div>
+      <p>138M parameters is very large — memory-intensive for deployment. FC layers are huge and not spatially aware. No skip connections — training very deep VGG variants is harder. Replaced by ResNet in most applications.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Transfer Learning Popularity</div>
+      <p>VGG16/19 became the standard backbone for transfer learning in computer vision from 2014–2017. Pre-trained VGG features work extremely well for many tasks (style transfer, detection, segmentation).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header cnn-h">
+    <div class="section-num">Section 3</div>
+    <h2>Inception / GoogLeNet — Parallel Multi-Scale Processing</h2>
+  </div>
+
+  <h3>3.1 Core Problem Addressed</h3>
+  <p>In a CNN, you must choose a fixed filter size per layer (3×3? 5×5? 7×7?). But different objects in an image have features at <strong>different spatial scales</strong> — a face might need a large receptive field while fine texture details need a small one. Why choose just one? <strong>Inception uses them all in parallel.</strong></p>
+
+  <h3>3.2 The Inception Module</h3>
+
+  <div class="diagram">
+    <pre>
+  Input feature map
+       │
+       ├──── 1×1 Conv ─────────────────────────────────────────┐
+       │                                                        │
+       ├──── 1×1 Conv ──▶ 3×3 Conv ────────────────────────────┤
+       │                                                        │  Filter
+       ├──── 1×1 Conv ──▶ 5×5 Conv ────────────────────────────┤  Concat
+       │                                                        │
+       └──── MaxPool 3×3 ──▶ 1×1 Conv ────────────────────────┘
+                                                               │
+                                             Output (all channels stacked)
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Inception module. Four parallel branches with different receptive fields, output concatenated along channel dimension.</div>
+  </div>
+
+  <div class="inception-grid">
+    <div class="inc-branch">
+      <div class="branch-title">Branch 1</div>
+      <div class="branch-ops">1×1 Conv<br>ReLU<br>─────<br>Captures fine<br>point features,<br>reduces dims</div>
+    </div>
+    <div class="inc-branch">
+      <div class="branch-title">Branch 2</div>
+      <div class="branch-ops">1×1 Conv<br>↓<br>3×3 Conv<br>ReLU<br>─────<br>Medium<br>receptive field</div>
+    </div>
+    <div class="inc-branch">
+      <div class="branch-title">Branch 3</div>
+      <div class="branch-ops">1×1 Conv<br>↓<br>5×5 Conv<br>ReLU<br>─────<br>Large<br>receptive field</div>
+    </div>
+    <div class="inc-branch">
+      <div class="branch-title">Branch 4</div>
+      <div class="branch-ops">MaxPool<br>3×3<br>↓<br>1×1 Conv<br>─────<br>Pooled spatial<br>features</div>
+    </div>
+  </div>
+
+  <h3>3.3 The 1×1 Convolution — Bottleneck Layer</h3>
+  <p>The 1×1 Conv before the 3×3 and 5×5 filters is the key efficiency trick in Inception, called a <strong>bottleneck layer</strong>.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>What does 1×1 Conv do?</strong> A 1×1 Conv with fewer output channels reduces the channel depth of the feature map before the expensive 3×3 or 5×5 Conv. Example: 192 channels → 32 channels (via 1×1) → 5×5 Conv → 64 channels.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Parameter savings example:</strong> Without 1×1: 5×5×192×32 = 153,600 params. With 1×1 bottleneck (192→16 first): 1×1×192×16 + 5×5×16×32 = 3,072 + 12,800 = 15,872 params. Over <strong>9× fewer parameters</strong> for the same computation!</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cross-channel mixing:</strong> Beyond dimensionality reduction, 1×1 Conv also performs learned linear combinations across channels — it mixes channel information without spatial interaction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-linearity bonus:</strong> Each 1×1 Conv is followed by ReLU, adding an extra non-linearity that increases the representational power of the network.</div></li>
+  </ul>
+
+  <h3>3.4 GoogLeNet (Inception v1) Architecture</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Depth:</strong> 22 layers with weights (27 layers total including pooling). Deeper than VGG at the time but far fewer parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Parameters:</strong> Only ~7 million — compared to AlexNet's 62M and VGG16's 138M. <strong>20× fewer parameters than VGG16</strong> while achieving better accuracy.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No FC layers:</strong> GoogLeNet replaced the large FC layers with Global Average Pooling (GAP) — average all spatial positions of the last feature map → one value per channel. This alone saved ~40M parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Auxiliary classifiers:</strong> Two additional softmax classifiers attached to intermediate layers. During training, their losses are added to the main loss (weighted 0.3). Combats vanishing gradients by injecting gradient signal at earlier layers. Removed at test time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inception blocks:</strong> 9 Inception modules stacked, interspersed with MaxPool for spatial reduction.</div></li>
+  </ul>
+
+  <h3>3.5 Inception v2, v3, v4 Improvements</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Inception v2:</strong> Replaced 5×5 Conv with two stacked 3×3 Conv (same receptive field, fewer params). Added Batch Normalization throughout.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inception v3:</strong> Factorized convolutions further — replaced n×n with 1×n and n×1 operations in sequence (asymmetric convolution). For 7×7: 1×7 then 7×1 needs 7+7=14 operations vs 7×7=49. A 3× speedup.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inception v4 / Inception-ResNet:</strong> Combined Inception modules with Residual connections (skip connections from ResNet). Top-1 accuracy on ImageNet: 80.2%.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">Asymmetric Convolution Factorization (Inception v3)</div>
+    <div class="formula">
+      n×n Conv  →  [1×n Conv]  →  [n×1 Conv]<br><br>
+      Example — 7×7 Conv factorized:<br>
+      Original: 7×7 = 49 multiplications per position<br>
+      Factored:  1×7 + 7×1 = 14 multiplications  →  3.5× reduction in compute
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header cnn-h">
+    <div class="section-num">Section 4</div>
+    <h2>Xception — Extreme Inception with Depthwise Separable Convolutions</h2>
+  </div>
+
+  <h3>4.1 The Hypothesis Behind Xception</h3>
+  <p>Xception (Chollet, Google — 2017) takes the Inception philosophy one step further with a radical hypothesis: <em>cross-channel correlations and spatial correlations in feature maps can be entirely decoupled and mapped separately.</em> This idea leads to <strong>Depthwise Separable Convolution</strong>.</p>
+
+  <h3>4.2 Depthwise Separable Convolution — The Core Innovation</h3>
+  <p>A standard convolution mixes spatial and channel interactions simultaneously. Depthwise Separable Conv breaks this into two separate operations:</p>
+
+  <div class="diagram">
+    <pre>
+  STANDARD CONVOLUTION (does both at once):
+  Input: H×W×C_in ──▶ [K filters of f×f×C_in] ──▶ H×W×K
+  Params = K × f × f × C_in   (mixes spatial AND channel dimensions together)
+
+
+  DEPTHWISE SEPARABLE CONVOLUTION (separates them):
+
+  Step 1 — Depthwise Conv (spatial only, one filter per channel):
+  Input: H×W×C_in ──▶ [C_in filters, each f×f×1] ──▶ H×W×C_in
+  Each channel gets its OWN spatial filter. No mixing across channels.
+  Params = C_in × f × f
+
+  Step 2 — Pointwise Conv (channel mixing only):
+  H×W×C_in ──▶ [K filters of 1×1×C_in] ──▶ H×W×K
+  1×1 Conv mixes channels without spatial interaction.
+  Params = K × 1 × 1 × C_in = K × C_in
+    </pre>
+    <div class="diagram-caption">Figure 4.1 — Standard convolution vs Depthwise Separable Convolution. The latter decouples spatial and channel processing.</div>
+  </div>
+
+  <h3>4.3 Parameter and Compute Savings</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Computation Reduction — Depthwise Separable vs Standard Conv</div>
+    <div class="formula">
+      Standard Conv multiplications:  K × f² × C_in × H × W<br>
+      DepthSep Conv multiplications:  (C_in × f² + K × C_in) × H × W<br><br>
+      Ratio = (C_in × f² + K × C_in) / (K × f² × C_in)<br>
+            = 1/K  +  1/f²<br><br>
+      For K=256, f=3:  1/256 + 1/9  ≈  0.115  →  ~8–9× reduction in ops!
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>MobileNet connection:</strong> Depthwise Separable Conv is the core building block of MobileNet, designed for mobile and edge deployment. Xception and MobileNet independently discovered the same operation's power.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Accuracy vs efficiency:</strong> Xception achieves better ImageNet top-1 accuracy than Inception v3 (79.0% vs 78.0%) while using similar parameters — purely by architectural design.</div></li>
+  </ul>
+
+  <h3>4.4 Xception Architecture</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Entry flow:</strong> Two standard Conv layers + three depthwise separable Conv blocks with residual connections and strided convolutions for downsampling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Middle flow:</strong> Eight identical depthwise separable Conv blocks, all with residual connections. This is the core of the network.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Exit flow:</strong> Two more depthwise separable Conv blocks, Global Average Pooling, then Dense + Softmax.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Key difference from Inception:</strong> Xception replaces ALL Inception modules with depthwise separable Conv. It is essentially Inception taken to its logical extreme — hence the name: <em>Extreme Inception</em>.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Residual connections:</strong> Xception uses residual connections throughout (like ResNet), which are crucial for training the deep network stably. Unlike Inception, Xception has no auxiliary classifiers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Parameters:</strong> ~22.9 million. Achieves higher accuracy than VGG16 (138M) with 6× fewer parameters.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Xception vs Inception</div>
+    <p>Inception hypothesis: spatial and channel correlations are <em>somewhat</em> decoupled. Use 1×1 bottleneck + parallel spatial filters. Xception hypothesis: spatial and channel correlations can be <em>fully</em> decoupled. Replace all mixed convolutions with depthwise separable convolutions. Xception is the logical extreme of the Inception idea — hence the name.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header cnn-h">
+    <div class="section-num">Section 5</div>
+    <h2>Model Comparison Summary</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr>
+      <th>Model</th><th>Year</th><th>Depth</th><th>Params</th><th>Top-5 Error</th><th>Key Innovation</th>
+    </tr>
+    <tr>
+      <td><strong>AlexNet</strong></td><td>2012</td><td>8</td><td>62M</td><td>15.3%</td>
+      <td>ReLU, GPU training, Dropout, Data augmentation</td>
+    </tr>
+    <tr>
+      <td><strong>VGG16</strong></td><td>2014</td><td>16</td><td>138M</td><td>7.3%</td>
+      <td>Uniform 3×3 filters throughout, depth via simplicity</td>
+    </tr>
+    <tr>
+      <td><strong>GoogLeNet</strong></td><td>2014</td><td>22</td><td>7M</td><td>6.7%</td>
+      <td>Inception module (parallel multi-scale), 1×1 bottleneck, GAP</td>
+    </tr>
+    <tr>
+      <td><strong>ResNet-50</strong></td><td>2015</td><td>50</td><td>25M</td><td>5.3%</td>
+      <td>Residual skip connections — enables very deep networks</td>
+    </tr>
+    <tr>
+      <td><strong>Inception v3</strong></td><td>2016</td><td>48</td><td>24M</td><td>5.6%</td>
+      <td>Factorized convolutions, asymmetric conv, BatchNorm</td>
+    </tr>
+    <tr>
+      <td><strong>Xception</strong></td><td>2017</td><td>71</td><td>22.9M</td><td>5.0%</td>
+      <td>Depthwise separable convolutions, full channel-spatial decoupling</td>
+    </tr>
+    <tr>
+      <td><strong>EfficientNet-B7</strong></td><td>2019</td><td>—</td><td>66M</td><td>3.0%</td>
+      <td>Compound scaling (depth + width + resolution simultaneously)</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">The Evolutionary Story</div>
+    <p>AlexNet showed depth works. VGG showed <em>uniform</em> depth works. Inception showed you don't need to choose filter sizes. ResNet showed you can go as deep as you want. Xception showed you can completely decouple spatial and channel processing. EfficientNet showed you should scale all three dimensions (depth, width, resolution) together. Each architecture solved a specific problem left by its predecessor.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 2: AUTOENCODERS ████████████ -->
+<div class="part-banner part-ae">Part 2 — Autoencoders and Variational Autoencoders</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header ae-h">
+    <div class="section-num">Section 6</div>
+    <h2>Autoencoder — Architecture and Theory</h2>
+  </div>
+
+  <h3>6.1 What is an Autoencoder?</h3>
+  <p>An <strong>Autoencoder (AE)</strong> is an unsupervised neural network trained to copy its input to its output by first compressing it into a lower-dimensional representation (encoding) and then reconstructing the original input from that compressed form (decoding). The network is forced to discover the most important structure in the data to perform this compression faithfully.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Key Insight — Constrained Reconstruction</div>
+    <p>If the network had no constraints (e.g., bottleneck with same dimensions as input), it could learn the identity function trivially. The constraint — a bottleneck with far fewer dimensions than the input — forces the encoder to learn a compressed, informative, low-dimensional representation. This representation captures the essential structure of the data.</p>
+  </div>
+
+  <h3>6.2 Autoencoder Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT                ENCODER                  LATENT       DECODER               OUTPUT
+  (high-dim)     (compression / feature          CODE        (reconstruction)      (high-dim)
+                  learning)                    (low-dim)
+
+  x ──▶ [h₁: 784] ──▶ [h₂: 512] ──▶ [h₃: 256] ──▶ [z: 32] ──▶ [h₄: 256] ──▶ [h₅: 512] ──▶ [x̂: 784]
+         Dense          Dense          Dense          ↑           Dense          Dense          Dense
+         ReLU           ReLU           ReLU       Bottleneck      ReLU           ReLU         Sigmoid
+
+                   Encoding path (shrinking)              Decoding path (expanding, mirror of encoder)
+
+  Loss: Reconstruction Error  L = ‖x − x̂‖²  (MSE)  or  Binary Cross-Entropy(x, x̂)
+    </pre>
+    <div class="diagram-caption">Figure 6.1 — Standard Autoencoder. Encoder compresses input to latent code z. Decoder reconstructs x̂ from z.</div>
+  </div>
+
+  <h3>6.3 Components — Detailed</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Encoder f(x):</strong> Maps input x (high-dimensional) to latent code z (low-dimensional). z = f(x). In a deep AE, this is a series of Dense or Conv layers with progressively smaller dimensions. Learns to extract the most salient features.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Latent space z (bottleneck):</strong> The compressed representation. Dimension of z ≪ dimension of x. This is the learned feature representation. For a 784-dim MNIST image, z might be 32-dimensional. The bottleneck forces information compression.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Decoder g(z):</strong> Maps latent code z back to the input space: x̂ = g(z). Mirror structure of the encoder — progressively expands dimensions. In convolutional AEs, uses transposed convolutions (deconvolutions) for spatial upsampling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Reconstruction loss:</strong> Measures how well x̂ approximates x. For continuous data: MSE = (1/n)Σ(xᵢ − x̂ᵢ)². For binary/image data [0,1]: Binary Cross-Entropy = −Σ[xᵢ log(x̂ᵢ) + (1−xᵢ)log(1−x̂ᵢ)].</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training objective:</strong> Minimize reconstruction loss. No labels needed — the input itself is both input and target. This is why AEs are called self-supervised / unsupervised learning.</div></li>
+  </ul>
+
+  <h3>6.4 Undercomplete vs Overcomplete Autoencoders</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Undercomplete AE:</strong> Bottleneck dimension &lt; input dimension. Forces compression. Learns useful representations because it cannot simply copy input. The standard design.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Overcomplete AE:</strong> Bottleneck dimension ≥ input dimension. Without extra constraints, could learn trivial identity mapping. Requires regularization (sparse coding, denoising) to learn useful features.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header ae-h">
+    <div class="section-num">Section 7</div>
+    <h2>Autoencoder Types and Applications</h2>
+  </div>
+
+  <h3>7.1 Denoising Autoencoder (DAE)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Deliberately corrupt the input x by adding noise (Gaussian noise, masking, dropout) to get x̃. Train the AE to reconstruct the clean original x from the noisy version x̃. Loss: ‖x − g(f(x̃))‖².</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it works better:</strong> The network cannot just memorize inputs — it must learn the underlying data structure to "fill in" what was corrupted. Learns more robust, generalizable representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Image denoising, speech enhancement, missing data imputation, anomaly detection. The corrupted input makes DAE one of the most practically useful AE variants.</div></li>
+  </ul>
+
+  <h3>7.2 Sparse Autoencoder</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Add a sparsity penalty to the loss: L = Reconstruction loss + λ · Sparsity penalty. The sparsity penalty encourages most neurons in the latent layer to have near-zero activation — only a few should activate for any given input.</div></li>
+    <li><span class="bullet">▸</span><div><strong>KL divergence sparsity:</strong> Sparsity penalty = KL(ρ ‖ ρ̂) where ρ is target sparsity (e.g. 0.05) and ρ̂ is actual average activation. Penalizes neurons that activate more often than the target sparsity.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Can work with overcomplete representations (more hidden units than inputs). Learns disentangled, interpretable features. Used in feature learning for NLP and images.</div></li>
+  </ul>
+
+  <h3>7.3 Convolutional Autoencoder</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Replace Dense layers with Conv layers in the encoder and Transposed Conv layers in the decoder. Respects the spatial structure of image data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transposed Convolution (Deconv):</strong> The "reverse" of convolution. Uses learnable weights to upsample a small feature map to a larger one. Unlike simple upsampling (bilinear, nearest-neighbor), it is learned — can reconstruct spatial details.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Image compression, image inpainting, anomaly detection in images, pre-training for segmentation networks (U-Net is an encoder-decoder with skip connections).</div></li>
+  </ul>
+
+  <h3>7.4 Autoencoder Applications Summary</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Dimensionality Reduction</div>
+      <p>Alternative to PCA but non-linear. Learns compact representations for visualization (t-SNE on z) and downstream ML tasks. Often better than PCA for complex data.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Anomaly Detection</div>
+      <p>Train AE only on normal data. At test time: normal inputs reconstruct well (low loss). Anomalous inputs reconstruct poorly (high loss). Threshold on reconstruction error.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Image Denoising</div>
+      <p>Denoising AE trained on clean images learns to remove noise. Input: noisy image. Output: clean reconstruction. Better than classical filters for complex noise patterns.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Data Compression</div>
+      <p>Encoder compresses data; decoder decompresses. Learned compression can outperform JPEG for specific data types. Useful for compressing medical images, scientific data.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Pre-training / Feature Learning</div>
+      <p>Train AE on unlabeled data first. Use encoder weights to initialize a classifier. The encoder has already learned meaningful representations — fine-tune with limited labeled data.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Information Retrieval</div>
+      <p>Encode all items into z-space. Find similar items by nearest neighbor search in the low-dimensional z-space. Faster and more meaningful than searching in raw pixel space.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header ae-h">
+    <div class="section-num">Section 8</div>
+    <h2>Variational Autoencoder (VAE)</h2>
+  </div>
+
+  <h3>8.1 The Problem with Standard AEs for Generation</h3>
+  <p>A standard AE maps each input to a single point in latent space. The latent space is not necessarily structured or continuous. If you sample a random point z from the latent space and decode it, you might get a nonsensical output because the space between learned points is undefined — there is no guarantee about what lives there.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">VAE Key Insight — Encode Distributions, Not Points</div>
+    <p>Instead of encoding each input as a single point z, a VAE encodes each input as a <strong>probability distribution over the latent space</strong> — specifically, a Gaussian distribution parameterized by mean μ and variance σ². During training, z is sampled from this distribution. This forces the latent space to be continuous and structured — so any point in latent space decodes to something meaningful. This enables <strong>generation</strong>: sample z ~ N(0,I), decode → new data.</p>
+  </div>
+
+  <h3>8.2 VAE Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT x                ENCODER                LATENT              DECODER             OUTPUT x̂
+                                                 SPACE
+                      ┌──▶ μ(x)    ──────────┐
+  x ──▶ [Dense        │                       ├──▶ z = μ + σ·ε ──▶ [Dense] ──▶ x̂
+         layers]  ────┤                       │         ↑
+                      └──▶ log σ²(x) ─────────┘         └─── ε ~ N(0,I)
+                                                              (reparameterization trick)
+
+  Encoder outputs: μ (mean vector) and log σ² (log variance vector)
+  Both have same dimension as desired latent space
+  z is SAMPLED from N(μ, σ²) — not a deterministic point!
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — VAE architecture. Encoder outputs distribution parameters (μ, σ²). z is sampled via the reparameterization trick.</div>
+  </div>
+
+  <h3>8.3 The VAE Loss Function — ELBO</h3>
+  <p>The VAE is trained by maximizing the <strong>Evidence Lower BOund (ELBO)</strong>, which is equivalent to minimizing:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">VAE Loss = Reconstruction Loss + KL Divergence</div>
+    <div class="formula">
+      L_VAE = E[‖x − x̂‖²]  +  KL( q(z|x)  ‖  p(z) )<br><br>
+      Term 1: <span class="gr">Reconstruction Loss</span>  = E[log p(x|z)]<br>
+        → How well does the decoder reconstruct x from the sampled z?<br>
+        → Same as standard AE reconstruction loss (MSE or BCE)<br><br>
+      Term 2: <span class="rd">KL Divergence</span>  = KL( N(μ,σ²)  ‖  N(0,I) )<br>
+        → How different is the encoder distribution q(z|x) from the prior N(0,I)?<br>
+        → Closed form: = −(1/2) Σ [1 + log σ² − μ² − σ²]<br>
+        → Forces the latent space to be organized near the standard normal
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Reconstruction loss:</strong> Pulls the decoder output close to the original input. Encourages faithful reconstruction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>KL divergence:</strong> Pulls the encoder distribution toward N(0,I) — the prior. Regularizes the latent space to be smooth and structured. Without this, VAE degenerates to a standard AE.</div></li>
+    <li><span class="bullet">▸</span><div><strong>The tension:</strong> These two terms are in tension. Reconstruction wants a tight, specific encoding per input. KL wants the encoding to be spread out like N(0,I). The balance is what produces a structured, traversable latent space.</div></li>
+  </ul>
+
+  <h3>8.4 The Reparameterization Trick</h3>
+  <p>A critical technical point: sampling z ~ N(μ, σ²) is a stochastic (random) operation. Gradients cannot flow through random nodes during backpropagation. The reparameterization trick solves this:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Reparameterization Trick</div>
+    <div class="formula">
+      Instead of:  z ~ N(μ, σ²)          <span class="comment">← cannot backprop through</span><br><br>
+      Write as:    z = μ  +  σ · ε        <span class="comment">← ε ~ N(0, I) sampled independently</span><br><br>
+      Now: μ and σ are outputs of the encoder (differentiable)
+           ε is random noise drawn externally (not a learnable parameter)
+      Gradient flows through μ and σ normally → backprop works!
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why it works:</strong> The randomness is "externalized" into ε, which is drawn from a fixed N(0,I) and does not depend on any parameters. The learned parameters μ and σ are deterministic functions of x — gradients flow through them normally.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Generation at test time:</strong> To generate new data, simply sample ε ~ N(0,I), compute z = μ + σ·ε (or just z ~ N(0,I) if using the prior directly), feed z to the decoder → new sample x̂.</div></li>
+  </ul>
+
+  <h3>8.5 Latent Space Properties of VAE</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Continuity:</strong> Because the KL term pushes encodings toward N(0,I), nearby points in latent space correspond to visually similar inputs. Interpolating between two z points gives a smooth transition between the two corresponding images.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Completeness:</strong> Any random sample from N(0,I) decodes to something meaningful (not random noise). The entire latent space is "filled" with valid data representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Disentanglement:</strong> With appropriate architecture and training, different dimensions of z can correspond to different semantically meaningful factors of variation (e.g., one dimension controls smile, another controls age in face generation). This is a research direction called disentangled representation learning.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header ae-h">
+    <div class="section-num">Section 9</div>
+    <h2>AE vs VAE — Detailed Comparison</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Standard Autoencoder</th><th>Variational Autoencoder</th></tr>
+    <tr>
+      <td><strong>Latent representation</strong></td>
+      <td>Single deterministic point z = f(x)</td>
+      <td>Distribution: z ~ N(μ(x), σ²(x))</td>
+    </tr>
+    <tr>
+      <td><strong>Encoder output</strong></td>
+      <td>Single vector z</td>
+      <td>Two vectors: μ and log σ²</td>
+    </tr>
+    <tr>
+      <td><strong>Loss function</strong></td>
+      <td>Reconstruction loss only: ‖x − x̂‖²</td>
+      <td>Reconstruction loss + KL divergence</td>
+    </tr>
+    <tr>
+      <td><strong>Latent space structure</strong></td>
+      <td>Unstructured — points scattered, gaps between them undefined</td>
+      <td>Structured, continuous, organized near N(0,I)</td>
+    </tr>
+    <tr>
+      <td><strong>Generative capability</strong></td>
+      <td>Cannot generate: sampling from latent space gives noise</td>
+      <td>Can generate: sample z ~ N(0,I), decode → valid new data</td>
+    </tr>
+    <tr>
+      <td><strong>Interpolation</strong></td>
+      <td>Interpolating between two z points may pass through undefined regions</td>
+      <td>Smooth, semantically meaningful interpolation in latent space</td>
+    </tr>
+    <tr>
+      <td><strong>Training trick needed</strong></td>
+      <td>None — standard backprop</td>
+      <td>Reparameterization trick to enable backprop through sampling</td>
+    </tr>
+    <tr>
+      <td><strong>Reconstruction quality</strong></td>
+      <td>Typically sharper (no blurriness from sampling)</td>
+      <td>Slightly blurry (averaging over distribution)</td>
+    </tr>
+    <tr>
+      <td><strong>Primary use case</strong></td>
+      <td>Compression, denoising, anomaly detection, feature learning</td>
+      <td>Generation of new data, latent space exploration, disentanglement</td>
+    </tr>
+    <tr>
+      <td><strong>Mathematical framework</strong></td>
+      <td>Deterministic</td>
+      <td>Probabilistic graphical model (Bayesian)</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — VAE vs AE Core Difference (One Sentence)</div>
+    <p>A standard AE encodes to a <em>point</em> in latent space (deterministic); a VAE encodes to a <em>distribution</em> over latent space (probabilistic), which enables generation and produces a structured, continuous latent space via the KL divergence regularization term.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 3: GENERATIVE MODELS ████████████ -->
+<div class="part-banner part-gen">Part 3 — Generative Adversarial Networks (GAN)</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header gen-h">
+    <div class="section-num">Section 10</div>
+    <h2>GAN — Core Architecture and Theory</h2>
+  </div>
+
+  <h3>10.1 What is a GAN?</h3>
+  <p>A <strong>Generative Adversarial Network</strong> (Goodfellow et al., 2014) is a framework for training a generative model through an adversarial game between two networks. The core idea: train a generator to produce realistic fake data by pitting it against a discriminator whose job is to distinguish real from fake.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The Adversarial Game — Counterfeiter vs Detective</div>
+    <p><strong>Generator (G):</strong> A counterfeiter trying to print fake banknotes so convincing that the detective cannot tell they're fake.</p>
+    <p><strong>Discriminator (D):</strong> A detective trying to distinguish real banknotes from the counterfeiter's fakes.</p>
+    <p>They are trained simultaneously — the counterfeiter gets better by fooling the detective; the detective gets better at spotting fakes. At convergence: the counterfeiter produces perfect fakes that the detective cannot distinguish from real.</p>
+  </div>
+
+  <h3>10.2 GAN Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  GENERATOR (G):
+  Random noise z ──▶ [Dense/ConvTranspose layers] ──▶ Fake image G(z)
+  z ~ N(0, I)     (learns to map noise to realistic data)
+  "Tries to fool D"
+
+  DISCRIMINATOR (D):
+  Real image x ──▶ ┐                               ┌──▶ P(real) ≈ 1
+                   ├──▶ [Dense/Conv layers] ──▶ D  │
+  Fake image G(z)──┘                               └──▶ P(real) ≈ 0
+  (learns to classify real vs generated)
+  "Tries to catch G"
+
+  Training Signal:
+  ← Gradient flows back to G through D's predictions
+    G improves to make D output P(real)≈1 for G(z)
+    D improves to output P(real)≈1 for x and ≈0 for G(z)
+    </pre>
+    <div class="diagram-caption">Figure 10.1 — GAN architecture. G generates from noise; D classifies real vs fake. Both are trained adversarially.</div>
+  </div>
+
+  <h3>10.3 The GAN Objective — Minimax Game</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">GAN Minimax Objective (Value Function V)</div>
+    <div class="formula">
+      min_G  max_D  V(D, G) =<br>
+        E_{x~p_data} [log D(x)]  +  E_{z~p_z} [log(1 − D(G(z)))]<br><br>
+      <span class="gr">Discriminator D maximizes:</span><br>
+        → log D(x): maximize probability of calling real data "real" (D(x)→1)<br>
+        → log(1−D(G(z))): maximize probability of calling fakes "fake" (D(G(z))→0)<br><br>
+      <span class="rd">Generator G minimizes:</span><br>
+        → log(1−D(G(z))): minimize D's ability to identify fakes (D(G(z))→1)<br><br>
+      <span class="var">In practice, G maximizes log D(G(z)) instead</span> (non-saturating loss):<br>
+        → Provides stronger gradients early in training when D easily rejects fakes
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Nash Equilibrium:</strong> The theoretical equilibrium of the minimax game is when G produces samples from the true data distribution p_data perfectly, and D outputs 0.5 everywhere (random guessing — cannot tell real from fake).</div></li>
+    <li><span class="bullet">▸</span><div><strong>p_z (prior):</strong> The input noise distribution. Typically Gaussian N(0,I) or Uniform U(-1,1). The dimension of z is a hyperparameter (e.g. 100-dimensional).</div></li>
+    <li><span class="bullet">▸</span><div><strong>D(x) interpretation:</strong> Outputs a scalar in (0,1) — the probability that x is real data (not generated).</div></li>
+  </ul>
+
+  <h3>10.4 How GANs Differ from VAEs for Generation</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>VAE</th><th>GAN</th></tr>
+    <tr><td><strong>Training objective</strong></td><td>Maximize ELBO (reconstruction + KL)</td><td>Minimax adversarial game</td></tr>
+    <tr><td><strong>Output quality</strong></td><td>Slightly blurry (MSE-like loss)</td><td>Sharp, photorealistic images</td></tr>
+    <tr><td><strong>Latent space</strong></td><td>Structured, continuous, interpretable</td><td>Less structured; harder to traverse</td></tr>
+    <tr><td><strong>Training stability</strong></td><td>Stable — single loss function</td><td>Unstable — two networks competing</td></tr>
+    <tr><td><strong>Mode collapse</strong></td><td>Does not suffer from mode collapse</td><td>Major problem — G may generate limited variety</td></tr>
+    <tr><td><strong>Best at</strong></td><td>Structured generation, interpolation, disentanglement</td><td>Photorealistic synthesis, image translation</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header gen-h">
+    <div class="section-num">Section 11</div>
+    <h2>GAN Training Dynamics and Challenges</h2>
+  </div>
+
+  <h3>11.1 The GAN Training Procedure</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">GAN Training — Alternating Gradient Updates</div>
+    <div class="algo-body">
+      <div class="formula">
+        for each training iteration:<br><br>
+        <span class="hl">Step 1 — Train Discriminator (k steps, typically k=1):</span><br>
+        &nbsp;&nbsp;Sample m real examples: {x⁽¹⁾, ..., x⁽ᵐ⁾} from training data<br>
+        &nbsp;&nbsp;Sample m noise vectors: {z⁽¹⁾, ..., z⁽ᵐ⁾} ~ N(0,I)<br>
+        &nbsp;&nbsp;Generate fakes: {G(z⁽¹⁾), ..., G(z⁽ᵐ⁾)}<br>
+        &nbsp;&nbsp;Compute D loss:<br>
+        &nbsp;&nbsp;L_D = −[log D(x) + log(1−D(G(z)))]<br>
+        &nbsp;&nbsp;Update D parameters via gradient ascent (maximize V)<br><br>
+        <span class="rd">Step 2 — Train Generator (1 step):</span><br>
+        &nbsp;&nbsp;Sample m new noise vectors: {z⁽¹⁾, ..., z⁽ᵐ⁾} ~ N(0,I)<br>
+        &nbsp;&nbsp;Compute G loss:<br>
+        &nbsp;&nbsp;L_G = −log D(G(z))   ← non-saturating (practical version)<br>
+        &nbsp;&nbsp;Update G parameters via gradient descent (minimize L_G)<br>
+        &nbsp;&nbsp;NOTE: D weights are FROZEN during this step<br><br>
+        repeat until convergence
+      </div>
+    </div>
+  </div>
+
+  <h3>11.2 GAN Training Challenges</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Mode Collapse:</strong> G learns to produce only a few types of outputs (or even just one), ignoring diversity. D gets fooled by these, so G has no incentive to learn the full distribution. One of the most notorious GAN problems. Example: a face GAN generates only young females even though the training data had many ages and genders.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Vanishing Gradients for G:</strong> If D becomes too good early in training, D(G(z)) ≈ 0 for all generated samples. Then log(1−D(G(z))) ≈ 0, and the gradient for G is near zero — G stops learning. This is why the non-saturating loss (maximize log D(G(z)) instead) was introduced.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training Instability / Oscillation:</strong> D and G can oscillate — D improves, G degrades, G recovers, D degrades, repeat. The loss may not converge cleanly. Requires careful learning rate balancing (D and G shouldn't learn at very different rates).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hyperparameter sensitivity:</strong> GANs are very sensitive to learning rate, batch size, architecture choices, and initialization. Much harder to tune than standard supervised networks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No explicit likelihood:</strong> Unlike VAE, GAN has no direct measure of how good the generator is (no loss value you can directly interpret). Evaluation requires metrics like FID (Fréchet Inception Distance) and IS (Inception Score).</div></li>
+  </ul>
+
+  <h3>11.3 Techniques to Stabilize GAN Training</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Wasserstein GAN (WGAN):</strong> Replaces the binary cross-entropy D loss with the Wasserstein distance (Earth Mover Distance). Provides meaningful gradients even when D and G distributions are far apart. Requires clipping D weights or gradient penalty. Dramatically more stable training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Label smoothing:</strong> Instead of using hard labels (1 for real, 0 for fake), use soft labels (0.9 for real, 0.1 for fake). Prevents D from becoming overconfident, providing better gradient signal to G.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Minibatch discrimination:</strong> D examines a batch of images together, not individually. This helps G produce diverse outputs (fighting mode collapse).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Progressive growing:</strong> Start training at low resolution (4×4), gradually increase to full resolution. Both D and G grow simultaneously. Dramatically improves stability and quality for high-resolution generation (ProGAN, StyleGAN).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Spectral normalization:</strong> Normalize weight matrices in D to stabilize training by controlling the Lipschitz constant of D.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Mode Collapse Explained</div>
+    <p>Mode collapse occurs when G learns to map many different z values to the same or very few outputs. Since D accepts these, G has no gradient signal to diversify. The generator "collapses" to a subset of the true data distribution's modes (clusters). It is the most fundamental failure mode of GANs — most GAN improvements (WGAN, minibatch discrimination) are primarily motivated by reducing mode collapse.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header gen-h">
+    <div class="section-num">Section 12</div>
+    <h2>GAN Variants — Architecture and Innovation</h2>
+  </div>
+
+  <h3>12.1 DCGAN — Deep Convolutional GAN</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Contribution:</strong> First stable architecture that brought CNNs to GANs. Established a set of architectural guidelines that became the default GAN template.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Generator:</strong> Starts from a dense layer projecting z into a small spatial map (4×4×512), then uses Transposed Convolutions to upsample (4→8→16→32→64 pixels). BatchNorm + ReLU throughout; Tanh at output.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Discriminator:</strong> Standard CNN with strided Conv layers (no MaxPool). BatchNorm + LeakyReLU; Sigmoid at output for real/fake probability.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DCGAN rules:</strong> (1) Replace pooling with strided Conv. (2) Use BatchNorm in both G and D. (3) Remove FC layers. (4) Use ReLU in G, LeakyReLU in D. (5) Tanh output in G.</div></li>
+  </ul>
+
+  <h3>12.2 Conditional GAN (cGAN)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Condition both G and D on extra information y (class label, text description, image). G generates samples from class y; D checks both realism AND class correctness.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> y is typically embedded and concatenated with z (for G) or with the input (for D). Objective: G tries to generate class-y samples; D tries to detect fakes and class mismatches.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Class-conditional image generation, text-to-image synthesis (concatenate text embedding with z), image-to-image translation.</div></li>
+  </ul>
+
+  <h3>12.3 Pix2Pix — Image-to-Image Translation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> A conditional GAN where the condition y is an entire input image (not just a label). G translates the input image to an output image; D checks if the output looks realistic given the input.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> G is a U-Net (encoder-decoder with skip connections). D is a PatchGAN — classifies whether each N×N patch of the image is real or fake, rather than the whole image.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Loss:</strong> Adversarial loss + L1 reconstruction loss (keeps output close to ground truth in low frequencies). The adversarial loss adds sharpness; L1 prevents blurriness.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Sketch → photo, aerial map → street view, daytime → nighttime, grayscale → color, segmentation map → realistic image.</div></li>
+  </ul>
+
+  <h3>12.4 CycleGAN — Unpaired Image Translation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem Pix2Pix solves:</strong> Requires paired training data (input image + corresponding output). This is expensive/impossible to collect for many tasks (e.g., horse photos paired with zebra photos).</div></li>
+    <li><span class="bullet">▸</span><div><strong>CycleGAN solution:</strong> Two generators (G: X→Y, F: Y→X) and two discriminators (D_X, D_Y). Adds a <strong>cycle consistency loss</strong>: translate X→Y→X should recover the original X.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cycle consistency:</strong> F(G(x)) ≈ x AND G(F(y)) ≈ y. This constraint prevents G from producing any random Y-domain image — it must produce one that maps back to the original x.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Horse ↔ Zebra, Summer ↔ Winter, Photo ↔ Painting (Monet style), MRI ↔ CT scan.</div></li>
+  </ul>
+
+  <h3>12.5 StyleGAN — High-Fidelity Face Generation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Core innovation:</strong> Instead of feeding z directly to G, a mapping network first transforms z into an intermediate latent w-space. Style vectors derived from w control different levels of the generator (coarse: pose, hairstyle; medium: facial features; fine: color, texture).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Adaptive Instance Normalization (AdaIN):</strong> Style is injected at each Conv layer via AdaIN, which adjusts feature map statistics (mean and variance) according to the style vector.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Results:</strong> Generated face images indistinguishable from real photos at 1024×1024 resolution. The source of the "This Person Does Not Exist" website.</div></li>
+  </ul>
+
+  <h3>12.6 GAN Variants Summary</h3>
+
+  <table class="compare-table">
+    <tr><th>GAN Variant</th><th>Key Innovation</th><th>Primary Application</th></tr>
+    <tr><td><strong>Vanilla GAN</strong></td><td>Adversarial minimax training framework</td><td>Proof of concept; image generation</td></tr>
+    <tr><td><strong>DCGAN</strong></td><td>CNN-based G and D; standard training guidelines</td><td>Image generation from noise</td></tr>
+    <tr><td><strong>cGAN</strong></td><td>Conditioning on class label y</td><td>Class-specific generation</td></tr>
+    <tr><td><strong>WGAN</strong></td><td>Wasserstein distance; stable gradients</td><td>Stable training; mode collapse reduction</td></tr>
+    <tr><td><strong>Pix2Pix</strong></td><td>Image conditioning; PatchGAN discriminator</td><td>Paired image-to-image translation</td></tr>
+    <tr><td><strong>CycleGAN</strong></td><td>Cycle consistency loss; no paired data needed</td><td>Unpaired image-to-image translation</td></tr>
+    <tr><td><strong>StyleGAN</strong></td><td>Style mapping network; AdaIN style injection</td><td>High-fidelity controllable face generation</td></tr>
+    <tr><td><strong>BigGAN</strong></td><td>Scale (large batch, class-conditional)</td><td>High-quality class-conditional generation</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header gen-h">
+    <div class="section-num">Section 13</div>
+    <h2>Applications and Final Comparison of Generative Models</h2>
+  </div>
+
+  <h3>13.1 GAN Applications</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Photorealistic Image Synthesis</div>
+      <p>Generate high-resolution realistic images of faces (StyleGAN), bedrooms, animals. Used in entertainment, content creation, prototyping.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Data Augmentation</div>
+      <p>Generate synthetic training data for rare classes or privacy-sensitive domains (medical images). Reduces need for expensive data collection.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Image Inpainting</div>
+      <p>Fill in missing or damaged regions of images with contextually appropriate content. Used in photo restoration, watermark removal.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Super-Resolution (SRGAN)</div>
+      <p>Upscale low-resolution images to high resolution. Generates missing high-frequency details (textures, edges). Used in medical imaging, satellite imagery, video upscaling.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Drug Discovery</div>
+      <p>Generate novel molecular structures with desired properties. G generates molecular graphs; D evaluates validity and drug-likeness. Promising for pharmaceutical research.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Deepfake Detection</div>
+      <p>GANs produce deepfakes; the discriminator framework is also used to detect them. Training a deepfake detector uses the same adversarial principle in reverse.</p>
+    </div>
+  </div>
+
+  <h3>13.2 AE vs VAE vs GAN — Full Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Property</th><th>Autoencoder</th><th>VAE</th><th>GAN</th></tr>
+    <tr>
+      <td><strong>Type</strong></td>
+      <td>Deterministic encoder-decoder</td>
+      <td>Probabilistic encoder-decoder</td>
+      <td>Implicit generative model (no explicit encoder)</td>
+    </tr>
+    <tr>
+      <td><strong>Training signal</strong></td>
+      <td>Reconstruction loss only</td>
+      <td>Reconstruction + KL divergence</td>
+      <td>Adversarial (minimax game)</td>
+    </tr>
+    <tr>
+      <td><strong>Can generate new samples?</strong></td>
+      <td>Not effectively</td>
+      <td>Yes — sample z ~ N(0,I), decode</td>
+      <td>Yes — sample z ~ N(0,I), pass through G</td>
+    </tr>
+    <tr>
+      <td><strong>Sample quality</strong></td>
+      <td>N/A (not a generator)</td>
+      <td>Smooth but slightly blurry</td>
+      <td>Sharp, photorealistic</td>
+    </tr>
+    <tr>
+      <td><strong>Latent space</strong></td>
+      <td>Unstructured</td>
+      <td>Structured, smooth, interpretable</td>
+      <td>Unstructured (unless modified)</td>
+    </tr>
+    <tr>
+      <td><strong>Training stability</strong></td>
+      <td>Very stable</td>
+      <td>Stable</td>
+      <td>Often unstable; mode collapse risk</td>
+    </tr>
+    <tr>
+      <td><strong>Explicit likelihood?</strong></td>
+      <td>No</td>
+      <td>Yes (ELBO lower bound)</td>
+      <td>No</td>
+    </tr>
+    <tr>
+      <td><strong>Primary strengths</strong></td>
+      <td>Compression, denoising, anomaly detection</td>
+      <td>Generation + structured latent space + interpolation</td>
+      <td>Photorealistic generation, image translation</td>
+    </tr>
+    <tr>
+      <td><strong>Primary weaknesses</strong></td>
+      <td>Cannot generate; unstructured latent space</td>
+      <td>Blurry outputs; harder to tune than AE</td>
+      <td>Training instability, mode collapse, hard to evaluate</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">How They Are Used Together</div>
+    <p>In practice, these architectures are often combined. VAE-GAN uses a VAE encoder + GAN decoder training — getting both structured latent space (VAE) and sharp outputs (GAN). BiGAN adds an encoder to GAN for representation learning. Many modern architectures like VQ-VAE, DALL-E, Stable Diffusion use ideas from all three frameworks.</p>
+  </div>
+
+  <!-- FINAL SUMMARY BOX -->
+  <div class="summary-box">
+    <h4>Module 4 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>AlexNet (2012):</strong> 8 layers, 62M params. Key contributions: ReLU activation, GPU training, Dropout regularization, data augmentation. Won ImageNet with 15.3% top-5 error — began the deep learning revolution.</div></li>
+      <li><span class="bullet">2.</span><div><strong>VGG16 (2014):</strong> 16 layers, 138M params. Uniform 3×3 filters throughout. Two 3×3 = one 5×5 receptive field with fewer params + more non-linearity. 89% of params in FC layers. Excellent for transfer learning.</div></li>
+      <li><span class="bullet">3.</span><div><strong>Inception/GoogLeNet (2014):</strong> 22 layers, only 7M params. Inception module uses parallel 1×1, 3×3, 5×5, MaxPool branches. 1×1 bottleneck reduces params 9×. Global Average Pooling replaces FC layers. Auxiliary classifiers combat vanishing gradients.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Xception (2017):</strong> 71 layers, 22.9M params. Depthwise Separable Convolution fully decouples spatial and channel processing. ~8× fewer operations than standard Conv. "Extreme Inception."</div></li>
+      <li><span class="bullet">5.</span><div><strong>Autoencoder:</strong> Encoder compresses x → z (bottleneck). Decoder reconstructs x̂ from z. Loss = reconstruction error. Unsupervised. Used for compression, denoising, anomaly detection. Cannot generate new data.</div></li>
+      <li><span class="bullet">6.</span><div><strong>Variational AE:</strong> Encodes to distribution N(μ,σ²) not a point. Loss = Reconstruction + KL(N(μ,σ²) ‖ N(0,I)). Reparameterization trick: z = μ + σ·ε enables backprop. Structured latent space enables generation and interpolation.</div></li>
+      <li><span class="bullet">7.</span><div><strong>GAN:</strong> Generator G maps noise z → fake data. Discriminator D classifies real/fake. Trained via minimax: min_G max_D V(D,G). Produces photorealistic samples but suffers from mode collapse and training instability.</div></li>
+      <li><span class="bullet">8.</span><div><strong>GAN Variants:</strong> DCGAN (CNN-based, stable training), cGAN (class-conditional), Pix2Pix (paired image translation), CycleGAN (unpaired, cycle consistency loss), StyleGAN (style mapping, photorealistic faces), WGAN (Wasserstein loss, stable gradients).</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Neural Networks — Module 4</span>
+  <span>AlexNet · VGG16 · Inception · Xception · AE · VAE · GAN</span>
+</div>
+
+</body>
+</html>

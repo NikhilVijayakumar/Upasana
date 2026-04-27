@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks – Module 1 Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface2: #f4f2ee;
+    --border: #e5e0d8;
+    --border2: #d0c8bc;
+    --text: #1a1814;
+    --text2: #4a4540;
+    --text3: #7a7268;
+    --accent: #1e5fa8;
+    --accent-bg: #edf3fc;
+    --accent-border: #b8d0ef;
+    --green: #1a6b3c;
+    --green-bg: #edf7f2;
+    --green-border: #a8d9bc;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --code-bg: #f0ede8;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: var(--text);
+    color: #f5f2ec;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #b0a898;
+    margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: #f5f2ec;
+    margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #8c8078;
+    margin-top: 1rem;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+  }
+  .toc h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 4px 2rem;
+  }
+  .toc a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num {
+    font-weight: 600;
+    color: var(--text3);
+    min-width: 20px;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 960px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header {
+    border-left: 4px solid var(--text);
+    padding-left: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .section-header .section-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+  }
+  .section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  /* ── SUBSECTIONS ── */
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    border-left: 3px solid;
+  }
+  .callout-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+  }
+  .callout-key .callout-title { color: var(--accent); }
+  .callout-key p { color: #2a4a7a; }
+
+  .callout-formula {
+    background: var(--purple-bg);
+    border-color: var(--purple);
+  }
+  .callout-formula .callout-title { color: var(--purple); }
+  .callout-formula p { color: #3a2460; }
+
+  .callout-tip {
+    background: var(--green-bg);
+    border-color: var(--green);
+  }
+  .callout-tip .callout-title { color: var(--green); }
+  .callout-tip p { color: #14502c; }
+
+  .callout-warn {
+    background: var(--amber-bg);
+    border-color: var(--amber);
+  }
+  .callout-warn .callout-title { color: var(--amber); }
+  .callout-warn p { color: #5a3800; }
+
+  .callout-exam {
+    background: var(--red-bg);
+    border-color: var(--red);
+  }
+  .callout-exam .callout-title { color: var(--red); }
+  .callout-exam p { color: #6a1010; }
+
+  /* ── POINT LIST ── */
+  .point-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 1.25rem;
+  }
+  .point-list li {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 16px;
+    line-height: 1.65;
+    align-items: flex-start;
+  }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text3);
+    min-width: 22px;
+    padding-top: 3px;
+  }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list {
+    counter-reset: steps;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 1.25rem;
+  }
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--surface);
+    background: var(--text);
+    border-radius: 50%;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .step-list li strong { color: var(--text); }
+
+  /* ── MATH / FORMULA DISPLAY ── */
+  .formula-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .formula-block .formula-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+  .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 2;
+  }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .op { color: var(--text3); }
+  .formula .comment {
+    font-size: 13px;
+    color: var(--text3);
+    margin-left: 1rem;
+  }
+
+  /* ── DIAGRAM (ASCII-style) ── */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    overflow-x: auto;
+  }
+  .diagram pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .diagram-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 15px;
+  }
+  .compare-table th {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--surface2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .compare-table td {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .code-block .code-lang {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+  .code-block code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.8;
+    white-space: pre;
+    display: block;
+  }
+
+  /* ── DEFINITION TERM ── */
+  .def-term {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* ── KEY SUMMARY BOX ── */
+  .summary-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .summary-box h4 {
+    margin-top: 0;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  /* ── DIVIDER ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  /* ── INLINE CODE ── */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--code-bg);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--purple);
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ── GRID CARDS ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 1.25rem 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .card .card-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .card p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Neural Networks & Deep Learning</div>
+  <h1><span>Module 1:</span> Foundations of Neural Networks</h1>
+  <div class="subtitle">Neural Network Working · Backpropagation · Gradient Descent · Deep Networks · Vectorization · Shallow vs Deep</div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> What is a Neural Network?</a>
+    <a href="#s2"><span class="num">2.</span> How a Neural Network Works</a>
+    <a href="#s3"><span class="num">3.</span> Gradient Descent</a>
+    <a href="#s4"><span class="num">4.</span> Backpropagation</a>
+    <a href="#s5"><span class="num">5.</span> Intro to Deep Neural Networks</a>
+    <a href="#s6"><span class="num">6.</span> Vectorization in Deep Learning</a>
+    <a href="#s7"><span class="num">7.</span> Shallow vs Deep Networks</a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 1 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">Section 1</div>
+    <h2>What is a Neural Network?</h2>
+  </div>
+
+  <h3>1.1 Biological Inspiration</h3>
+  <p>The artificial neural network is loosely inspired by how the human brain processes information. The brain contains approximately 86 billion neurons, each connected to thousands of others through synapses. Learning happens when the strength of these connections changes.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Biological Neuron:</strong> Receives signals through dendrites, processes them in the cell body (soma), and fires an output through the axon if the total signal crosses a threshold.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Artificial Neuron (Perceptron):</strong> Receives numerical inputs, multiplies each by a weight, sums them all, adds a bias, and passes the result through an activation function to produce an output.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Synapse → Weight:</strong> The strength of a biological synaptic connection is modeled by the weight <code>w</code> in an artificial neuron. Learning = adjusting weights.</div></li>
+  </ul>
+
+  <h3>1.2 The Artificial Neuron (Perceptron)</h3>
+  <p>An artificial neuron is the basic computational unit. It performs two operations: a <em>linear transformation</em> followed by a <em>non-linear activation</em>.</p>
+
+  <div class="diagram">
+    <pre>
+  x₁ ──(w₁)──┐
+  x₂ ──(w₂)──┤
+  x₃ ──(w₃)──┼──→  z = Σ(wᵢxᵢ) + b  ──→  a = f(z)  ──→  Output
+   ⋮         │
+  xₙ ──(wₙ)──┘         + bias (b)
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — Single artificial neuron. Inputs are weighted, summed, biased, then activated.</div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">Mathematical form of a single neuron</div>
+    <div class="formula">
+      z = w₁x₁ + w₂x₂ + ... + wₙxₙ + b  →  <span class="comment">weighted sum + bias</span><br>
+      a = f(z)                              →  <span class="comment">activation output</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>x₁, x₂, ..., xₙ</strong> — Input features (the data given to the neuron).</div></li>
+    <li><span class="bullet">▸</span><div><strong>w₁, w₂, ..., wₙ</strong> — Weights. These are <em>learnable parameters</em>. They determine how important each input is.</div></li>
+    <li><span class="bullet">▸</span><div><strong>b</strong> — Bias. A constant added to shift the output. It lets the neuron activate even when all inputs are zero.</div></li>
+    <li><span class="bullet">▸</span><div><strong>z</strong> — Pre-activation (or net input). The raw linear combination before applying the activation function.</div></li>
+    <li><span class="bullet">▸</span><div><strong>f(z)</strong> — Activation function. Introduces non-linearity. Without this, stacking multiple layers gives the same result as one layer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>a</strong> — Post-activation (the output of the neuron, passed to next layer).</div></li>
+  </ul>
+
+  <h3>1.3 Activation Functions</h3>
+  <p>Activation functions introduce non-linearity into the network, allowing it to learn complex patterns. Without non-linearity, any deep network collapses into a single linear transformation.</p>
+
+  <table class="compare-table">
+    <tr>
+      <th>Function</th><th>Formula</th><th>Output Range</th><th>Use Case</th>
+    </tr>
+    <tr>
+      <td><strong>Sigmoid (σ)</strong></td>
+      <td><code>1 / (1 + e⁻ᶻ)</code></td>
+      <td>(0, 1)</td>
+      <td>Binary classification output layer</td>
+    </tr>
+    <tr>
+      <td><strong>Tanh</strong></td>
+      <td><code>(eᶻ − e⁻ᶻ) / (eᶻ + e⁻ᶻ)</code></td>
+      <td>(−1, 1)</td>
+      <td>Hidden layers (zero-centered, better than sigmoid)</td>
+    </tr>
+    <tr>
+      <td><strong>ReLU</strong></td>
+      <td><code>max(0, z)</code></td>
+      <td>[0, ∞)</td>
+      <td>Most hidden layers (fast, avoids vanishing gradient)</td>
+    </tr>
+    <tr>
+      <td><strong>Leaky ReLU</strong></td>
+      <td><code>max(0.01z, z)</code></td>
+      <td>(−∞, ∞)</td>
+      <td>Avoids "dying ReLU" problem</td>
+    </tr>
+    <tr>
+      <td><strong>Softmax</strong></td>
+      <td><code>eᶻᵢ / Σeᶻⱼ</code></td>
+      <td>(0, 1), sums to 1</td>
+      <td>Multi-class classification output layer</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Key Insight — Why Non-Linearity?</div>
+    <p>A composition of linear functions is still linear: f(g(x)) = f(Ax) = A'x. So without activation functions, a 100-layer network can only learn what a 1-layer network can. Non-linearity is what gives deep networks their power.</p>
+  </div>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Vanishing Gradient Problem (Preview)</div>
+    <p>Sigmoid and Tanh squash their inputs into small ranges. Their derivatives are very small (Sigmoid max = 0.25). When chained across many layers during backpropagation, gradients shrink to near zero — the network stops learning in early layers. ReLU largely solves this.</p>
+  </div>
+
+  <h3>1.4 Network Architecture — Layers</h3>
+  <div class="diagram">
+    <pre>
+  INPUT LAYER    HIDDEN LAYER 1   HIDDEN LAYER 2   OUTPUT LAYER
+  ┌───────┐       ┌───────┐        ┌───────┐        ┌───────┐
+  │  x₁   │──────▶│  h₁₁  │───────▶│  h₂₁  │───────▶│  ŷ₁  │
+  │  x₂   │──────▶│  h₁₂  │───────▶│  h₂₂  │───────▶│  ŷ₂  │
+  │  x₃   │──────▶│  h₁₃  │───────▶│  h₂₃  │        └───────┘
+  └───────┘       │  h₁₄  │        └───────┘
+                  └───────┘
+  (no learning)   (learnable)       (learnable)      (learnable)
+    </pre>
+    <div class="diagram-caption">Figure 1.2 — Fully connected (dense) neural network with 2 hidden layers.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Input Layer:</strong> Receives the raw features. No computation is done here. The number of neurons = number of features in your data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hidden Layers:</strong> Intermediate layers where all computation happens. Each neuron in a hidden layer applies the weighted sum + activation. These layers learn abstract representations of data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Output Layer:</strong> Produces the final prediction. Number of neurons depends on the task (1 for regression/binary, K for K-class classification).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fully Connected (Dense):</strong> Every neuron in one layer connects to every neuron in the next layer. This is the standard architecture.</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 2 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">Section 2</div>
+    <h2>How a Neural Network Works — Forward Propagation</h2>
+  </div>
+
+  <p>Before a network can learn, it must first make a prediction. This prediction process — passing input data through the network layer by layer — is called <strong>Forward Propagation</strong>.</p>
+
+  <h3>2.1 Forward Propagation — Step by Step</h3>
+
+  <ol class="step-list">
+    <li><div><strong>Initialize weights and biases</strong> — Each connection has a weight w and each neuron has a bias b. Initially, these are set to small random values (not zero, to break symmetry).</div></li>
+    <li><div><strong>Feed input data</strong> — Provide input vector x = [x₁, x₂, ..., xₙ] to the input layer. These propagate to the first hidden layer.</div></li>
+    <li><div><strong>Compute pre-activation z for each layer</strong> — For layer l: z[l] = W[l] · a[l-1] + b[l], where W[l] is the weight matrix and a[l-1] is the output of the previous layer.</div></li>
+    <li><div><strong>Apply activation function</strong> — a[l] = f(z[l]). This becomes the input to the next layer.</div></li>
+    <li><div><strong>Repeat for each layer</strong> — Carry this forward through every hidden layer until the output layer.</div></li>
+    <li><div><strong>Compute final output ŷ</strong> — The output layer produces the prediction ŷ. For classification, typically a Sigmoid (binary) or Softmax (multi-class) is applied.</div></li>
+    <li><div><strong>Compute the Loss (Cost)</strong> — Compare ŷ to the true label y using a loss function to measure the error.</div></li>
+  </ol>
+
+  <h3>2.2 Loss Functions</h3>
+  <p>The loss function measures how wrong the prediction is. The goal of training is to minimize this loss.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Binary Cross-Entropy Loss (Binary Classification)</div>
+    <div class="formula">
+      L(ŷ, y) = −[ y · log(ŷ) + (1−y) · log(1−ŷ) ]
+    </div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">Mean Squared Error Loss (Regression)</div>
+    <div class="formula">
+      L(ŷ, y) = (1/2) · (ŷ − y)²
+    </div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">Cost Function (average loss over all m training examples)</div>
+    <div class="formula">
+      J(W, b) = (1/m) · Σᵢ L(ŷ⁽ⁱ⁾, y⁽ⁱ⁾)
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Loss L:</strong> Error for a single training example.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cost J:</strong> Average loss over the entire training dataset. The network tries to minimize J.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why Cross-Entropy for classification?</strong> It heavily penalizes confident wrong predictions. If the model says "90% chance of class 1" but the answer is 0, the penalty is −log(0.1) ≈ 2.3 — very large.</div></li>
+  </ul>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Intuition — What is the network doing?</div>
+    <p>Think of a network as a function: f(x; W, b) → ŷ. The weights and biases are the parameters. Forward propagation is just evaluating this function. Training is finding the values of W and b that make this function approximate the true mapping from x to y as closely as possible.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 3 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">Section 3</div>
+    <h2>Gradient Descent</h2>
+  </div>
+
+  <p>After computing the loss, the network needs to update its weights to reduce the error. <strong>Gradient Descent</strong> is the optimization algorithm used to do this. It uses the gradient (slope) of the cost function to decide in which direction to move the weights.</p>
+
+  <h3>3.1 Core Idea — The Mountain Analogy</h3>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Intuition</div>
+    <p>Imagine you are standing somewhere on a hilly landscape (the cost surface) blindfolded. Your goal is to reach the lowest valley (minimum cost). At each step, you feel the slope beneath your feet (gradient) and take a step in the direction that goes downhill. That is gradient descent.</p>
+  </div>
+
+  <h3>3.2 The Update Rule</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Gradient Descent Parameter Update</div>
+    <div class="formula">
+      W := W − α · (∂J/∂W)    <span class="comment">← update weights</span><br>
+      b := b − α · (∂J/∂b)    <span class="comment">← update biases</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>α (learning rate):</strong> A small positive number (e.g. 0.01). Controls how large each step is. Too large → overshoot the minimum. Too small → training is very slow.</div></li>
+    <li><span class="bullet">▸</span><div><strong>∂J/∂W (gradient):</strong> The partial derivative of the cost function with respect to the weights. It tells us: "if I increase W slightly, how much does J increase?" If this is positive, J increases with W, so we decrease W to minimize J (hence the minus sign).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why partial derivative?</strong> J depends on all weights simultaneously. Partial derivative isolates the effect of changing one weight while holding others fixed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>:= notation:</strong> This means "assign", i.e., W is being updated in place — old W replaced by new value.</div></li>
+  </ul>
+
+  <h3>3.3 Variants of Gradient Descent</h3>
+
+  <table class="compare-table">
+    <tr>
+      <th>Variant</th><th>What it uses per update</th><th>Speed</th><th>Stability</th>
+    </tr>
+    <tr>
+      <td><strong>Batch GD</strong></td>
+      <td>All m training examples</td>
+      <td>Slow per step (but accurate direction)</td>
+      <td>Very stable, smooth convergence</td>
+    </tr>
+    <tr>
+      <td><strong>Stochastic GD (SGD)</strong></td>
+      <td>1 training example at a time</td>
+      <td>Very fast per step</td>
+      <td>Noisy, oscillates; can escape local minima</td>
+    </tr>
+    <tr>
+      <td><strong>Mini-Batch GD</strong></td>
+      <td>Small batch (e.g. 32, 64, 128 examples)</td>
+      <td>Fast, vectorized on GPU</td>
+      <td>Good balance — used in practice</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Which variant is used in practice?</div>
+    <p>Mini-batch gradient descent (typically batch size 32–256) is the standard in deep learning. It exploits vectorized operations on GPUs/TPUs while still updating more frequently than full batch GD. When people say "SGD" in deep learning, they usually mean mini-batch SGD.</p>
+  </div>
+
+  <h3>3.4 The Role of the Learning Rate</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Too high α:</strong> Overshoots the minimum. Cost may oscillate or diverge (get worse over time).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too low α:</strong> Learning is painfully slow. May get stuck in shallow local minima.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Just right α:</strong> Cost decreases smoothly and reaches a minimum in a reasonable number of iterations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learning rate decay:</strong> Start with a larger α and reduce it over time. Common approach: α decreases as training progresses, allowing fine-tuning near the minimum.</div></li>
+  </ul>
+
+  <h3>3.5 Local vs Global Minima</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Global minimum:</strong> The absolute lowest point of the cost function. Theoretically ideal but hard to guarantee finding.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Local minimum:</strong> A low point that is not the lowest overall. GD can get trapped here.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Saddle points:</strong> Points where gradient is zero but it is neither a max nor a min. More common than local minima in high-dimensional spaces. GD can slow down here.</div></li>
+    <li><span class="bullet">▸</span><div><strong>In practice:</strong> For deep networks with millions of parameters, most local minima are actually pretty good — almost as good as the global minimum (Goodfellow et al.). So GD usually finds a good solution.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Convergence Condition</div>
+    <p>Gradient descent is said to have converged when the change in cost J between successive iterations becomes negligibly small (below a threshold ε). Alternatively, when ‖∇J‖ ≈ 0, meaning we are at a flat region of the cost surface.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 4 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">Section 4</div>
+    <h2>Backpropagation Algorithm</h2>
+  </div>
+
+  <p>Gradient descent requires us to know the gradient ∂J/∂W for every weight in the network. For a deep network with millions of parameters, computing this directly is infeasible. <strong>Backpropagation</strong> is the efficient algorithm that computes all these gradients in one backward pass using the chain rule of calculus.</p>
+
+  <h3>4.1 The Chain Rule — The Heart of Backpropagation</h3>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Chain Rule (Calculus Recap)</div>
+    <p>If z depends on y, and y depends on x, then the derivative of z with respect to x is: dz/dx = (dz/dy) · (dy/dx). In a neural network, the loss J depends on the output, which depends on the last layer, which depends on the layer before it — all the way back to the input. The chain rule lets us unravel this dependency.</p>
+  </div>
+
+  <h3>4.2 Notation for Backpropagation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>L</strong> — Total number of layers (not counting input).</div></li>
+    <li><span class="bullet">▸</span><div><strong>a[l]</strong> — Activations (outputs) of layer l.</div></li>
+    <li><span class="bullet">▸</span><div><strong>z[l]</strong> — Pre-activation values of layer l: z[l] = W[l]·a[l-1] + b[l].</div></li>
+    <li><span class="bullet">▸</span><div><strong>δ[l] (delta)</strong> — The error signal at layer l. Formally: δ[l] = ∂J/∂z[l]. This is the sensitivity of the cost to the pre-activation at layer l.</div></li>
+    <li><span class="bullet">▸</span><div><strong>f'(z)</strong> — Derivative of the activation function (needed for gradient computation).</div></li>
+  </ul>
+
+  <h3>4.3 Step-by-Step Backpropagation</h3>
+
+  <ol class="step-list">
+    <li>
+      <div>
+        <strong>Forward pass first</strong> — Run forward propagation to compute all z[l] and a[l] for all layers. Also compute the loss J. Store all intermediate values — they are needed during backprop.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Compute output layer error δ[L]</strong>
+        <div class="formula-block" style="margin-top:0.5rem">
+          <div class="formula">δ[L] = ∂J/∂z[L] = (∂J/∂a[L]) · f'(z[L])</div>
+        </div>
+        For Binary Cross-Entropy with Sigmoid output: δ[L] = (a[L] − y)
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Propagate error backwards — for each layer l = L-1, L-2, ..., 1</strong>
+        <div class="formula-block" style="margin-top:0.5rem">
+          <div class="formula">δ[l] = (W[l+1]ᵀ · δ[l+1]) ⊙ f'(z[l])</div>
+        </div>
+        Where ⊙ is element-wise multiplication and W[l+1]ᵀ is the transpose of next layer's weight matrix.
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Compute gradients for weights and biases at each layer</strong>
+        <div class="formula-block" style="margin-top:0.5rem">
+          <div class="formula">
+            ∂J/∂W[l] = δ[l] · a[l-1]ᵀ    <span class="comment">← gradient w.r.t. weights</span><br>
+            ∂J/∂b[l] = δ[l]               <span class="comment">← gradient w.r.t. biases</span>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Update parameters using gradient descent</strong>
+        <div class="formula-block" style="margin-top:0.5rem">
+          <div class="formula">
+            W[l] := W[l] − α · ∂J/∂W[l]<br>
+            b[l] := b[l] − α · ∂J/∂b[l]
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div><strong>Repeat for many iterations (epochs)</strong> until the cost converges.</div>
+    </li>
+  </ol>
+
+  <h3>4.4 Intuition — What is Backprop Really Doing?</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Blame assignment:</strong> Backpropagation answers: "Which weights were responsible for the error, and by how much?" The gradient ∂J/∂w tells us — a large gradient means that weight contributed significantly to the error.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Efficiency:</strong> A naive approach would compute the gradient for each weight independently, requiring one forward pass per parameter. Backprop computes ALL gradients in just two passes (one forward, one backward) — this is its genius.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why backward?</strong> The error starts at the output (where we know the loss) and flows backwards because that is the direction of the chain rule — the loss depends on output, which depends on the second-to-last layer, etc.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  FORWARD PASS (compute predictions)
+  x ──→ [Layer 1] ──→ [Layer 2] ──→ [Layer 3] ──→ ŷ ──→ LOSS J
+              ↑              ↑              ↑
+         store z[1],a[1]  store z[2],a[2]  store z[3],a[3]
+
+  BACKWARD PASS (compute gradients)
+  J ──→ δ[3] ──→ δ[2] ──→ δ[1] ──→ (done)
+         ↓           ↓          ↓
+      ∂J/∂W[3]   ∂J/∂W[2]   ∂J/∂W[1]
+    </pre>
+    <div class="diagram-caption">Figure 4.1 — Forward and backward passes through a 3-layer network.</div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Key Properties of Backpropagation</div>
+    <p>1. Backpropagation is not an optimization algorithm — it only computes gradients. Gradient Descent uses those gradients to update parameters.</p>
+    <p>2. Backprop requires storing all intermediate activations from the forward pass — this is why deep networks use a lot of memory during training.</p>
+    <p>3. Backpropagation is just the chain rule applied efficiently using dynamic programming.</p>
+  </div>
+
+  <h3>4.5 Derivative of Common Activation Functions</h3>
+  <p>These are needed in the backpropagation step when computing δ[l] = ... ⊙ f'(z[l]).</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Activation Derivatives</div>
+    <div class="formula">
+      Sigmoid:   σ'(z) = σ(z) · (1 − σ(z))      <span class="comment">← max value is 0.25 at z=0</span><br>
+      Tanh:      tanh'(z) = 1 − tanh²(z)         <span class="comment">← max value is 1 at z=0</span><br>
+      ReLU:      ReLU'(z) = 1 if z > 0, else 0   <span class="comment">← constant gradient, no squashing</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 5 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">Section 5</div>
+    <h2>Introduction to Deep Neural Networks</h2>
+  </div>
+
+  <h3>5.1 What Makes a Network "Deep"?</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Shallow Network:</strong> 1 hidden layer. Can theoretically approximate any function (Universal Approximation Theorem), but requires exponentially many neurons.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Deep Network:</strong> 2 or more hidden layers. In practice, "deep" usually means many hidden layers (5, 10, 100+). Deep Learning = learning with deep neural networks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Depth matters:</strong> More layers mean the network can build increasingly abstract representations of data hierarchically.</div></li>
+  </ul>
+
+  <h3>5.2 Hierarchical Feature Learning</h3>
+  <p>The power of deep networks comes from their ability to learn a <strong>hierarchy of features</strong>. Each layer transforms the representation from the previous layer into something more abstract and task-relevant.</p>
+
+  <div class="diagram">
+    <pre>
+  Example: Image Recognition (Face Detection)
+
+  Layer 1 → Detects edges, corners, gradients
+  Layer 2 → Combines edges into shapes: eyes, nose, curves
+  Layer 3 → Combines shapes into face parts: eye region, jaw
+  Layer 4 → Detects whole face structure
+  Layer 5 → Recognizes specific people, expressions
+
+  Low-level features ──────────────────────────→ High-level abstractions
+    </pre>
+    <div class="diagram-caption">Figure 5.1 — Hierarchical feature learning in a deep network for face recognition.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Early layers</strong> learn low-level, general features (edges, textures). These are similar across different tasks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Middle layers</strong> learn intermediate, task-specific features by composing low-level ones.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Later layers</strong> learn high-level, abstract, task-specific representations directly useful for classification/regression.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transfer learning</strong> exploits this: early layers trained on one task (e.g. ImageNet) can be reused for another task because low-level features are universal.</div></li>
+  </ul>
+
+  <h3>5.3 Why Deep Works Better than Wide</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Parameter efficiency:</strong> A deep network can represent certain functions exponentially more compactly than a shallow one. This means fewer total parameters needed for the same expressiveness.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Circuit complexity theory:</strong> There exist functions that require exponential neurons in a shallow network but only polynomial neurons in a deep network (Bengio & LeCun).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Compositionality of real world:</strong> Real-world data (images, speech, text) is naturally compositional — objects are made of parts, parts are made of primitives. Deep networks mirror this structure.</div></li>
+  </ul>
+
+  <h3>5.4 Challenges in Deep Networks</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Vanishing Gradients</div>
+      <p>Gradients shrink exponentially through many sigmoid/tanh layers. Early layers learn very slowly or not at all.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Exploding Gradients</div>
+      <p>Gradients grow exponentially through layers. Weights update wildly; training becomes unstable. Fixed with gradient clipping.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Overfitting</div>
+      <p>Deep networks have many parameters and can memorize training data. Solved with dropout, L2 regularization, batch norm.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Computational Cost</div>
+      <p>Training deep networks requires large datasets and significant compute (GPUs/TPUs). Inference can also be slow.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-formula">
+    <div class="callout-title">Universal Approximation Theorem</div>
+    <p>A single hidden layer neural network with a sufficient number of neurons can approximate any continuous function on a compact domain to arbitrary precision. However, "sufficient" can mean exponentially many neurons. Deep networks achieve the same approximation with polynomially fewer neurons.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 6 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">Section 6</div>
+    <h2>Role of Vectorization in Deep Learning</h2>
+  </div>
+
+  <p>In deep learning, we process thousands of training examples and layers with potentially millions of neurons. Writing operations as explicit loops is extremely slow. <strong>Vectorization</strong> is the practice of replacing loops with matrix/vector operations that execute in parallel on modern hardware.</p>
+
+  <h3>6.1 What is Vectorization?</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Scalar approach:</strong> Process one data point at a time using for loops. Very slow for large datasets.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Vectorized approach:</strong> Express all operations as matrix multiplications and element-wise operations. Entire batches processed simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why fast?</strong> BLAS (Basic Linear Algebra Subroutines) libraries and GPUs are optimized for matrix operations using parallelism — thousands of cores compute simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>In NumPy/PyTorch/TensorFlow:</strong> A single function call like <code>np.dot(W, X)</code> runs optimized C/CUDA code under the hood, far faster than any Python loop.</div></li>
+  </ul>
+
+  <h3>6.2 Non-Vectorized vs Vectorized Comparison</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Without Vectorization (Slow — Python loops)</div>
+    <code>
+# m training examples, n features
+# Forward pass: z = W·x + b for each example
+z = np.zeros(m)
+for i in range(m):
+    for j in range(n):
+        z[i] += W[j] * X[j, i]
+    z[i] += b
+# Time: O(m × n) sequential operations
+    </code>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">With Vectorization (Fast — Matrix Operation)</div>
+    <code>
+# X is (n × m) matrix — all m examples at once
+# W is (1 × n) vector, b is a scalar
+Z = np.dot(W, X) + b    # Shape: (1 × m)
+A = sigmoid(Z)          # Element-wise — all m outputs at once
+
+# One line replaces nested loops!
+# Runs in parallel on all available CPU/GPU cores
+    </code>
+  </div>
+
+  <h3>6.3 Matrix Dimensions in Neural Networks</h3>
+  <p>Getting matrix dimensions right is critical. Here is the complete set of rules:</p>
+
+  <table class="compare-table">
+    <tr><th>Quantity</th><th>Dimensions</th><th>Explanation</th></tr>
+    <tr>
+      <td><strong>Input X</strong></td>
+      <td><code>(nₓ × m)</code></td>
+      <td>nₓ features, m training examples</td>
+    </tr>
+    <tr>
+      <td><strong>Weight matrix W[l]</strong></td>
+      <td><code>(n[l] × n[l-1])</code></td>
+      <td>n[l] neurons in layer l, n[l-1] in previous layer</td>
+    </tr>
+    <tr>
+      <td><strong>Bias vector b[l]</strong></td>
+      <td><code>(n[l] × 1)</code></td>
+      <td>One bias per neuron in layer l</td>
+    </tr>
+    <tr>
+      <td><strong>Pre-activation Z[l]</strong></td>
+      <td><code>(n[l] × m)</code></td>
+      <td>Z[l] = W[l] · A[l-1] + b[l]</td>
+    </tr>
+    <tr>
+      <td><strong>Activation A[l]</strong></td>
+      <td><code>(n[l] × m)</code></td>
+      <td>A[l] = f(Z[l]) — same shape as Z[l]</td>
+    </tr>
+    <tr>
+      <td><strong>Gradient dW[l]</strong></td>
+      <td><code>(n[l] × n[l-1])</code></td>
+      <td>Same shape as W[l]</td>
+    </tr>
+    <tr>
+      <td><strong>Gradient db[l]</strong></td>
+      <td><code>(n[l] × 1)</code></td>
+      <td>Same shape as b[l]</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Memory Aid for Dimensions</div>
+    <p>For weight matrix W[l]: think of it as a transformation from the previous layer's space (n[l-1] dimensions) to the current layer's space (n[l] dimensions). So rows = current layer neurons, columns = previous layer neurons: W[l] is (n[l] × n[l-1]).</p>
+  </div>
+
+  <h3>6.4 Broadcasting</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> When performing operations between arrays of different shapes, NumPy/PyTorch automatically "broadcasts" the smaller array to match the shape of the larger one — without actually copying data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Example:</strong> Adding bias b (shape n[l] × 1) to Z (shape n[l] × m): the bias is automatically added to every column (every training example) — no loop needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why important:</strong> Broadcasting is used constantly in forward and backward passes. Understanding it prevents shape mismatch bugs.</div></li>
+  </ul>
+
+  <h3>6.5 Vectorized Forward and Backward Propagation</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Vectorized Forward Propagation (entire training set)</div>
+    <div class="formula">
+      A[0] = X                         <span class="comment">← input (nₓ × m)</span><br>
+      Z[l] = W[l] · A[l-1] + b[l]     <span class="comment">← (n[l] × m)</span><br>
+      A[l] = f(Z[l])                   <span class="comment">← element-wise activation</span><br>
+      J = (1/m) · Σ L(A[L], Y)        <span class="comment">← average cost over all m examples</span>
+    </div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">Vectorized Backward Propagation</div>
+    <div class="formula">
+      dZ[L]  = A[L] − Y                        <span class="comment">← output error (for cross-entropy + sigmoid)</span><br>
+      dW[l]  = (1/m) · dZ[l] · A[l-1]ᵀ        <span class="comment">← weight gradient</span><br>
+      db[l]  = (1/m) · np.sum(dZ[l], axis=1)  <span class="comment">← bias gradient (sum over m examples)</span><br>
+      dZ[l-1] = W[l]ᵀ · dZ[l] ⊙ f'(Z[l-1])  <span class="comment">← propagate error backwards</span>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Practical Tip — Always Verify Shapes</div>
+    <p>The most common bug in implementing neural networks from scratch is a shape mismatch in matrix multiplication. Always check: (n[l] × n[l-1]) · (n[l-1] × m) = (n[l] × m). If your shapes don't follow this rule, something is wrong.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SECTION 7 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">Section 7</div>
+    <h2>Shallow vs Deep Networks — Comparison</h2>
+  </div>
+
+  <p>Understanding why depth matters — and when it does not — is central to both theory and practice in neural networks.</p>
+
+  <h3>7.1 Definitions Recap</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Shallow Network:</strong> Typically refers to a network with just 1 hidden layer. Sometimes "shallow" means 1–2 hidden layers. A logistic regression is the extreme case — 0 hidden layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Deep Network:</strong> Has many hidden layers (typically 3 or more). Modern deep learning architectures have dozens to hundreds of layers (e.g. ResNet-152 has 152 layers).</div></li>
+  </ul>
+
+  <h3>7.2 Head-to-Head Comparison</h3>
+
+  <table class="compare-table">
+    <tr>
+      <th>Aspect</th>
+      <th>Shallow Network</th>
+      <th>Deep Network</th>
+    </tr>
+    <tr>
+      <td><strong>Number of layers</strong></td>
+      <td>1 hidden layer</td>
+      <td>Many hidden layers (2, 5, 100+)</td>
+    </tr>
+    <tr>
+      <td><strong>Feature learning</strong></td>
+      <td>Learns flat features directly from input</td>
+      <td>Learns hierarchical, compositional features</td>
+    </tr>
+    <tr>
+      <td><strong>Parameter efficiency</strong></td>
+      <td>Requires exponentially many neurons for complex functions</td>
+      <td>Can represent same functions with far fewer total parameters</td>
+    </tr>
+    <tr>
+      <td><strong>Training difficulty</strong></td>
+      <td>Easy to train (no vanishing gradient issue)</td>
+      <td>Harder: vanishing gradients, needs careful initialization</td>
+    </tr>
+    <tr>
+      <td><strong>Generalization</strong></td>
+      <td>May not generalize well on complex tasks</td>
+      <td>Better generalization on complex real-world data (with regularization)</td>
+    </tr>
+    <tr>
+      <td><strong>Computation</strong></td>
+      <td>Faster training and inference</td>
+      <td>Slower (more matrix ops, more memory)</td>
+    </tr>
+    <tr>
+      <td><strong>Data requirements</strong></td>
+      <td>Works with smaller datasets</td>
+      <td>Typically needs large datasets to shine</td>
+    </tr>
+    <tr>
+      <td><strong>Use cases</strong></td>
+      <td>Simple tabular data, small problems</td>
+      <td>Images, speech, NLP, complex tasks</td>
+    </tr>
+    <tr>
+      <td><strong>Expressiveness</strong></td>
+      <td>Limited by width (number of neurons)</td>
+      <td>Highly expressive — both depth and width contribute</td>
+    </tr>
+    <tr>
+      <td><strong>Interpretability</strong></td>
+      <td>Relatively easier to interpret</td>
+      <td>Very hard to interpret (black box)</td>
+    </tr>
+  </table>
+
+  <h3>7.3 The Depth-Width Trade-off</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Width:</strong> More neurons per layer → richer representations at each level of abstraction, but no hierarchical composition.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Depth:</strong> More layers → allows composing simple functions into complex ones. Each layer reuses the representations learned by the previous layer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Theoretical result:</strong> For parity functions and other complex Boolean functions, a deep network needs O(n) neurons while a shallow network needs O(2ⁿ) neurons (exponential). Depth wins dramatically.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Practical wisdom:</strong> Going deeper (adding layers) generally works better than going wider (adding neurons per layer) for most real-world tasks, up to a point — beyond which we get diminishing returns and training instability.</div></li>
+  </ul>
+
+  <h3>7.4 When Shallow Networks are Sufficient</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Simple, low-dimensional data:</strong> Small tabular datasets with clear features. A 1-hidden-layer network or even logistic regression may be optimal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Small training data:</strong> Deep networks need lots of data to generalize. With little data, they overfit. Shallow networks are more data-efficient.</div></li>
+    <li><span class="bullet">▸</span><div><strong>When interpretability matters:</strong> In medical or financial domains, shallow models are preferred because their decisions can be explained.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Edge/embedded deployment:</strong> When compute is limited (mobile devices, IoT sensors), a small shallow network is preferred.</div></li>
+  </ul>
+
+  <h3>7.5 When Deep Networks Excel</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Images:</strong> Convolutional deep networks (CNNs) learn edge → shape → object hierarchies. Shallow networks cannot.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Speech and audio:</strong> Raw waveforms have hierarchical structure (samples → phonemes → words → sentences).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Natural language:</strong> Characters → words → phrases → sentences → meaning. Deep Transformers (BERT, GPT) exploit this hierarchy.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Any structured compositional data:</strong> Where the data itself is naturally built from simpler parts.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Key Theoretical Justifications for Depth</div>
+    <p>1. <strong>Circuit complexity:</strong> Certain functions require exponentially many neurons in 1 layer but only polynomially many in multiple layers.</p>
+    <p>2. <strong>Universal Approximation:</strong> Both shallow and deep networks are universal approximators, but depth improves parameter efficiency exponentially.</p>
+    <p>3. <strong>Compositionality argument:</strong> Real data is compositional; deep networks mirror this structure and can therefore learn it more efficiently.</p>
+  </div>
+
+  <!-- SUMMARY BOX -->
+  <div class="summary-box">
+    <h4>Module 1 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div>A neural network is a composition of artificial neurons organized in layers. Each neuron computes z = W·x + b, then a = f(z).</div></li>
+      <li><span class="bullet">2.</span><div>Forward propagation passes input through all layers to produce a prediction ŷ. The loss function measures how wrong ŷ is compared to y.</div></li>
+      <li><span class="bullet">3.</span><div>Gradient Descent minimizes the cost by updating parameters in the direction opposite to the gradient: W := W − α·(∂J/∂W).</div></li>
+      <li><span class="bullet">4.</span><div>Backpropagation efficiently computes all gradients using the chain rule in a single backward pass. It is not the optimizer — gradient descent is.</div></li>
+      <li><span class="bullet">5.</span><div>Deep networks learn hierarchical, compositional representations. They are exponentially more parameter-efficient than shallow networks for complex functions.</div></li>
+      <li><span class="bullet">6.</span><div>Vectorization replaces slow for-loops with matrix operations, enabling efficient parallel computation on CPUs and GPUs.</div></li>
+      <li><span class="bullet">7.</span><div>Deep networks excel at structured data (images, audio, text) but require more data and careful training. Shallow networks suit simple, small-data problems.</div></li>
+    </ul>
+  </div>
+
+</div>
+<!-- end content -->
+</div>
+
+<div class="doc-footer">
+  <span>M.Tech Neural Networks — Module 1</span>
+  <span>Backpropagation · Gradient Descent · Deep Learning · Vectorization</span>
+</div>
+
+</body>
+</html>

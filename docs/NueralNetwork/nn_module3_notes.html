@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks – Module 3 Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface2: #f4f2ee;
+    --border: #e5e0d8;
+    --border2: #d0c8bc;
+    --text: #1a1814;
+    --text2: #4a4540;
+    --text3: #7a7268;
+    --accent: #1e5fa8;
+    --accent-bg: #edf3fc;
+    --accent-border: #b8d0ef;
+    --green: #1a6b3c;
+    --green-bg: #edf7f2;
+    --green-border: #a8d9bc;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5c5c;
+    --teal-bg: #eaf6f6;
+    --teal-border: #8fd4d4;
+    --code-bg: #f0ede8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: #1a0a2e;
+    color: #f5f2ec;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9b7fd4;
+    margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: #f5f2ec;
+    margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #7a60a8;
+    margin-top: 1rem;
+  }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--surface);
+  }
+  .part-banner.cnn { background: #1e5fa8; }
+  .part-banner.rnn { background: #1a6b3c; }
+  .part-banner.hybrid { background: #6b1a4a; }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+  }
+  .toc h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 960px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { border-left: 4px solid #1a0a2e; padding-left: 1.25rem; margin-bottom: 2rem; }
+  .section-header.cnn { border-color: #1e5fa8; }
+  .section-header.rnn { border-color: #1a6b3c; }
+  .section-header.hybrid { border-color: #6b1a4a; }
+  .section-header .section-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+  }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key { background: var(--accent-bg); border-color: var(--accent); }
+  .callout-key .callout-title { color: var(--accent); }
+  .callout-key p { color: #2a4a7a; }
+
+  .callout-formula { background: var(--purple-bg); border-color: var(--purple); }
+  .callout-formula .callout-title { color: var(--purple); }
+  .callout-formula p { color: #3a2460; }
+
+  .callout-tip { background: var(--green-bg); border-color: var(--green); }
+  .callout-tip .callout-title { color: var(--green); }
+  .callout-tip p { color: #14502c; }
+
+  .callout-warn { background: var(--amber-bg); border-color: var(--amber); }
+  .callout-warn .callout-title { color: var(--amber); }
+  .callout-warn p { color: #5a3800; }
+
+  .callout-exam { background: var(--red-bg); border-color: var(--red); }
+  .callout-exam .callout-title { color: var(--red); }
+  .callout-exam p { color: #6a1010; }
+
+  .callout-teal { background: var(--teal-bg); border-color: var(--teal); }
+  .callout-teal .callout-title { color: var(--teal); }
+  .callout-teal p { color: #084040; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li {
+    display: flex; gap: 0.75rem; padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border); color: var(--text2);
+    font-size: 16px; line-height: 1.65; align-items: flex-start;
+  }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li {
+    counter-increment: steps; display: flex; gap: 1rem;
+    padding: 0.75rem 0; border-bottom: 1px solid var(--border);
+    align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600;
+    font-size: 13px; color: var(--surface); background: #1a0a2e;
+    border-radius: 50%; min-width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block {
+    background: var(--code-bg); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto;
+  }
+  .formula-block .formula-label {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem;
+  }
+  .formula {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    color: var(--text); line-height: 2;
+  }
+  .formula .comment { font-size: 13px; color: var(--text3); margin-left: 1rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl { color: var(--accent); font-weight: 500; }
+  .formula .gr { color: var(--green); font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto;
+  }
+  .diagram pre {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--text2); line-height: 1.7; white-space: pre;
+  }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2);
+    padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2);
+  }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CODE BLOCK ── */
+  .code-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; overflow-x: auto; }
+  .code-block .code-lang { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .code-block code { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; color: var(--text); line-height: 1.8; white-space: pre; display: block; }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── GATE BOX ── */
+  .gate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 1.25rem 0; }
+  .gate-box { border-radius: 10px; padding: 1rem 1.25rem; border: 1px solid; }
+  .gate-box .gate-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 0.35rem; }
+  .gate-box .gate-formula { font-family: 'JetBrains Mono', monospace; font-size: 13px; margin-bottom: 0.5rem; }
+  .gate-box p { font-size: 14px; line-height: 1.55; }
+
+  .gate-forget { background: #fdf0f0; border-color: #e8a8a8; }
+  .gate-forget .gate-name { color: #8b1a1a; }
+  .gate-input  { background: var(--accent-bg); border-color: var(--accent-border); }
+  .gate-input .gate-name  { color: var(--accent); }
+  .gate-cell   { background: var(--purple-bg); border-color: var(--purple-border); }
+  .gate-cell .gate-name   { color: var(--purple); }
+  .gate-output { background: var(--green-bg); border-color: var(--green-border); }
+  .gate-output .gate-name { color: var(--green); }
+  .gate-reset  { background: var(--amber-bg); border-color: var(--amber-border); }
+  .gate-reset .gate-name  { color: var(--amber); }
+  .gate-update { background: var(--teal-bg); border-color: var(--teal-border); }
+  .gate-update .gate-name { color: var(--teal); }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #1a0a2e; color: #e8eef8; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; color: var(--text); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Neural Networks &amp; Deep Learning</div>
+  <h1><span>Module 3:</span> CNNs, RNNs &amp; Hybrid Deep Models</h1>
+  <div class="subtitle">CNN Architecture · Deep CNN · Parameter Sharing · RNN · LSTM · GRU · Hybridization · Applications</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Motivation for CNNs</a>
+    <a href="#s2"><span class="num">2.</span> CNN Core Operations</a>
+    <a href="#s3"><span class="num">3.</span> CNN Architecture</a>
+    <a href="#s4"><span class="num">4.</span> Parameter Sharing</a>
+    <a href="#s5"><span class="num">5.</span> Deep CNN Architectures</a>
+    <a href="#s6"><span class="num">6.</span> CNN Applications</a>
+    <a href="#s7"><span class="num">7.</span> Motivation for RNNs</a>
+    <a href="#s8"><span class="num">8.</span> RNN Architecture &amp; Forward Pass</a>
+    <a href="#s9"><span class="num">9.</span> BPTT &amp; Vanishing Gradient</a>
+    <a href="#s10"><span class="num">10.</span> LSTM</a>
+    <a href="#s11"><span class="num">11.</span> GRU</a>
+    <a href="#s12"><span class="num">12.</span> RNN Architectural Variants</a>
+    <a href="#s13"><span class="num">13.</span> RNN Applications</a>
+    <a href="#s14"><span class="num">14.</span> Hybridization of Deep Models</a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ████████████████████ PART 1: CNN ████████████████████ -->
+<div class="part-banner cnn">Part 1 — Convolutional Neural Networks (CNN)</div>
+
+<!-- ═══ SECTION 1 ═══ -->
+<div class="section" id="s1">
+  <div class="section-header cnn">
+    <div class="section-num">Section 1</div>
+    <h2>Motivation for CNNs</h2>
+  </div>
+
+  <h3>1.1 Why Not Use Fully Connected Networks for Images?</h3>
+  <p>Consider a modest 224×224 RGB image — that is 224 × 224 × 3 = <strong>150,528 input values</strong>. A fully connected (dense) layer with 1000 neurons would need 150,528 × 1000 = <strong>150 million parameters</strong> in just the first layer. This causes severe problems:</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Parameter explosion:</strong> Hundreds of millions of parameters are needed for even a single FC layer on an image. Hugely memory-intensive and computationally impractical.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Overfitting:</strong> So many parameters with relatively limited labeled image data → the network memorizes training examples rather than learning generalizable patterns.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No spatial structure exploitation:</strong> FC layers treat every pixel independently. They have no built-in knowledge that nearby pixels are related, or that a feature (like an edge) can appear anywhere in the image.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No translation invariance:</strong> A cat in the top-left and a cat in the bottom-right of an image would look completely different to a FC network, requiring it to learn both locations separately.</div></li>
+  </ul>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The Solution — Three Key Insights of CNNs</div>
+    <p><strong>1. Local connectivity:</strong> Neurons only connect to a small local region (receptive field) of the input, not the whole image. Nearby pixels matter; far-away pixels usually don't.</p>
+    <p><strong>2. Parameter sharing:</strong> The same filter (set of weights) is used across all spatial positions. A filter that detects a vertical edge works the same everywhere in the image.</p>
+    <p><strong>3. Hierarchical composition:</strong> Stack multiple layers to detect increasingly complex features — edges → textures → shapes → objects.</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 2 ═══ -->
+<div class="section" id="s2">
+  <div class="section-header cnn">
+    <div class="section-num">Section 2</div>
+    <h2>CNN Core Operations</h2>
+  </div>
+
+  <h3>2.1 The Convolution Operation</h3>
+  <p>The fundamental operation in a CNN is the <strong>2D convolution</strong>. A small matrix of weights called a <strong>filter</strong> (or kernel) slides across the input image, computing the dot product between the filter and a local patch of the input at each position.</p>
+
+  <div class="diagram">
+    <pre>
+  Input (6×6)          Filter (3×3)         Output (4×4)
+  ┌───────────────┐    ┌─────────┐           ┌───────────┐
+  │ 1  0  1  0  1│    │ 1  0 -1 │           │           │
+  │ 0  1  0  1  0│    │ 1  0 -1 │    →      │    ...    │
+  │ 1  1  1  0  0│    │ 1  0 -1 │           │           │
+  │ 0  0  1  1  1│    └─────────┘           └───────────┘
+  │ 1  0  0  1  0│
+  │ 0  1  1  0  1│
+  └───────────────┘
+
+  At each position: Σ(patch × filter) + bias → single output value
+  Filter slides across input with stride s, producing feature map
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — A 3×3 filter slides over a 6×6 input to produce a 4×4 feature map (with stride=1, no padding).</div>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">Output Size Formula (crucial — memorize this)</div>
+    <div class="formula">
+      Output size = ⌊(n + 2p − f) / s⌋ + 1<br><br>
+      n = input size (height or width)<br>
+      f = filter size (f×f)<br>
+      p = padding (number of zeros added to border)<br>
+      s = stride (step size of filter movement)
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Feature map:</strong> The output of applying one filter to the entire input. One filter → one feature map. If we apply K filters, we get K feature maps stacked together.</div></li>
+    <li><span class="bullet">▸</span><div><strong>What does a filter detect?</strong> Each filter detects a specific local pattern. A 3×3 vertical edge detector would have high weights in a vertical pattern. The network <em>learns</em> which filters are useful — we don't hand-design them.</div></li>
+  </ul>
+
+  <h3>2.2 Padding</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem without padding:</strong> After each convolution, the feature map shrinks. With a 3×3 filter on a 6×6 input: output is 4×4. After many layers, the image shrinks to nothing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Valid padding (p=0):</strong> No padding. Output is smaller than input: (n−f+1) × (n−f+1).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Same padding:</strong> Add zeros around the border so that the output has the same size as the input. Required padding: p = (f−1)/2. This also fixes the problem that edge pixels are used less frequently than center pixels.</div></li>
+  </ul>
+
+  <h3>2.3 Stride</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> How many pixels the filter moves at each step. Stride=1 means move 1 pixel. Stride=2 means skip every other pixel.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect:</strong> Larger stride → smaller output (downsampling). Stride=2 roughly halves the spatial dimensions. This reduces computation in deeper layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stride vs Pooling:</strong> Both reduce spatial dimensions. Strided convolution is learnable (preferred in modern architectures). Pooling is a fixed operation.</div></li>
+  </ul>
+
+  <h3>2.4 Pooling Layers</h3>
+  <p>Pooling reduces spatial dimensions (downsamples) while retaining the most important information, making the network more computationally efficient and providing a degree of translation invariance.</p>
+
+  <div class="diagram">
+    <pre>
+  Max Pooling (2×2, stride=2):          Average Pooling (2×2, stride=2):
+
+  ┌───────────────┐                     ┌───────────────┐
+  │  1   3 │ 2  4 │                     │  1   3 │ 2  4 │
+  │  5   6 │ 1  2 │  →  ┌───────┐       │  5   6 │ 1  2 │  → ┌────────┐
+  ├────────┼──────┤     │ 6  4  │       ├────────┼──────┤    │ 3.75 3 │
+  │  1   2 │ 3  4 │     │ 9  4  │       │  1   2 │ 3  4 │    │ 4    3 │
+  │  9   3 │ 1  4 │     └───────┘       │  9   3 │ 1  4 │    └────────┘
+  └───────────────┘                     └───────────────┘
+  Takes max of each 2×2 block           Takes average of each 2×2 block
+    </pre>
+    <div class="diagram-caption">Figure 2.2 — Max Pooling vs Average Pooling on a 4×4 input with 2×2 window and stride 2.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Max Pooling:</strong> Takes the maximum value in each local region. Retains the presence of features (if a feature was detected anywhere in the region, it survives). Most commonly used.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Average Pooling:</strong> Takes the average. Smoother, less sharp. Often used in the final layer of classification networks (Global Average Pooling) to replace FC layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No learnable parameters:</strong> Pooling layers have no weights — they are fixed operations. They reduce spatial size without adding to the parameter count.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Translation invariance:</strong> If an edge shifts by 1 pixel, the max pooling output is often the same. This gives CNNs some robustness to small translations.</div></li>
+  </ul>
+
+  <h3>2.5 3D Convolutions (RGB Images)</h3>
+  <p>Real images have depth (color channels). A filter on an RGB image must also be 3D: filter shape = (f × f × channels_in). All three channel slices of the filter are applied simultaneously and summed to give a single output value.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Convolution on 3D input (e.g. RGB)</div>
+    <div class="formula">
+      Input:   (H × W × C_in)      <span class="comment">← height, width, input channels</span><br>
+      Filter:  (f × f × C_in)      <span class="comment">← one filter covers all input channels</span><br>
+      K filters → Output: (H' × W' × K)  <span class="comment">← K feature maps</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SECTION 3 ═══ -->
+<div class="section" id="s3">
+  <div class="section-header cnn">
+    <div class="section-num">Section 3</div>
+    <h2>CNN Architecture</h2>
+  </div>
+
+  <h3>3.1 Standard CNN Layer Stack</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT       CONV BLOCK 1      CONV BLOCK 2      FC LAYERS    OUTPUT
+  (224×224×3)                                     (Flatten)
+      │       ┌──────────┐      ┌──────────┐         │
+      └──────▶│  CONV    │─────▶│  CONV    │─────▶ Dense    ──▶ Softmax
+              │  BN      │      │  BN      │       Dense         (class
+              │  ReLU    │      │  ReLU    │       Dropout       probs)
+              │  Pooling │      │  Pooling │         │
+              └──────────┘      └──────────┘         │
+              (112×112×64)      (56×56×128)     (1×1×512)
+
+  Each conv block: [Convolution] → [Batch Norm] → [Activation] → [Pooling]
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Standard CNN architecture. Spatial dimensions decrease, channel depth increases.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Spatial dimensions shrink:</strong> Each pooling layer halves H and W. By the end, spatial dimensions are very small (e.g. 7×7).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Channel depth increases:</strong> We use more filters in deeper layers (32→64→128→256). More filters = more feature detectors = richer representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Batch Normalization (BN):</strong> Normalizes the output of each layer to have mean≈0, variance≈1 across the batch. Stabilizes training, allows higher learning rates, reduces sensitivity to initialization.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Flatten:</strong> After the final pooling layer, the 3D tensor (H×W×C) is flattened into a 1D vector to feed into Dense (FC) layers for classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Global Average Pooling (GAP):</strong> Modern alternative to Flatten + FC. For each channel, take the mean of all spatial positions → vector of length C. Massively reduces parameters and overfitting.</div></li>
+  </ul>
+
+  <h3>3.2 Receptive Field</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> The region of the original input image that a particular neuron in a deeper layer "sees" — i.e., that influences its value.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Growth with depth:</strong> A neuron in layer 2 sees a 5×5 region of the original input (stacking two 3×3 filters). A neuron in layer 3 sees a 7×7 region. Deeper layers have larger receptive fields — they see more context.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it matters:</strong> Complex high-level features (faces, objects) require large receptive fields to gather global context. Depth enables this efficiently.</div></li>
+  </ul>
+</div>
+
+<!-- ═══ SECTION 4 ═══ -->
+<div class="section" id="s4">
+  <div class="section-header cnn">
+    <div class="section-num">Section 4</div>
+    <h2>Parameter Sharing in CNNs</h2>
+  </div>
+
+  <h3>4.1 What is Parameter Sharing?</h3>
+  <p>In a CNN, <strong>the same filter weights are used at every spatial position</strong> of the input. When computing the convolution, the filter slides across the entire input — always using the exact same set of weights. This is parameter sharing (also called weight sharing).</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Parameter Sharing — The Big Insight</div>
+    <p>The assumption behind parameter sharing: a feature detector (e.g., a vertical edge detector) that is useful at one location in the image is equally useful at any other location. A cat's whisker detector doesn't need to be learned separately for the top-left and bottom-right regions — one set of weights serves the whole image.</p>
+  </div>
+
+  <h3>4.2 Parameter Count Comparison</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Parameters in a Convolutional Layer vs FC Layer</div>
+    <div class="formula">
+      Input: (28 × 28 × 1), Conv layer: 32 filters of size (5×5×1)<br><br>
+      FC layer params:   28 × 28 × 1 × (32 × 28 × 28) = 19,668,224<br>
+      Conv layer params: (5 × 5 × 1 + 1) × 32           = 832 only!<br><br>
+      Reduction factor: ~23,700× fewer parameters
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why so few?</strong> Each filter has f×f×C_in + 1 (bias) parameters. This set of weights is shared across ALL spatial positions. A 5×5×1 filter has only 26 parameters but operates on every 5×5 patch in the image.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence 1 — Efficiency:</strong> CNNs can process large images with far fewer parameters than FC networks → less memory, less overfitting, faster training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence 2 — Translation equivariance:</strong> If an object moves in the input image, the feature map also shifts correspondingly (equivariance). Pooling on top of this provides translation invariance.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence 3 — Better generalization:</strong> Fewer parameters = stronger inductive bias = better generalization from limited data.</div></li>
+  </ul>
+
+  <h3>4.3 Local Connectivity</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Each neuron in a convolutional layer only connects to a small local region (the receptive field) of the previous layer, not the entire input.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Contrast with FC:</strong> In a FC layer, every neuron connects to every input. In a Conv layer, each neuron connects to only an f×f patch.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why valid?</strong> Local statistics of images are informative. An edge in one part of the image has no direct relationship to what is happening in a completely different region — so global connectivity is wasteful.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Two Properties of CNNs That Enable Efficiency</div>
+    <p><strong>1. Local connectivity:</strong> Each filter only looks at a small f×f region — not the whole input.</p>
+    <p><strong>2. Parameter sharing:</strong> The same filter weights are applied at every spatial position. These two together reduce parameter count by orders of magnitude compared to a FC network applied to the same input, while encoding the inductive bias that features are local and translation-equivariant.</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 5 ═══ -->
+<div class="section" id="s5">
+  <div class="section-header cnn">
+    <div class="section-num">Section 5</div>
+    <h2>Deep CNN Architectures</h2>
+  </div>
+
+  <h3>5.1 LeNet-5 (1998) — The Original CNN</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Designed by:</strong> Yann LeCun for handwritten digit recognition (MNIST).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Input(32×32) → CONV(6 filters, 5×5) → AvgPool → CONV(16 filters, 5×5) → AvgPool → FC(120) → FC(84) → Softmax(10).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Significance:</strong> Demonstrated that CNNs could learn visual features automatically. Used Tanh/sigmoid activations (before ReLU was standard).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Parameters:</strong> ~60,000. Very small by modern standards.</div></li>
+  </ul>
+
+  <h3>5.2 AlexNet (2012) — The Deep Learning Revolution</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Designed by:</strong> Krizhevsky, Sutskever, Hinton. Won ImageNet 2012 with 15.3% top-5 error (next best was 26.2%). This was the watershed moment for deep learning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> 5 CONV layers + 3 FC layers. Input 224×224×3. ~60 million parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Key innovations:</strong> First widespread use of ReLU (faster training). GPU training (2 GTX 580s). Dropout for regularization. Data augmentation. Local Response Normalization (precursor to BatchNorm).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Large filters in early layers:</strong> First layer used 11×11 filters with stride 4. Modern practice prefers smaller filters (3×3).</div></li>
+  </ul>
+
+  <h3>5.3 VGGNet (2014) — Depth with Simplicity</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Key idea:</strong> Use exclusively 3×3 CONV filters (smallest that captures left/right, up/down, center) with stride 1 and same padding, and 2×2 max pooling. Depth via simplicity.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why 3×3 filters?</strong> Two stacked 3×3 Conv layers have the same receptive field as one 5×5 layer, but fewer parameters (2×3×3=18 vs 5×5=25) and more non-linearity (two ReLU activations instead of one).</div></li>
+    <li><span class="bullet">▸</span><div><strong>VGG-16:</strong> 13 conv layers + 3 FC layers = 16 weight layers. ~138 million parameters. Simple, deep, effective.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Limitation:</strong> Huge number of parameters in FC layers (100M out of 138M). Very memory-intensive.</div></li>
+  </ul>
+
+  <h3>5.4 Residual Networks — ResNet (2015)</h3>
+  <p>The most important architectural innovation after the original CNN. Enabled training of networks with 100–1000+ layers.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The Degradation Problem — Why Deep Networks Stopped Working</div>
+    <p>Simply stacking more layers beyond ~20 made training accuracy <em>worse</em> — not because of overfitting (it happened even on training data), but because gradients vanished through many layers. The network couldn't even learn the identity function through all those transformations.</p>
+  </div>
+
+  <div class="diagram">
+    <pre>
+  Standard Block:              Residual Block:
+  ┌─────────┐                  ┌─────────┐
+  │  Input  │                  │  Input x│──────────────┐
+  └────┬────┘                  └────┬────┘              │
+       │                            │                   │ skip
+    CONV                         CONV                   │ connection
+    ReLU                         ReLU                   │ (identity)
+    CONV                         CONV                   │
+       │                            │                   │
+       ▼                            ▼                   │
+  ┌─────────┐                  ┌──────────┐             │
+  │ Output  │                  │  F(x)    │◀────────────┘
+  └─────────┘                  │ + x      │  ← "shortcut"
+                               └──────────┘
+  Learn H(x) directly          Learn residual F(x) = H(x) − x
+                               then H(x) = F(x) + x
+    </pre>
+    <div class="diagram-caption">Figure 5.1 — Residual (skip) connection. The block learns the residual F(x), not the full mapping H(x).</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Skip connection:</strong> The input x is added directly to the output of the block: H(x) = F(x) + x. The block only needs to learn the <em>residual</em> (deviation from identity).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it works:</strong> If the optimal function is close to the identity, it is easy to push F(x)→0 than to learn H(x)≈x from scratch. The gradient also flows through the skip connection directly, bypassing many layers — solving the vanishing gradient problem.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ResNet-50/101/152:</strong> 50, 101, 152 layer networks. ResNet-152 won ImageNet 2015 with 3.57% top-5 error (surpassing human level ~5%).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Impact:</strong> Residual connections are now used in virtually every modern deep architecture — Transformers, EfficientNet, RegNet, etc.</div></li>
+  </ul>
+
+  <h3>5.5 Architecture Summary</h3>
+
+  <table class="compare-table">
+    <tr><th>Architecture</th><th>Year</th><th>Depth</th><th>Params</th><th>Key Innovation</th></tr>
+    <tr><td><strong>LeNet-5</strong></td><td>1998</td><td>5 layers</td><td>~60K</td><td>First CNN for digit recognition</td></tr>
+    <tr><td><strong>AlexNet</strong></td><td>2012</td><td>8 layers</td><td>~60M</td><td>ReLU, GPU training, Dropout</td></tr>
+    <tr><td><strong>VGG-16</strong></td><td>2014</td><td>16 layers</td><td>~138M</td><td>Uniform 3×3 filters, depth</td></tr>
+    <tr><td><strong>GoogLeNet</strong></td><td>2014</td><td>22 layers</td><td>~7M</td><td>Inception modules (parallel filters)</td></tr>
+    <tr><td><strong>ResNet-50</strong></td><td>2015</td><td>50 layers</td><td>~25M</td><td>Residual skip connections</td></tr>
+    <tr><td><strong>ResNet-152</strong></td><td>2015</td><td>152 layers</td><td>~60M</td><td>Ultra-deep with skip connections</td></tr>
+    <tr><td><strong>EfficientNet</strong></td><td>2019</td><td>Variable</td><td>~5–66M</td><td>Compound scaling (depth+width+resolution)</td></tr>
+  </table>
+</div>
+
+<!-- ═══ SECTION 6 ═══ -->
+<div class="section" id="s6">
+  <div class="section-header cnn">
+    <div class="section-num">Section 6</div>
+    <h2>CNN Applications</h2>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Image Classification</div>
+      <p>Assign a label to an entire image. Output: probability over K classes. Used in: medical diagnosis, quality control, content moderation. Classic benchmarks: ImageNet (1000 classes), CIFAR-10.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Object Detection</div>
+      <p>Locate AND classify multiple objects in an image with bounding boxes. Models: YOLO, SSD, Faster R-CNN. Used in: autonomous driving, surveillance, robotics.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Semantic Segmentation</div>
+      <p>Assign a class label to EVERY pixel in the image. Model: FCN, U-Net. Used in: medical image segmentation (tumors, organs), satellite analysis, autonomous driving (road/pedestrian).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Face Recognition</div>
+      <p>Identify or verify a person from a face image. Uses Siamese networks or triplet loss. Applied in: unlocking phones, security access, surveillance.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Medical Imaging</div>
+      <p>Detect tumors in CT/MRI/X-ray, diagnose skin cancer, retinal disease screening. CNNs match or exceed radiologist performance on specific tasks.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Style Transfer / Generation</div>
+      <p>Artistic style transfer, super-resolution, image-to-image translation, deepfakes. Enabled by CNN + adversarial training (GANs).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ████████████████████ PART 2: RNN ████████████████████ -->
+<div class="part-banner rnn">Part 2 — Recurrent Neural Networks (RNN)</div>
+
+<!-- ═══ SECTION 7 ═══ -->
+<div class="section" id="s7">
+  <div class="section-header rnn">
+    <div class="section-num">Section 7</div>
+    <h2>Motivation for RNNs</h2>
+  </div>
+
+  <h3>7.1 Why Not Use Feedforward Networks for Sequences?</h3>
+  <p>Many real-world data types are <strong>sequential</strong> — the order of elements matters and elements depend on context from prior elements. Standard feedforward (dense) networks fail at this because:</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Fixed input size:</strong> FC networks require a fixed-size input. But sentences have varying lengths, time series have varying durations. You cannot just pad — context at different positions differs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No memory of past:</strong> Each forward pass is independent. A FC network processing word 5 in a sentence has no knowledge of words 1–4. It cannot model dependencies.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Position doesn't share parameters:</strong> A FC network processing a sentence of length 100 would need separate weights for every position. What a word means (its embedding) should not depend on its absolute position.</div></li>
+  </ul>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The RNN Solution — Hidden State as Memory</div>
+    <p>An RNN processes a sequence one element at a time. After processing each element, it maintains a <strong>hidden state</strong> h — a summary of everything seen so far. This hidden state is passed forward to the next time step, giving the network memory across the sequence. The same weights are used at every time step (parameter sharing over time).</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 8 ═══ -->
+<div class="section" id="s8">
+  <div class="section-header rnn">
+    <div class="section-num">Section 8</div>
+    <h2>RNN Architecture &amp; Forward Pass</h2>
+  </div>
+
+  <h3>8.1 RNN Structure</h3>
+
+  <div class="diagram">
+    <pre>
+  FOLDED VIEW:               UNROLLED (UNFOLDED) VIEW:
+                             ← sequence processes left to right →
+  ┌─────────┐
+  │   hₜ   │               h₀    h₁    h₂    h₃    h₄
+  │    ↑    │               │     │     │     │     │
+  │  [RNN]  │◀──hₜ₋₁       ▼     ▼     ▼     ▼     ▼
+  │    ↑    │          x₁─▶[A]─▶[A]─▶[A]─▶[A]─▶[A]
+  │   xₜ   │               ↑     ↑     ↑     ↑     ↑
+  └─────────┘              x₁    x₂    x₃    x₄    x₅
+       ↓
+      yₜ             Same weight matrices W, U, V used at EVERY time step!
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Folded vs Unrolled RNN. The same parameters are shared across all time steps.</div>
+  </div>
+
+  <h3>8.2 RNN Forward Pass Equations</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">RNN Forward Pass (at each time step t)</div>
+    <div class="formula">
+      hₜ = tanh(Wₕ · hₜ₋₁  +  Wₓ · xₜ  +  bₕ)   <span class="comment">← hidden state update</span><br>
+      yₜ = Wᵧ · hₜ  +  bᵧ                          <span class="comment">← output at time t</span><br><br>
+      h₀ = zeros (or learned initialization)         <span class="comment">← initial hidden state</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>xₜ</strong> — Input at time step t (e.g., a word embedding, a stock price value).</div></li>
+    <li><span class="bullet">▸</span><div><strong>hₜ</strong> — Hidden state at time t. This is the network's "memory" — a vector summarizing all inputs seen up to and including time t.</div></li>
+    <li><span class="bullet">▸</span><div><strong>hₜ₋₁</strong> — Hidden state from the previous time step. This is what carries information forward through the sequence.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Wₕ</strong> — Recurrent weight matrix (hidden-to-hidden). Same matrix used at every time step.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Wₓ</strong> — Input weight matrix (input-to-hidden). Maps input xₜ into the hidden state space.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Wᵧ</strong> — Output weight matrix (hidden-to-output).</div></li>
+    <li><span class="bullet">▸</span><div><strong>tanh activation:</strong> Standard for RNNs. Keeps hidden state values bounded in (-1,1), preventing explosive growth. Also has zero-centered output unlike sigmoid.</div></li>
+  </ul>
+
+  <h3>8.3 RNN Input/Output Patterns</h3>
+
+  <table class="compare-table">
+    <tr><th>Pattern</th><th>Input</th><th>Output</th><th>Example Applications</th></tr>
+    <tr>
+      <td><strong>One-to-One</strong></td>
+      <td>Single vector</td>
+      <td>Single vector</td>
+      <td>Standard classification (not really RNN)</td>
+    </tr>
+    <tr>
+      <td><strong>One-to-Many</strong></td>
+      <td>Single input</td>
+      <td>Sequence</td>
+      <td>Image captioning: image → sentence</td>
+    </tr>
+    <tr>
+      <td><strong>Many-to-One</strong></td>
+      <td>Sequence</td>
+      <td>Single output</td>
+      <td>Sentiment analysis: sentence → positive/negative</td>
+    </tr>
+    <tr>
+      <td><strong>Many-to-Many (same length)</strong></td>
+      <td>Sequence</td>
+      <td>Sequence (same T)</td>
+      <td>Named Entity Recognition, POS tagging</td>
+    </tr>
+    <tr>
+      <td><strong>Many-to-Many (Seq2Seq)</strong></td>
+      <td>Sequence</td>
+      <td>Sequence (different T)</td>
+      <td>Machine translation: English → French</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ SECTION 9 ═══ -->
+<div class="section" id="s9">
+  <div class="section-header rnn">
+    <div class="section-num">Section 9</div>
+    <h2>BPTT and the Vanishing Gradient Problem</h2>
+  </div>
+
+  <h3>9.1 Backpropagation Through Time (BPTT)</h3>
+  <p>Training an RNN requires computing gradients with respect to all weights. Since the network is unrolled across T time steps, backpropagation must go through each time step — this is called <strong>Backpropagation Through Time (BPTT)</strong>.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Process:</strong> Unroll the RNN for T time steps. Perform a forward pass to compute all hₜ and losses. Then backpropagate from the final time step all the way back to the first, accumulating gradients.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Chain rule over time:</strong> To compute ∂L/∂h₁, the gradient must be multiplied by Wₕ at each backward step: ∂hₜ/∂hₜ₋₁ = Wₕ · f'(zₜ). Over T steps, this multiplies Wₕ a total of T times.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Truncated BPTT:</strong> In practice, for very long sequences we only backpropagate through a fixed window of K steps (K&lt;&lt;T) to save compute. Approximates full BPTT.</div></li>
+  </ul>
+
+  <h3>9.2 Vanishing and Exploding Gradients in RNNs</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Gradient Flow Through T Time Steps</div>
+    <div class="formula">
+      ∂hₜ/∂h₁  =  ∏ₖ₌₂ᵀ (Wₕ · diag(f'(hₖ)))<br><br>
+      If |Wₕ · f'(h)| &lt; 1  →  product shrinks exponentially  →  <span class="var">Vanishing gradient</span><br>
+      If |Wₕ · f'(h)| &gt; 1  →  product grows exponentially   →  <span class="hl">Exploding gradient</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Vanishing gradient:</strong> For sequences longer than ~10–20 steps, gradient at early time steps is nearly zero. The network cannot learn long-range dependencies — what happened 50 words ago has no influence on the weight update.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Exploding gradient:</strong> Gradients grow uncontrollably. Weights update by enormous amounts, training diverges. Easier to fix: gradient clipping (cap the gradient norm to a maximum value).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Gradient clipping formula:</strong> if ‖g‖ &gt; threshold: g := g × (threshold / ‖g‖). Simple and effective for exploding gradients.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Vanishing gradient is harder:</strong> This is the fundamental limitation of vanilla RNNs for long sequences. Solving it required architectural changes → LSTM and GRU.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why Vanilla RNNs Fail on Long Sequences</div>
+    <p>The same weight matrix Wₕ is multiplied T times during backprop. If its singular values are &lt;1, the gradient signal at early time steps effectively becomes zero. The network has no gradient to learn from — it cannot connect a consequence at time T to its cause at time 1. LSTM and GRU solve this with gating mechanisms that create "gradient highways" through time.</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 10 ═══ -->
+<div class="section" id="s10">
+  <div class="section-header rnn">
+    <div class="section-num">Section 10</div>
+    <h2>LSTM — Long Short-Term Memory</h2>
+  </div>
+
+  <h3>10.1 The Key Idea — Two Memory Streams</h3>
+  <p>LSTM (Hochreiter &amp; Schmidhuber, 1997) solves the vanishing gradient problem through a carefully designed cell architecture with <strong>two separate memory streams</strong>:</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Cell state Cₜ (long-term memory):</strong> Flows through the entire sequence with very minimal transformations — mainly additions and pointwise multiplications. This creates a "gradient highway" — gradients can flow through this path unimpeded over long distances.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hidden state hₜ (short-term memory / output):</strong> A filtered version of the cell state. Used as the output at each time step and fed to the next step. More dynamic — changes significantly each step.</div></li>
+  </ul>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Intuition — LSTM as a Pipeline with Valves</div>
+    <p>Think of the cell state Cₜ as a conveyor belt running through the whole sequence. The LSTM has three valves (gates) that control what information gets onto the belt, what stays on the belt, and what information is read off the belt. The gates are themselves learned — the network decides when to remember, when to forget, and when to output.</p>
+  </div>
+
+  <h3>10.2 The Four Gates of LSTM</h3>
+
+  <div class="gate-grid">
+    <div class="gate-box gate-forget">
+      <div class="gate-name">Forget Gate (fₜ)</div>
+      <div class="gate-formula">fₜ = σ(Wf · [hₜ₋₁, xₜ] + bf)</div>
+      <p>Decides what fraction of the previous cell state Cₜ₋₁ to keep. Output: values in (0,1) per cell. 0 = forget completely, 1 = keep entirely. Example: when reading a new subject in text, forget the previous subject's gender pronoun.</p>
+    </div>
+    <div class="gate-box gate-input">
+      <div class="gate-name">Input Gate (iₜ)</div>
+      <div class="gate-formula">iₜ = σ(Wi · [hₜ₋₁, xₜ] + bi)</div>
+      <p>Decides which new information to write to the cell state. Works together with the cell candidate gate below. Output: (0,1) — which dimensions to update.</p>
+    </div>
+    <div class="gate-box gate-cell">
+      <div class="gate-name">Cell Candidate (C̃ₜ)</div>
+      <div class="gate-formula">C̃ₜ = tanh(Wc · [hₜ₋₁, xₜ] + bc)</div>
+      <p>The new candidate values that could be added to the cell state. A tanh layer creates values in (-1,1). Scaled by the input gate iₜ before being added.</p>
+    </div>
+    <div class="gate-box gate-output">
+      <div class="gate-name">Output Gate (oₜ)</div>
+      <div class="gate-formula">oₜ = σ(Wo · [hₜ₋₁, xₜ] + bo)</div>
+      <p>Decides what to read out from the updated cell state as the hidden state hₜ. Filters which parts of the cell state to expose as output.</p>
+    </div>
+  </div>
+
+  <h3>10.3 LSTM State Updates</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">LSTM — Complete State Update Equations</div>
+    <div class="algo-body">
+      <div class="formula">
+        Input: xₜ (current input), hₜ₋₁ (previous hidden), Cₜ₋₁ (previous cell)<br><br>
+
+        <span class="hl">Step 1 — Forget Gate:</span>  fₜ = σ(Wf · [hₜ₋₁, xₜ] + bf)<br>
+        <span class="hl">Step 2 — Input Gate:</span>   iₜ = σ(Wi · [hₜ₋₁, xₜ] + bi)<br>
+        <span class="hl">Step 3 — Cell Candidate:</span> C̃ₜ = tanh(Wc · [hₜ₋₁, xₜ] + bc)<br><br>
+
+        <span class="var">Step 4 — Cell State Update:</span><br>
+        Cₜ = fₜ ⊙ Cₜ₋₁  +  iₜ ⊙ C̃ₜ<br>
+        <span class="comment">← forget old info + write new info (additive update!)</span><br><br>
+
+        <span class="gr">Step 5 — Output Gate:</span>  oₜ = σ(Wo · [hₜ₋₁, xₜ] + bo)<br>
+        <span class="gr">Step 6 — Hidden State:</span>  hₜ = oₜ ⊙ tanh(Cₜ)<br>
+        <span class="comment">← filtered read of cell state</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>10.4 Why LSTM Solves the Vanishing Gradient</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Additive cell update:</strong> Cₜ = fₜ ⊙ Cₜ₋₁ + iₜ ⊙ C̃ₜ. The cell state is updated by <em>addition</em>, not by multiplication through a squashing function. Addition has a gradient of 1 — no shrinking. This is the "gradient highway."</div></li>
+    <li><span class="bullet">▸</span><div><strong>Gate control of gradient flow:</strong> The forget gate fₜ controls how much gradient flows through. If fₜ ≈ 1 (keep everything), gradient flows through almost unchanged over many steps.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Long-range dependencies:</strong> Information stored in the cell state can persist for hundreds of time steps without degradation, enabling learning of very long-range patterns.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  LSTM Memory Flow:
+
+       Cₜ₋₁ ─────(×fₜ)─────────────(+)───────────── Cₜ ─────────
+                                     ↑                            │
+                             iₜ ──(×)── C̃ₜ                     tanh
+                                                                  │
+  xₜ ──────────────────────────────────────────────── oₜ ──(×)─▶ hₜ
+  hₜ₋₁ ─── (forget gate) (input gate) (cell cand.) (output gate) │
+                                                                  ▼
+                                                            output / next hₜ₋₁
+    </pre>
+    <div class="diagram-caption">Figure 10.1 — LSTM information flow. Cell state Cₜ flows with minimal interference (the gradient highway).</div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — LSTM Key Properties</div>
+    <p>1. LSTM has <strong>4 gates</strong>: Forget, Input, Cell Candidate (tanh), Output. Three use sigmoid (output 0–1 for gating). One uses tanh (output -1 to 1 for candidate values).</p>
+    <p>2. The cell state update is <strong>additive</strong>: Cₜ = fₜ⊙Cₜ₋₁ + iₜ⊙C̃ₜ. This additive path is the gradient highway that prevents vanishing gradients.</p>
+    <p>3. LSTM has <strong>4× more parameters</strong> than a standard RNN of the same hidden size (one set of weights per gate).</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 11 ═══ -->
+<div class="section" id="s11">
+  <div class="section-header rnn">
+    <div class="section-num">Section 11</div>
+    <h2>GRU — Gated Recurrent Unit</h2>
+  </div>
+
+  <h3>11.1 GRU — Simplified LSTM</h3>
+  <p>GRU (Cho et al., 2014) is a simpler alternative to LSTM that achieves comparable performance on most tasks. It merges the cell state and hidden state into a single hidden state, and reduces four gates to two gates.</p>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">GRU vs LSTM — Core Difference</div>
+    <p>LSTM has two memory streams (Cₜ and hₜ) and four gates. GRU has one memory stream (hₜ) and two gates. GRU is faster to train, uses fewer parameters, and often performs comparably to LSTM — especially on smaller datasets.</p>
+  </div>
+
+  <h3>11.2 GRU Gates</h3>
+
+  <div class="gate-grid">
+    <div class="gate-box gate-reset">
+      <div class="gate-name">Reset Gate (rₜ)</div>
+      <div class="gate-formula">rₜ = σ(Wr · [hₜ₋₁, xₜ] + br)</div>
+      <p>Controls how much of the previous hidden state to use when computing the candidate hidden state. If rₜ ≈ 0, the gate "resets" — ignores the past and focuses on the current input. Useful for forgetting irrelevant history.</p>
+    </div>
+    <div class="gate-box gate-update">
+      <div class="gate-name">Update Gate (zₜ)</div>
+      <div class="gate-formula">zₜ = σ(Wz · [hₜ₋₁, xₜ] + bz)</div>
+      <p>Controls how much of the new candidate to mix into the new hidden state. If zₜ ≈ 0: keep old hidden state (long-term memory). If zₜ ≈ 1: use new candidate (update memory). This replaces both forget and input gates from LSTM.</p>
+    </div>
+  </div>
+
+  <h3>11.3 GRU State Update Equations</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">GRU — Complete State Update</div>
+    <div class="algo-body">
+      <div class="formula">
+        <span class="hl">Step 1 — Reset Gate:</span>    rₜ = σ(Wr · [hₜ₋₁, xₜ] + br)<br>
+        <span class="var">Step 2 — Update Gate:</span>   zₜ = σ(Wz · [hₜ₋₁, xₜ] + bz)<br>
+        <span class="gr">Step 3 — Candidate:</span>     h̃ₜ = tanh(W · [rₜ ⊙ hₜ₋₁, xₜ] + b)<br>
+        <span class="comment">          ↑ reset gate controls how much of past to include</span><br><br>
+        <span class="hl">Step 4 — Final Update:</span><br>
+        hₜ = (1 − zₜ) ⊙ hₜ₋₁  +  zₜ ⊙ h̃ₜ<br>
+        <span class="comment">← keep old          +  add new (weighted by update gate)</span>
+      </div>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Interpolation in step 4:</strong> hₜ is a weighted blend of the old hidden state hₜ₋₁ and the new candidate h̃ₜ. The update gate zₜ controls the blend. This is elegant — a single gate manages both forgetting and remembering.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Long-term memory mechanism:</strong> When zₜ ≈ 0: hₜ ≈ hₜ₋₁. The state is copied unchanged — information from far in the past survives. This solves vanishing gradient similarly to LSTM's cell state.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fewer parameters:</strong> GRU has 3 weight matrices per gate×2 gates + 1 candidate = effectively 3 sets of weights. LSTM has 4 sets. GRU trains ~25% faster for the same hidden size.</div></li>
+  </ul>
+
+  <h3>11.4 LSTM vs GRU Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>LSTM</th><th>GRU</th></tr>
+    <tr><td><strong>Memory streams</strong></td><td>Two: cell state Cₜ + hidden state hₜ</td><td>One: only hidden state hₜ</td></tr>
+    <tr><td><strong>Number of gates</strong></td><td>3 gates + 1 cell candidate = 4 components</td><td>2 gates + 1 candidate = 3 components</td></tr>
+    <tr><td><strong>Parameters</strong></td><td>4× hidden_size² weights</td><td>3× hidden_size² weights (~25% less)</td></tr>
+    <tr><td><strong>Training speed</strong></td><td>Slower</td><td>Faster (~25%)</td></tr>
+    <tr><td><strong>Performance</strong></td><td>Slightly better on very long dependencies</td><td>Comparable on most tasks</td></tr>
+    <tr><td><strong>Use case</strong></td><td>When long-range dependencies are critical (e.g. long documents, music generation)</td><td>Faster alternative; good default for most NLP, time series</td></tr>
+    <tr><td><strong>Introduced</strong></td><td>1997 (Hochreiter &amp; Schmidhuber)</td><td>2014 (Cho et al.)</td></tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Practical Guideline</div>
+    <p>In practice, start with GRU — it's faster and performs similarly. Switch to LSTM if the task clearly benefits from longer memory (very long sequences, complex temporal patterns). On most NLP tasks (sentiment, NER, translation), the difference is small. Transformers now dominate both for long sequences.</p>
+  </div>
+</div>
+
+<!-- ═══ SECTION 12 ═══ -->
+<div class="section" id="s12">
+  <div class="section-header rnn">
+    <div class="section-num">Section 12</div>
+    <h2>RNN Architectural Variants</h2>
+  </div>
+
+  <h3>12.1 Bidirectional RNN (BiRNN)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with unidirectional RNN:</strong> At time step t, the hidden state hₜ only has information from past inputs x₁, ..., xₜ. But for many NLP tasks, future context also matters: in "He said 'I ___' yesterday", the blank depends on what comes after.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Solution:</strong> Run two RNNs on the same sequence — one forward (left to right) and one backward (right to left). At each time step, concatenate both hidden states: h̃ₜ = [h→ₜ ; h←ₜ].</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefit:</strong> Each output uses context from both past AND future. Significantly improves performance on tasks where full sequence is available (not suitable for real-time prediction where future is unknown).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Named Entity Recognition, POS tagging, speech recognition (offline), machine translation encoder.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  Bidirectional RNN:
+
+  Forward:   h→₁ ──▶ h→₂ ──▶ h→₃ ──▶ h→₄ ──▶ h→₅
+             ↑        ↑        ↑        ↑        ↑
+            x₁       x₂       x₃       x₄       x₅
+             ↓        ↓        ↓        ↓        ↓
+  Backward:  h←₁ ◀── h←₂ ◀── h←₃ ◀── h←₄ ◀── h←₅
+
+  Output at each step: ỹₜ = f([h→ₜ ; h←ₜ])   ← concat both directions
+    </pre>
+    <div class="diagram-caption">Figure 12.1 — Bidirectional RNN. Each output uses both past and future context.</div>
+  </div>
+
+  <h3>12.2 Deep (Stacked) RNN</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Stack multiple RNN layers on top of each other. The hidden state output of layer l at each time step becomes the input to layer l+1 at the same time step.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefit:</strong> Each layer learns representations at increasing levels of abstraction, similar to deep feedforward networks. More expressive than a single-layer RNN.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Typical depth:</strong> 2–4 layers for most tasks. Too many RNN layers → exponential vanishing gradient both in time and depth direction.</div></li>
+  </ul>
+
+  <h3>12.3 Encoder-Decoder (Seq2Seq)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Two separate RNNs. Encoder reads the input sequence and compresses it into a fixed-size context vector c (the final hidden state). Decoder takes c and generates the output sequence one token at a time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Machine translation, summarization, chatbots, speech-to-text.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Bottleneck problem:</strong> The entire input sequence is compressed into a single fixed-size vector c. For long sequences, the encoder cannot capture everything. Solved by Attention mechanism.</div></li>
+  </ul>
+
+  <h3>12.4 Attention Mechanism (Brief)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Key idea:</strong> Instead of using only the final encoder hidden state, the decoder can attend to ALL encoder hidden states at each decoding step, assigning a learned attention weight to each encoder position.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect:</strong> Solves the bottleneck problem. Decoder can "look back" at any part of the input sequence with arbitrary precision. Also provides interpretable alignments.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Impact:</strong> Attention was the key insight that led to the Transformer architecture, which has largely replaced RNNs for NLP tasks.</div></li>
+  </ul>
+</div>
+
+<!-- ═══ SECTION 13 ═══ -->
+<div class="section" id="s13">
+  <div class="section-header rnn">
+    <div class="section-num">Section 13</div>
+    <h2>RNN Applications</h2>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Natural Language Processing</div>
+      <p>Sentiment analysis, text classification (many-to-one). Named Entity Recognition, POS tagging (many-to-many). Language modeling — predicts next word given context.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Machine Translation</div>
+      <p>Seq2Seq with attention (Encoder-Decoder). Input: source language sentence. Output: target language sentence of different length. Foundation of Google Translate before Transformers.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Speech Recognition</div>
+      <p>Raw audio waveform → phoneme sequence → text. Bidirectional LSTM is standard. CTC loss handles alignment between audio frames and text characters.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Time Series Forecasting</div>
+      <p>Stock price prediction, weather forecasting, anomaly detection in IoT sensor data. Input: past T values. Output: future k values. LSTM/GRU captures temporal patterns.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Music and Text Generation</div>
+      <p>Character-level RNN generates text one character at a time (one-to-many). Given initial input, generates indefinitely long sequences with learned style.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Video Analysis</div>
+      <p>CNN extracts spatial features from each frame. RNN models temporal evolution across frames. Used for action recognition, video captioning, gesture recognition.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ████████████████████ PART 3: HYBRID ████████████████████ -->
+<div class="part-banner hybrid">Part 3 — Hybridization of Deep Models</div>
+
+<!-- ═══ SECTION 14 ═══ -->
+<div class="section" id="s14">
+  <div class="section-header hybrid">
+    <div class="section-num">Section 14</div>
+    <h2>Hybridization of Deep Models</h2>
+  </div>
+
+  <h3>14.1 What is Model Hybridization?</h3>
+  <p><strong>Hybridization</strong> refers to combining multiple types of neural network architectures into a single model, where each component handles the aspect of the problem it is best suited for. Rather than choosing between a CNN, RNN, or Transformer, hybrid models use all of them as needed.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Motivation for Hybridization</div>
+    <p>No single architecture is best for all data modalities. Images need spatial processing (CNNs). Sequences need temporal memory (RNNs/Transformers). Graphs need relational processing (GNNs). Real-world problems often involve multiple modalities or require both spatial AND temporal reasoning simultaneously — hence hybrid architectures.</p>
+  </div>
+
+  <h3>14.2 CNN + RNN — Spatial-Temporal Hybrid</h3>
+  <p>The most classic hybrid: a CNN extracts spatial features from each frame/image, and an RNN models the temporal dynamics across frames/timesteps.</p>
+
+  <div class="diagram">
+    <pre>
+  CNN + RNN Hybrid for Video Classification:
+
+  Frame 1 ──▶ [CNN] ──▶ feature₁ ─┐
+  Frame 2 ──▶ [CNN] ──▶ feature₂  ├──▶ [LSTM] ──▶ [Dense] ──▶ class label
+  Frame 3 ──▶ [CNN] ──▶ feature₃  │
+    ⋮         [CNN]       ⋮       │     temporal
+  Frame T ──▶ [CNN] ──▶ featureT ─┘     reasoning
+
+  CNN: shared weights across all frames (spatial feature extraction)
+  LSTM: models temporal evolution of CNN features
+    </pre>
+    <div class="diagram-caption">Figure 14.1 — CNN+RNN hybrid. CNN extracts per-frame features; LSTM models temporal dynamics.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Pre-trained CNN (e.g. ResNet) extracts a feature vector for each frame. The sequence of these vectors is fed to an LSTM. The final LSTM hidden state feeds a classifier.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Weight sharing for CNN:</strong> The same CNN processes all frames (parameter sharing over time), reducing parameters drastically.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Video action recognition (UCF-101, Kinetics), video captioning, sign language recognition, surgical video analysis.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Variant — Conv-LSTM:</strong> Instead of separate CNN + LSTM, ConvLSTM replaces the matrix multiplications in LSTM gates with convolutions. Both spatial and temporal gates are convolutional — used for spatiotemporal prediction (precipitation nowcasting, traffic flow).</div></li>
+  </ul>
+
+  <h3>14.3 CNN + Transformer</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Motivation:</strong> CNNs are excellent for local feature extraction but struggle with long-range spatial relationships. Transformers (self-attention) capture global relationships but ignore local structure.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> CNN backbone extracts a grid of local features → flatten spatial positions into a sequence → feed to Transformer encoder for global reasoning → classification head.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Vision Transformer (ViT):</strong> Splits an image into 16×16 patches, embeds each patch as a token, processes the sequence with a Transformer. State-of-the-art for image classification on large datasets.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DETR (Detection Transformer):</strong> CNN backbone + Transformer encoder-decoder for object detection. Eliminates hand-designed anchors and NMS post-processing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Image classification, object detection, medical imaging, self-driving perception.</div></li>
+  </ul>
+
+  <h3>14.4 CNN + GAN — Generative Hybrid</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>GAN structure:</strong> A Generator (CNN) creates fake images. A Discriminator (CNN) tries to distinguish real from fake. They are trained adversarially — generator tries to fool the discriminator; discriminator tries to catch the generator.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DCGAN (Deep Convolutional GAN):</strong> Both generator and discriminator are deep CNNs. Generator uses transposed convolutions (upsampling). Discriminator uses strided convolutions (downsampling).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Photorealistic image synthesis, data augmentation, super-resolution (SRGAN), image-to-image translation (Pix2Pix), style transfer (CycleGAN), deepfakes detection AND generation.</div></li>
+  </ul>
+
+  <h3>14.5 Encoder-Decoder Hybrids (U-Net style)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>U-Net architecture:</strong> A CNN encoder (contracting path) progressively downsamples to extract high-level features. A CNN decoder (expanding path) upsamples back to original resolution. Skip connections between corresponding encoder and decoder levels.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Skip connections:</strong> Directly pass high-resolution encoder features to the decoder, preserving fine-grained spatial detail that was lost in downsampling. This is the key innovation of U-Net.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Medical image segmentation (tumors, cells, organs), satellite image segmentation, depth estimation. Variants like U-Net++ and TransUNet (U-Net + Transformer) are state-of-the-art in medical imaging.</div></li>
+  </ul>
+
+  <h3>14.6 Multi-Modal Hybrid Models</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Models that process multiple input modalities simultaneously — e.g., images + text, audio + video, tabular + images.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Visual Question Answering (VQA):</strong> Input: image + natural language question. Output: answer. CNN encodes the image; RNN/Transformer encodes the question. A fusion module combines both representations to generate the answer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CLIP (OpenAI):</strong> Contrastive Language-Image Pre-Training. Jointly trains an image encoder (CNN/ViT) and a text encoder (Transformer) to align image and text representations in a shared embedding space. Enables zero-shot image classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Audio-Visual Speech Recognition:</strong> CNN processes lip movements (visual). RNN/Transformer processes audio. Combined for robust speech recognition even in noisy environments.</div></li>
+  </ul>
+
+  <h3>14.7 Common Fusion Strategies</h3>
+
+  <table class="compare-table">
+    <tr><th>Fusion Type</th><th>When it Happens</th><th>How</th><th>Use Case</th></tr>
+    <tr>
+      <td><strong>Early Fusion</strong></td>
+      <td>Before feature extraction</td>
+      <td>Concatenate raw inputs, then feed to single network</td>
+      <td>Modalities are closely related (RGB + depth channels)</td>
+    </tr>
+    <tr>
+      <td><strong>Late Fusion</strong></td>
+      <td>After separate feature extraction</td>
+      <td>Each modality has its own network; outputs are combined (avg, max, concat) just before final layer</td>
+      <td>Very different modalities (image + text)</td>
+    </tr>
+    <tr>
+      <td><strong>Mid Fusion</strong></td>
+      <td>At intermediate layers</td>
+      <td>Features from separate networks are merged at one or more intermediate levels</td>
+      <td>Need both low-level and high-level interaction</td>
+    </tr>
+    <tr>
+      <td><strong>Attention Fusion</strong></td>
+      <td>Dynamically, guided by cross-attention</td>
+      <td>Cross-attention between modality feature sequences — each modality attends to the other</td>
+      <td>Transformers, CLIP, multimodal LLMs</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why Hybridization Outperforms Single Architectures</div>
+    <p>1. <strong>Complementary strengths:</strong> CNNs excel at spatial features; RNNs at temporal sequences; Transformers at long-range dependencies. Combining them lets each part handle what it does best.</p>
+    <p>2. <strong>Richer representations:</strong> Fusing features from multiple pathways gives the model more information than any single pathway alone.</p>
+    <p>3. <strong>Multi-modal reasoning:</strong> Real-world problems often involve multiple data types. Pure CNNs or RNNs cannot naturally handle both images and text simultaneously without hybridization.</p>
+    <p>4. <strong>Modern state-of-the-art:</strong> Almost all top-performing models today are hybrids — GPT (Transformer+embedding), LLaVA (CNN+Transformer), Whisper (CNN+Transformer for audio), SAM (CNN+Transformer for segmentation).</p>
+  </div>
+
+  <!-- FINAL SUMMARY BOX -->
+  <div class="summary-box">
+    <h4>Module 3 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>CNNs</strong> solve the parameter explosion of FC networks via local connectivity and parameter sharing. Same filter weights used at all spatial positions — enabling translation equivariance and massive parameter savings.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Core CNN operations:</strong> Convolution (output size = ⌊(n+2p−f)/s⌋+1), Pooling (max for feature presence, avg for smooth reduction), Activation (ReLU standard).</div></li>
+      <li><span class="bullet">3.</span><div><strong>Deep CNN architectures:</strong> LeNet (original) → AlexNet (ReLU, GPU) → VGG (uniform 3×3 filters) → ResNet (skip connections, solved vanishing gradient for deep networks via additive paths).</div></li>
+      <li><span class="bullet">4.</span><div><strong>RNNs</strong> process sequences by maintaining a hidden state hₜ that summarizes past information. Same weights at all time steps (parameter sharing over time). Equation: hₜ = tanh(Wₕhₜ₋₁ + Wₓxₜ + b).</div></li>
+      <li><span class="bullet">5.</span><div><strong>Vanishing gradient in RNNs</strong> prevents learning long-range dependencies. Gradient is multiplied by Wₕ at each BPTT step — shrinks exponentially over many steps.</div></li>
+      <li><span class="bullet">6.</span><div><strong>LSTM</strong> solves this with an additive cell state update Cₜ = fₜ⊙Cₜ₋₁ + iₜ⊙C̃ₜ. Four components: Forget gate (what to erase), Input gate (what to write), Cell candidate (what to write with), Output gate (what to read). Cell state is the gradient highway.</div></li>
+      <li><span class="bullet">7.</span><div><strong>GRU</strong> is a simpler LSTM variant with 2 gates (Reset + Update) and one memory stream. hₜ = (1−zₜ)⊙hₜ₋₁ + zₜ⊙h̃ₜ. ~25% fewer parameters, comparable performance on most tasks.</div></li>
+      <li><span class="bullet">8.</span><div><strong>RNN variants:</strong> Bidirectional (both past + future context), Stacked/Deep (multiple RNN layers), Seq2Seq Encoder-Decoder (for variable-length input/output), Attention (decoder looks at all encoder states).</div></li>
+      <li><span class="bullet">9.</span><div><strong>Hybridization</strong> combines architectures for their complementary strengths. CNN+RNN (video), CNN+Transformer (ViT, DETR), CNN+GAN (DCGAN), U-Net (encoder-decoder with skip connections), Multimodal (VQA, CLIP).</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Neural Networks — Module 3</span>
+  <span>CNN · Parameter Sharing · LSTM · GRU · Hybrid Deep Models</span>
+</div>
+
+</body>
+</html>

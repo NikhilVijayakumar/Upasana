@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks – Module 2 Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --surface2: #f4f2ee;
+    --border: #e5e0d8;
+    --border2: #d0c8bc;
+    --text: #1a1814;
+    --text2: #4a4540;
+    --text3: #7a7268;
+    --accent: #1e5fa8;
+    --accent-bg: #edf3fc;
+    --accent-border: #b8d0ef;
+    --green: #1a6b3c;
+    --green-bg: #edf7f2;
+    --green-border: #a8d9bc;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5c5c;
+    --teal-bg: #eaf6f6;
+    --teal-border: #8fd4d4;
+    --code-bg: #f0ede8;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: #0f2744;
+    color: #f5f2ec;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a9ec8;
+    margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: #f5f2ec;
+    margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #6a8ab0;
+    margin-top: 1rem;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+  }
+  .toc h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 4px 2rem;
+  }
+  .toc a {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+  }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── MAIN CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 960px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header {
+    border-left: 4px solid #0f2744;
+    padding-left: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .section-header .section-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+  }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    border-left: 3px solid;
+  }
+  .callout-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key { background: var(--accent-bg); border-color: var(--accent); }
+  .callout-key .callout-title { color: var(--accent); }
+  .callout-key p { color: #2a4a7a; }
+
+  .callout-formula { background: var(--purple-bg); border-color: var(--purple); }
+  .callout-formula .callout-title { color: var(--purple); }
+  .callout-formula p { color: #3a2460; }
+
+  .callout-tip { background: var(--green-bg); border-color: var(--green); }
+  .callout-tip .callout-title { color: var(--green); }
+  .callout-tip p { color: #14502c; }
+
+  .callout-warn { background: var(--amber-bg); border-color: var(--amber); }
+  .callout-warn .callout-title { color: var(--amber); }
+  .callout-warn p { color: #5a3800; }
+
+  .callout-exam { background: var(--red-bg); border-color: var(--red); }
+  .callout-exam .callout-title { color: var(--red); }
+  .callout-exam p { color: #6a1010; }
+
+  .callout-teal { background: var(--teal-bg); border-color: var(--teal); }
+  .callout-teal .callout-title { color: var(--teal); }
+  .callout-teal p { color: #084040; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 16px;
+    line-height: 1.65;
+    align-items: flex-start;
+  }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text3);
+    min-width: 22px;
+    padding-top: 3px;
+  }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.65;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(steps);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--surface);
+    background: #0f2744;
+    border-radius: 50%;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .formula-block .formula-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+  .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14.5px;
+    color: var(--text);
+    line-height: 2;
+  }
+  .formula .comment { font-size: 13px; color: var(--text3); margin-left: 1rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl { color: var(--accent); font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    overflow-x: auto;
+  }
+  .diagram pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .diagram-caption {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--surface2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .compare-table td {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+  }
+  .code-block .code-lang {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+  .code-block code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.8;
+    white-space: pre;
+    display: block;
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+  }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block {
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+  }
+  .algo-block .algo-header {
+    background: #0f2744;
+    color: #e8eef8;
+    padding: 0.6rem 1.25rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 14px; }
+
+  /* ── HYPERPARAMETER TAG ── */
+  .hp-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--purple-bg);
+    color: var(--purple);
+    border: 1px solid var(--purple-border);
+    border-radius: 4px;
+    padding: 1px 7px;
+  }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border2);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .summary-box h4 { margin-top: 0; color: var(--text); margin-bottom: 1rem; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--code-bg);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--purple);
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 4rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Neural Networks &amp; Deep Learning</div>
+  <h1><span>Module 2:</span> Optimization, Hyperparameters &amp; Domain Knowledge</h1>
+  <div class="subtitle">Hyperparameter Tuning · Gradient Descent Optimizers · Adam · RMSProp · Domain Knowledge in Deep Learning</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> What are Hyperparameters?</a>
+    <a href="#s2"><span class="num">2.</span> Key Hyperparameters in Deep Networks</a>
+    <a href="#s3"><span class="num">3.</span> Hyperparameter Tuning Strategies</a>
+    <a href="#s4"><span class="num">4.</span> Problems with Vanilla Gradient Descent</a>
+    <a href="#s5"><span class="num">5.</span> Momentum</a>
+    <a href="#s6"><span class="num">6.</span> RMSProp</a>
+    <a href="#s7"><span class="num">7.</span> Adam Optimizer</a>
+    <a href="#s8"><span class="num">8.</span> Optimizer Comparison</a>
+    <a href="#s9"><span class="num">9.</span> Domain Knowledge in Deep Learning</a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ═══════════════════ SECTION 1 ═══════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">Section 1</div>
+    <h2>What are Hyperparameters?</h2>
+  </div>
+
+  <h3>1.1 Parameters vs Hyperparameters</h3>
+  <p>In a neural network, there are two categories of values that control behavior. Understanding the difference is fundamental.</p>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Parameters</th><th>Hyperparameters</th></tr>
+    <tr>
+      <td><strong>Definition</strong></td>
+      <td>Internal values learned by the model during training</td>
+      <td>External settings chosen by the user before training begins</td>
+    </tr>
+    <tr>
+      <td><strong>Examples</strong></td>
+      <td>Weights W, Biases b</td>
+      <td>Learning rate α, number of layers, batch size, epochs</td>
+    </tr>
+    <tr>
+      <td><strong>Who sets them?</strong></td>
+      <td>Automatically updated by backpropagation + gradient descent</td>
+      <td>Set manually by the engineer/researcher</td>
+    </tr>
+    <tr>
+      <td><strong>How optimized?</strong></td>
+      <td>Optimized via gradient descent to minimize cost J</td>
+      <td>Tuned via search strategies (grid search, random search, etc.)</td>
+    </tr>
+    <tr>
+      <td><strong>Saved in model?</strong></td>
+      <td>Yes — define the trained model</td>
+      <td>Recorded separately in experiment logs</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Key Insight</div>
+    <p>Parameters are what the network <em>learns</em>. Hyperparameters are what <em>you</em> decide. Choosing the right hyperparameters can mean the difference between a model that barely learns and one that reaches state-of-the-art performance.</p>
+  </div>
+
+  <h3>1.2 Why Hyperparameter Tuning Matters for Convergence</h3>
+  <p>A deep network's ability to converge to a good solution depends critically on its hyperparameters. Poor choices lead to:</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Non-convergence:</strong> The cost function never decreases (usually due to learning rate too high or poor weight initialization).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Very slow convergence:</strong> Training takes impractically long (learning rate too low, batch size too large).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Overfitting:</strong> Network memorizes training data, performs poorly on test data (too many layers/neurons, insufficient regularization).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Underfitting:</strong> Network is too simple to capture the patterns in data (too few layers, high regularization).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training instability:</strong> Loss oscillates wildly or explodes to NaN (learning rate + batch size interaction).</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════ SECTION 2 ═══════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">Section 2</div>
+    <h2>Key Hyperparameters in Deep Networks</h2>
+  </div>
+
+  <h3>2.1 Learning Rate (α) — The Most Important Hyperparameter</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Controls how large a step we take along the negative gradient direction during each parameter update: W := W − α · ∂J/∂W.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Typical range:</strong> 0.1, 0.01, 0.001, 0.0001. Usually searched on a logarithmic scale.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too high:</strong> Overshoots the minimum. Loss oscillates or diverges. Unstable training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too low:</strong> Extremely slow convergence. May plateau in a flat region or saddle point.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learning Rate Schedule:</strong> Start with a larger α and decrease over time. Three common schedules: Step Decay (halve α every N epochs), Exponential Decay (α = α₀ · e^(−kt)), Cosine Annealing (smooth periodic decay).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Warm-up:</strong> Modern practice — start with a very small α, ramp it up for the first few epochs, then decay. Helps with training stability in very deep networks and Transformers.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  Effect of Learning Rate on Training:
+
+  Cost J
+    │
+    │  α too high: ∧∨∧∨∧ (oscillates, may diverge)
+    │
+    │  α just right: ╲____  (smooth, fast convergence)
+    │
+    │  α too low:  ╲
+    │               ╲
+    │                ╲________  (converges but very slowly)
+    └────────────────────────────── Iterations
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — Effect of learning rate on the training loss curve.</div>
+  </div>
+
+  <h3>2.2 Number of Hidden Layers (Depth)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Role:</strong> Determines the depth of feature hierarchy the network can learn. More layers → more abstract representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Practical start:</strong> Start with 1–2 hidden layers and add more only if the model underfits.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Deeper is not always better:</strong> Beyond a certain depth, adding layers gives diminishing returns and introduces vanishing gradient problems (mitigated by ReLU, batch normalization, residual connections).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture search:</strong> Choosing depth is itself an active research area (Neural Architecture Search / NAS).</div></li>
+  </ul>
+
+  <h3>2.3 Number of Neurons per Layer (Width)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Role:</strong> Determines the representational capacity at each level. More neurons → richer representations per layer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Common practice:</strong> Use powers of 2 (32, 64, 128, 256, 512) for computational efficiency on GPU/CPU hardware.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Funnel architecture:</strong> Decreasing width across layers (e.g. 512→256→128) forces the network to compress information — useful for autoencoders and dimensionality reduction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Same width across layers:</strong> Often used in practice as a simple starting point, tuned later.</div></li>
+  </ul>
+
+  <h3>2.4 Batch Size</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Number of training examples used per gradient update step.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Small batches (8–64):</strong> Noisy gradient estimates, but noise acts as regularization. Better generalization, slower per-epoch time. Good for small GPUs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Large batches (256–2048+):</strong> More accurate gradient estimates, parallelizes well on large GPUs. But tends to converge to "sharp" minima with worse generalization.</div></li>
+    <li><span class="bullet">▸</span><div><strong>The "batch size sweet spot":</strong> 32–256 for most deep learning tasks. When increasing batch size, also increase learning rate proportionally (linear scaling rule).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Interaction with learning rate:</strong> Larger batch → more accurate gradient → can use larger α. Relationship: αₙₑw = αₒₗd × (new_batch_size / old_batch_size).</div></li>
+  </ul>
+
+  <h3>2.5 Number of Epochs</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> One epoch = one complete pass through the entire training dataset.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too few epochs:</strong> Model hasn't learned enough — underfitting.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too many epochs:</strong> Model memorizes training data — overfitting.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Early Stopping:</strong> Monitor validation loss; stop training when validation loss starts increasing even as training loss decreases. One of the best regularization techniques.</div></li>
+  </ul>
+
+  <h3>2.6 Regularization Hyperparameters</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>L2 regularization (λ):</strong> Adds λ · ‖W‖² to the cost. Penalizes large weights, prevents overfitting. Common values: 0.1, 0.01, 0.001.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dropout rate (p):</strong> Probability of randomly dropping a neuron during training. Typical: 0.2–0.5. Acts as ensemble of smaller networks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Batch normalization momentum:</strong> Controls how quickly the running statistics (mean, variance) update. Usually set to 0.99.</div></li>
+  </ul>
+
+  <h3>2.7 Weight Initialization</h3>
+  <p>Although often set automatically, weight initialization is a critical hyperparameter that affects whether training even starts properly.</p>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Zero initialization — NEVER do this:</strong> All neurons in a layer compute identical outputs. All gradients are identical. Network cannot learn (symmetry breaking problem).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Random initialization (small values):</strong> W ~ N(0, 0.01). Works for shallow networks but causes vanishing gradients for deep ones.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Xavier (Glorot) initialization:</strong> W ~ N(0, 1/n[l-1]). Designed for Tanh/Sigmoid activations. Keeps variance consistent across layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>He initialization:</strong> W ~ N(0, 2/n[l-1]). Designed for ReLU activations. Accounts for the fact that ReLU zeroes out half its inputs on average.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">Initialization Formulas</div>
+    <div class="formula">
+      Xavier:  W[l] = np.random.randn(n[l], n[l-1]) × √(1/n[l-1])<br>
+      He:      W[l] = np.random.randn(n[l], n[l-1]) × √(2/n[l-1])
+    </div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Hyperparameter Priority Order</div>
+    <p>When tuning, prioritize in this order: (1) Learning rate α — most impactful. (2) Mini-batch size. (3) Number of hidden units. (4) Number of layers. (5) Learning rate decay. (6) β₁, β₂, ε (only for Adam). Getting α right first is the single most important step.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 3 ═══════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">Section 3</div>
+    <h2>Hyperparameter Tuning Strategies</h2>
+  </div>
+
+  <h3>3.1 Grid Search</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Define a grid of hyperparameter values (e.g., α ∈ {0.01, 0.001}, layers ∈ {2, 3, 4}) and train a model for every combination.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pros:</strong> Exhaustive — guaranteed to find the best combination within the grid. Simple to implement.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cons:</strong> Scales exponentially with number of hyperparameters. 5 values × 5 hyperparameters = 5⁵ = 3125 training runs. Impractical for deep learning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Use when:</strong> Only 1–2 hyperparameters need tuning and each training run is fast.</div></li>
+  </ul>
+
+  <h3>3.2 Random Search</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Randomly sample hyperparameter combinations from defined distributions (not a fixed grid).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why better than grid search:</strong> In practice, some hyperparameters matter much more than others. Random search covers more distinct values of the important hyperparameters with the same number of trials. (Bergstra &amp; Bengio, 2012)</div></li>
+    <li><span class="bullet">▸</span><div><strong>Search on log scale:</strong> For learning rate, sample from log-uniform distribution: α = 10^(-r) where r ~ Uniform(-4, -1), giving values between 0.0001 and 0.1.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Use when:</strong> More than 2 hyperparameters. This is the standard practice in deep learning.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  Grid Search vs Random Search (2 hyperparameters, 9 trials):
+
+  GRID SEARCH              RANDOM SEARCH
+  ┌─────────────────┐      ┌─────────────────┐
+  │ × × ×           │      │  ×   ×      ×   │
+  │                 │      │       ×          │
+  │ × × ×           │      │  ×         ×    │
+  │                 │      │       ×          │
+  │ × × ×           │      │    ×      ×     │
+  └─────────────────┘      └─────────────────┘
+  3 values per param       9 distinct values per param!
+  (if one param doesn't     → Better coverage of
+   matter, waste 2/3 runs)    the important param
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Random search explores more of each hyperparameter dimension than grid search.</div>
+  </div>
+
+  <h3>3.3 Bayesian Optimization</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Build a probabilistic model (usually a Gaussian Process) of how hyperparameters relate to performance. Use this model to intelligently choose the next set of hyperparameters to try — focusing on regions likely to give improvement.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pros:</strong> Much more sample-efficient than random search. Each trial informs the next.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Tools:</strong> Optuna, Hyperopt, Weights &amp; Biases Sweeps, Google Vizier.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Use when:</strong> Each training run is expensive and you have a limited budget of trials.</div></li>
+  </ul>
+
+  <h3>3.4 Coarse-to-Fine Tuning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Phase 1 — Coarse search:</strong> Use random search over a wide range. Run many short experiments (few epochs) to quickly identify which regions of hyperparameter space are promising.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Phase 2 — Fine search:</strong> Zoom into the promising region identified in Phase 1. Run longer experiments with finer resolution.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why efficient:</strong> Avoids spending compute on clearly bad configurations. Most hyperparameter tuning in industry follows this approach.</div></li>
+  </ul>
+
+  <h3>3.5 Train / Dev / Test Split</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Training set:</strong> Used to update parameters (weights) via backpropagation. The network sees this data during training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dev / Validation set:</strong> Used to evaluate different hyperparameter configurations and guide tuning. Never used for backpropagation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Test set:</strong> Used only once at the end to report final model performance. Gives an unbiased estimate of real-world performance.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Typical splits:</strong> For small datasets (few thousand): 60/20/20. For large datasets (millions): 98/1/1 is common — you have more than enough data for a reliable dev/test estimate.</div></li>
+  </ul>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Common Mistake — Dev Set Leakage</div>
+    <p>Never tune hyperparameters using the test set. If you use the test set to guide tuning, you are effectively training on it and your final accuracy will be optimistically biased. Always tune using the dev set, and touch the test set only once.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 4 ═══════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">Section 4</div>
+    <h2>Problems with Vanilla Gradient Descent</h2>
+  </div>
+
+  <p>Before understanding Adam and RMSProp, we must understand <em>why</em> plain gradient descent is insufficient for training deep networks efficiently. These problems motivated the development of all modern optimizers.</p>
+
+  <h3>4.1 Slow Learning Due to Uniform Learning Rate</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> Vanilla GD uses the same learning rate α for all parameters. But different parameters may need different step sizes — some gradients are large (need small α), some are tiny (need large α).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence:</strong> A single α that works for one parameter may cause oscillations in another.</div></li>
+  </ul>
+
+  <h3>4.2 Oscillation in Narrow Ravines</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> Many loss surfaces look like elongated valleys (narrow in one direction, long in another). GD oscillates back and forth across the narrow direction while making slow progress along the valley toward the minimum.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence:</strong> High learning rate → oscillates across narrow dimension. Low learning rate → too slow in the long dimension. No α satisfies both.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  Narrow Ravine Loss Surface (top view):
+
+  w₂
+  │     ↑ narrow direction (large gradient, oscillates)
+  │   ↗↘↗↘↗↘
+  │  ↗         ↘
+  │            ↗↘↗↘→
+  │                 optimal
+  └───────────────────── w₁  (long direction, slow progress)
+
+  GD path: zigzags inefficiently instead of going straight
+    </pre>
+    <div class="diagram-caption">Figure 4.1 — Gradient descent oscillating in a narrow ravine instead of progressing efficiently.</div>
+  </div>
+
+  <h3>4.3 Noisy Gradients (Mini-batch)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> Mini-batch gradients are noisy estimates of the true gradient. Each update step can point in a slightly wrong direction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Consequence:</strong> Even near the minimum, the loss doesn't settle — it keeps oscillating around the minimum due to gradient noise.</div></li>
+  </ul>
+
+  <h3>4.4 Saddle Points and Flat Regions</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Saddle points:</strong> Regions where gradient is near zero but it is not a minimum. GD stalls here because ∂J/∂W ≈ 0 → nearly zero update.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Plateaus:</strong> Flat regions of the loss surface where gradients are tiny. Training slows to a crawl even if still far from the minimum.</div></li>
+  </ul>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Motivation for Advanced Optimizers</div>
+    <p>All of the problems above — oscillation, uniform step size, noisy gradients, saddle points — motivated the development of more sophisticated optimizers. Momentum addresses oscillation. RMSProp addresses the uniform learning rate problem. Adam combines both, making it the most widely used optimizer today.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 5 ═══════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">Section 5</div>
+    <h2>Gradient Descent with Momentum</h2>
+  </div>
+
+  <h3>5.1 Core Idea</h3>
+  <p>Momentum is inspired by physics. Imagine rolling a ball down a hill — it accelerates in consistent directions and dampens oscillations. Momentum does the same for gradient descent by maintaining a running average (exponentially weighted) of past gradients.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Intuition — Ball Rolling Down a Hill</div>
+    <p>A ball gains momentum as it rolls. In the narrow ravine scenario: across the narrow direction, gradients oscillate +/− and cancel out in the average (slowing oscillation). Along the long direction, gradients consistently point the same way and accumulate (speeding up progress). Result: faster, smoother convergence.</p>
+  </div>
+
+  <h3>5.2 Exponentially Weighted Moving Average (EWMA)</h3>
+  <p>Momentum relies on EWMA, which is used extensively in all modern optimizers. It is worth understanding deeply.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Exponentially Weighted Moving Average</div>
+    <div class="formula">
+      Vₜ = β · Vₜ₋₁ + (1 − β) · θₜ
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Vₜ</strong> — The smoothed (moving average) value at time step t.</div></li>
+    <li><span class="bullet">▸</span><div><strong>θₜ</strong> — The current raw value (e.g. current gradient).</div></li>
+    <li><span class="bullet">▸</span><div><strong>β</strong> — The decay/momentum coefficient. Controls how much history is remembered. Typical value: 0.9.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effective window:</strong> The EWMA approximates an average over the last 1/(1−β) values. With β=0.9, it averages over ≈ 10 past values. With β=0.99, ≈ 100 values.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Bias correction:</strong> Early values of V are biased toward 0 (since V₀=0). Corrected as: V̂ₜ = Vₜ / (1 − βᵗ). Important in the first few iterations.</div></li>
+  </ul>
+
+  <h3>5.3 Momentum Algorithm</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: Gradient Descent with Momentum</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: V_dW = 0,  V_db = 0<br><br>
+        On each iteration t:<br>
+        &nbsp;&nbsp;Compute dW, db  <span class="comment">← via backpropagation</span><br><br>
+        &nbsp;&nbsp;V_dW = β · V_dW + (1−β) · dW  <span class="comment">← momentum for weights</span><br>
+        &nbsp;&nbsp;V_db = β · V_db + (1−β) · db  <span class="comment">← momentum for biases</span><br><br>
+        &nbsp;&nbsp;W := W − α · V_dW             <span class="comment">← smooth update</span><br>
+        &nbsp;&nbsp;b := b − α · V_db
+      </div>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>β = 0.9</strong> is the standard default. Rarely needs tuning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect on oscillating direction:</strong> V_dW averages out the positive and negative gradients → oscillation is dampened.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect on consistent direction:</strong> V_dW accumulates gradients that consistently point the same way → larger, faster steps in that direction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Two hyperparameters:</strong> α (learning rate) and β (momentum). α matters more; β=0.9 usually works well.</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════ SECTION 6 ═══════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">Section 6</div>
+    <h2>RMSProp — Root Mean Square Propagation</h2>
+  </div>
+
+  <h3>6.1 Core Idea</h3>
+  <p>RMSProp (Hinton, 2012) solves the oscillation problem from a different angle than Momentum. Instead of smoothing the gradient itself, it adapts the learning rate for each parameter individually — dividing by the square root of the recent average of squared gradients.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Intuition</div>
+    <p>Parameters with consistently large gradients (oscillating direction) get a smaller effective learning rate — this slows them down and reduces oscillation. Parameters with consistently small gradients (valley direction) get a larger effective learning rate — this speeds them up. Each parameter adapts its own step size.</p>
+  </div>
+
+  <h3>6.2 RMSProp Algorithm</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: RMSProp</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: S_dW = 0,  S_db = 0<br><br>
+        On each iteration t:<br>
+        &nbsp;&nbsp;Compute dW, db  <span class="comment">← via backpropagation</span><br><br>
+        &nbsp;&nbsp;S_dW = β₂ · S_dW + (1−β₂) · dW²   <span class="comment">← EWMA of squared gradients</span><br>
+        &nbsp;&nbsp;S_db = β₂ · S_db + (1−β₂) · db²<br><br>
+        &nbsp;&nbsp;W := W − α · dW / (√S_dW + ε)      <span class="comment">← adaptive learning rate</span><br>
+        &nbsp;&nbsp;b := b − α · db / (√S_db + ε)
+      </div>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>dW²</strong> — Element-wise squaring of the gradient. This removes sign information — we only care about magnitude of recent gradients.</div></li>
+    <li><span class="bullet">▸</span><div><strong>S_dW</strong> — EWMA of squared gradients. Large when gradients have been consistently large; small when gradients have been small.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Division by √S_dW</strong> — Large S_dW → small step (slow down). Small S_dW → large step (speed up). This is the adaptive learning rate.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ε (epsilon)</strong> — A tiny constant (e.g. 10⁻⁸) added to the denominator to prevent division by zero when S_dW ≈ 0.</div></li>
+    <li><span class="bullet">▸</span><div><strong>β₂</strong> — Controls how fast the squared gradient history decays. Typical value: 0.999.</div></li>
+    <li><span class="bullet">▸</span><div><strong>α is still a hyperparameter</strong> in RMSProp — it controls the base step size. But it can be set larger than vanilla GD because RMSProp itself controls oscillation.</div></li>
+  </ul>
+
+  <h3>6.3 RMSProp on the Narrow Ravine</h3>
+
+  <div class="diagram">
+    <pre>
+  Narrow Ravine — Gradient behavior:
+
+  Direction b (narrow, oscillating):   db is LARGE each step
+    → S_db is LARGE
+    → α / √S_db is SMALL
+    → Small steps in b direction  →  Less oscillation ✓
+
+  Direction W (long, slow progress):   dW is SMALL each step
+    → S_dW is SMALL
+    → α / √S_dW is LARGE
+    → Large steps in W direction  →  Faster progress ✓
+    </pre>
+    <div class="diagram-caption">Figure 6.1 — How RMSProp adapts step sizes to reduce oscillation and speed up convergence.</div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">RMSProp vs Momentum — Key Difference</div>
+    <p>Momentum smooths the gradient using EWMA of the gradients themselves (addresses noisy direction). RMSProp divides by the EWMA of squared gradients (addresses scale of gradients). They attack the same convergence problem from different angles — which is why combining them (Adam) works so well.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 7 ═══════════════════ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">Section 7</div>
+    <h2>Adam Optimizer — Adaptive Moment Estimation</h2>
+  </div>
+
+  <h3>7.1 What is Adam?</h3>
+  <p>Adam (Kingma &amp; Ba, 2014) is the most widely used optimizer in deep learning today. It combines the best of Momentum and RMSProp: it maintains a smoothed gradient (like Momentum) AND adapts the learning rate per parameter (like RMSProp). It also includes bias correction, making it work well from the very first iteration.</p>
+
+  <div class="callout callout-formula">
+    <div class="callout-title">Adam = Momentum + RMSProp + Bias Correction</div>
+    <p>Momentum tracks the 1st moment (mean) of gradients. RMSProp tracks the 2nd moment (uncentered variance). Adam tracks both, and corrects for initialization bias. Hence the name: Adaptive Moment Estimation.</p>
+  </div>
+
+  <h3>7.2 Adam Algorithm — Complete</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: Adam (Adaptive Moment Estimation)</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: V_dW = 0, V_db = 0   <span class="comment">← 1st moment (momentum)</span><br>
+                    S_dW = 0, S_db = 0   <span class="comment">← 2nd moment (RMSProp)</span><br>
+                    t = 0               <span class="comment">← iteration counter</span><br><br>
+        On each iteration:<br>
+        &nbsp;&nbsp;t = t + 1<br>
+        &nbsp;&nbsp;Compute dW, db  <span class="comment">← via backpropagation</span><br><br>
+        &nbsp;&nbsp;<span class="hl">Step 1: Update 1st moment (momentum)</span><br>
+        &nbsp;&nbsp;V_dW = β₁ · V_dW + (1−β₁) · dW<br>
+        &nbsp;&nbsp;V_db = β₁ · V_db + (1−β₁) · db<br><br>
+        &nbsp;&nbsp;<span class="hl">Step 2: Update 2nd moment (RMSProp)</span><br>
+        &nbsp;&nbsp;S_dW = β₂ · S_dW + (1−β₂) · dW²<br>
+        &nbsp;&nbsp;S_db = β₂ · S_db + (1−β₂) · db²<br><br>
+        &nbsp;&nbsp;<span class="hl">Step 3: Bias correction</span><br>
+        &nbsp;&nbsp;V̂_dW = V_dW / (1 − β₁ᵗ)<br>
+        &nbsp;&nbsp;V̂_db = V_db / (1 − β₁ᵗ)<br>
+        &nbsp;&nbsp;Ŝ_dW = S_dW / (1 − β₂ᵗ)<br>
+        &nbsp;&nbsp;Ŝ_db = S_db / (1 − β₂ᵗ)<br><br>
+        &nbsp;&nbsp;<span class="hl">Step 4: Parameter update</span><br>
+        &nbsp;&nbsp;W := W − α · V̂_dW / (√Ŝ_dW + ε)<br>
+        &nbsp;&nbsp;b := b − α · V̂_db / (√Ŝ_db + ε)
+      </div>
+    </div>
+  </div>
+
+  <h3>7.3 Adam Hyperparameters — Explained</h3>
+
+  <table class="compare-table">
+    <tr><th>Hyperparameter</th><th>Role</th><th>Default Value</th><th>Notes</th></tr>
+    <tr>
+      <td><span class="hp-tag">α</span></td>
+      <td>Learning rate — base step size</td>
+      <td>0.001</td>
+      <td>The main hyperparameter to tune. Typical range: 1e-4 to 1e-2</td>
+    </tr>
+    <tr>
+      <td><span class="hp-tag">β₁</span></td>
+      <td>Decay rate for 1st moment (momentum)</td>
+      <td>0.9</td>
+      <td>Controls how much recent gradient is smoothed. Rarely changed.</td>
+    </tr>
+    <tr>
+      <td><span class="hp-tag">β₂</span></td>
+      <td>Decay rate for 2nd moment (squared gradient)</td>
+      <td>0.999</td>
+      <td>Smooths the squared gradient. Almost never changed in practice.</td>
+    </tr>
+    <tr>
+      <td><span class="hp-tag">ε</span></td>
+      <td>Numerical stability constant</td>
+      <td>10⁻⁸</td>
+      <td>Prevents division by zero. Almost never changed.</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">Practical Note — Adam in Industry</div>
+    <p>In practice, β₁=0.9, β₂=0.999, ε=10⁻⁸ are almost always left at their defaults. The only hyperparameter typically tuned in Adam is α. This is one of Adam's major advantages — it requires very little tuning compared to SGD with Momentum.</p>
+  </div>
+
+  <h3>7.4 Why Bias Correction Matters</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> V_dW and S_dW are initialized to 0. In early iterations, they are biased toward zero — they underestimate the true first and second moments.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Example without correction:</strong> At t=1, β₁=0.9: V_dW = 0.9×0 + 0.1×dW = 0.1×dW. This is 10 times smaller than the actual gradient! The first few steps would be tiny.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Correction:</strong> V̂_dW = V_dW / (1−β₁ᵗ). At t=1: divisor = 1−0.9¹ = 0.1, so V̂_dW = 0.1×dW / 0.1 = dW. Correct! As t→∞, the divisor → 1 and correction has no effect.</div></li>
+  </ul>
+
+  <h3>7.5 Adam's Advantages — Why It Dominates</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Adaptive per-parameter learning rates:</strong> Each weight gets its own effective α — faster for infrequently updated weights, slower for frequently updated ones.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Works well in sparse gradients:</strong> Useful in NLP/embeddings where many parameters see zero gradients most of the time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Robust to noisy gradients:</strong> Both moment estimates smooth out noise.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fast initial convergence:</strong> Bias correction ensures large, correct steps from the very beginning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Works across domains:</strong> Same default hyperparameters work reasonably well for images, NLP, audio, tabular data — almost no tuning needed.</div></li>
+  </ul>
+
+  <h3>7.6 Limitations of Adam</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Generalization gap:</strong> Models trained with Adam sometimes generalize slightly worse than those trained with SGD + Momentum (Wilson et al., 2017). SGD with carefully tuned α finds "flatter" minima that generalize better.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Memory overhead:</strong> Stores V_dW and S_dW for every parameter — doubles or triples memory compared to SGD.</div></li>
+    <li><span class="bullet">▸</span><div><strong>AdamW fix:</strong> Standard Adam does not correctly implement L2 regularization (weight decay). AdamW (Decoupled Weight Decay) fixes this and is the preferred version in modern practice (used in BERT, GPT, Vision Transformers).</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Adam Update Equation (Must Know)</div>
+    <p>The final Adam update step combines both corrected moments:</p>
+    <p style="font-family: 'JetBrains Mono', monospace; font-size: 14px; margin-top: 0.5rem;">W := W − α · V̂_dW / (√Ŝ_dW + ε)</p>
+    <p>Numerator V̂_dW: smoothed gradient direction (from Momentum). Denominator √Ŝ_dW: scale of recent gradients (from RMSProp). Together: take a smooth step, but scale it appropriately per parameter.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 8 ═══════════════════ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">Section 8</div>
+    <h2>Optimizer Comparison</h2>
+  </div>
+
+  <h3>8.1 Full Comparison Table</h3>
+
+  <table class="compare-table">
+    <tr>
+      <th>Optimizer</th>
+      <th>Key Idea</th>
+      <th>Hyperparams</th>
+      <th>Pros</th>
+      <th>Cons</th>
+    </tr>
+    <tr>
+      <td><strong>Vanilla SGD</strong></td>
+      <td>Single fixed α for all params</td>
+      <td>α only</td>
+      <td>Simple, memory-efficient</td>
+      <td>Oscillates, sensitive to α, slow on saddle pts</td>
+    </tr>
+    <tr>
+      <td><strong>SGD + Momentum</strong></td>
+      <td>EWMA of gradients smooths path</td>
+      <td>α, β₁</td>
+      <td>Dampens oscillations, faster convergence, good generalization</td>
+      <td>Still uniform learning rate; need to tune α carefully</td>
+    </tr>
+    <tr>
+      <td><strong>RMSProp</strong></td>
+      <td>Adaptive α per param via 2nd moment</td>
+      <td>α, β₂, ε</td>
+      <td>Handles sparse gradients; good for RNNs</td>
+      <td>No bias correction; less robust than Adam</td>
+    </tr>
+    <tr>
+      <td><strong>Adam</strong></td>
+      <td>Momentum + RMSProp + bias correction</td>
+      <td>α, β₁, β₂, ε</td>
+      <td>Fast, robust, minimal tuning, works across domains</td>
+      <td>Slight generalization gap vs SGD; more memory</td>
+    </tr>
+    <tr>
+      <td><strong>AdamW</strong></td>
+      <td>Adam + correct weight decay</td>
+      <td>α, β₁, β₂, ε, λ</td>
+      <td>Best of Adam + proper regularization</td>
+      <td>Slightly more complex to configure</td>
+    </tr>
+  </table>
+
+  <h3>8.2 Which Optimizer to Use When?</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Default choice</div>
+      <p>Adam (or AdamW). Works out of the box for almost all deep learning tasks. Start here.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Need best generalization</div>
+      <p>SGD + Momentum with learning rate schedule. Takes more tuning but often best test accuracy for image models (CNNs).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">NLP / Transformers</div>
+      <p>AdamW with linear warmup + cosine decay. This is the standard for BERT, GPT, and all modern language models.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">RNNs / LSTMs</div>
+      <p>RMSProp or Adam. Handles the sparse and variable gradient magnitudes common in recurrent networks.</p>
+    </div>
+  </div>
+
+  <div class="diagram">
+    <pre>
+  Convergence Speed Comparison (Conceptual):
+
+  Cost J
+    │
+    │  SGD: ╲                        (slow, oscillating)
+    │        ╲ ↗↘↗↘↗↘↗↘╲___
+    │                           ╲___
+    │
+    │  SGD+Momentum: ╲__________
+    │                            ╲__  (faster, smoother)
+    │
+    │  RMSProp: ╲_______
+    │                   ╲___         (fast, adaptive)
+    │
+    │  Adam: ╲____
+    │              ╲___              (fastest initial, stable)
+    └─────────────────────────────── Iterations
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Conceptual convergence comparison of optimizers (actual results vary by problem).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SECTION 9 ═══════════════════ -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">Section 9</div>
+    <h2>Domain Knowledge in Deep Learning</h2>
+  </div>
+
+  <h3>9.1 What is Domain Knowledge?</h3>
+  <p><strong>Domain knowledge</strong> refers to expert understanding of the specific field or problem area in which a deep learning model is being applied — such as medicine, finance, speech processing, biology, or computer vision. It is the accumulated human expertise about how the data was generated, what patterns are meaningful, what features matter, and what constraints must hold.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Core Idea</div>
+    <p>Deep learning models learn from data. But data alone rarely contains all the information needed to build a great model. Domain knowledge fills the gaps — it guides how we collect data, design architectures, choose features, interpret results, and ensure the model is trustworthy in its deployment context.</p>
+  </div>
+
+  <h3>9.2 Role of Domain Knowledge — Where it Applies</h3>
+
+  <h4>A. Data Collection and Curation</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>What data to collect:</strong> A cardiologist knows which ECG features indicate arrhythmia — guiding which signals to record, at what sampling rate, with what labeling criteria.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Label quality:</strong> Medical labels must come from qualified clinicians. Financial labels must account for look-ahead bias. Domain experts define what the "ground truth" label actually means.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Data imbalance awareness:</strong> In fraud detection, fraudulent transactions are &lt;1% of data. Domain knowledge tells you this class imbalance exists and guides the choice of sampling strategy and evaluation metric.</div></li>
+  </ul>
+
+  <h4>B. Feature Engineering</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Informative features:</strong> A clinician knows that the ratio of two blood markers is more informative than the individual values — a raw model would never discover this with limited data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Feature normalization:</strong> In finance, return normalization removes market regime effects. In biology, log-transforming gene expression data makes it closer to normally distributed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Data augmentation strategy:</strong> In medical imaging, horizontal flipping of a chest X-ray is valid augmentation (left-right symmetric). But flipping up-down is not — anatomy has a clear up/down orientation. Only a domain expert knows which augmentations preserve label validity.</div></li>
+  </ul>
+
+  <h4>C. Architecture Design</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Spatial locality in images:</strong> Knowledge that nearby pixels are correlated → Convolutional Neural Networks (CNNs) with local receptive fields. This architectural prior dramatically improves efficiency.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Temporal sequences:</strong> Knowledge that speech and text are sequential → RNNs, LSTMs, Transformers. A feedforward network would discard temporal ordering.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Symmetry constraints:</strong> In molecular property prediction, a molecule looks the same regardless of how we rotate it in 3D. Domain knowledge of this symmetry → equivariant graph neural networks that respect rotational symmetry.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Multi-scale structure:</strong> Medical images have relevant patterns at multiple scales (whole organ → tissue → cell). Domain knowledge → multi-scale architectures like U-Net.</div></li>
+  </ul>
+
+  <h4>D. Loss Function Design</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Asymmetric costs:</strong> In medical diagnosis, missing a cancer (false negative) is far worse than a false positive. Domain knowledge → use a weighted loss that penalizes false negatives more heavily.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Physics constraints:</strong> In fluid dynamics simulation, the model output must satisfy conservation of mass. Domain knowledge → add a physics-based penalty term to the loss (Physics-Informed Neural Networks).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Metric alignment:</strong> In speech synthesis, standard MSE loss does not align with human perception of audio quality. Domain knowledge → use perceptual loss functions (e.g. PESQ, STOI) that match human hearing.</div></li>
+  </ul>
+
+  <h4>E. Evaluation and Interpretation</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Choosing the right metric:</strong> In cancer screening, accuracy is a terrible metric (99% accuracy by predicting all negative). Domain knowledge → use sensitivity, specificity, AUC-ROC, or F1 score.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Sanity checking predictions:</strong> A model predicting negative patient age, or a financial model predicting returns above 1000% daily, is clearly wrong. Domain knowledge lets you catch nonsensical outputs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Interpretability requirements:</strong> In regulated industries (banking, medicine), knowing the model works is not enough — you must explain why it made a decision. Domain experts define what constitutes a valid explanation.</div></li>
+  </ul>
+
+  <h4>F. Transfer Learning and Pre-training</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Choosing a base model:</strong> Domain knowledge tells you whether ImageNet-pretrained features are relevant for your task. For natural images: highly relevant. For satellite imagery: somewhat relevant. For microscopy slides: less relevant — consider domain-specific pretraining.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Which layers to freeze:</strong> Early layers learn universal features (edges, textures) — these can be frozen. Later layers are task-specific — these should be fine-tuned. Domain knowledge determines how different your task is from the pretraining task.</div></li>
+  </ul>
+
+  <h3>9.3 Domain Knowledge vs Pure Data-Driven Learning</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Pure Data-Driven (No Domain Knowledge)</th><th>Domain Knowledge-Guided</th></tr>
+    <tr>
+      <td><strong>Data needed</strong></td>
+      <td>Very large — model must discover everything from data</td>
+      <td>Less — domain priors reduce the hypothesis space</td>
+    </tr>
+    <tr>
+      <td><strong>Generalization</strong></td>
+      <td>May learn spurious correlations in the training set</td>
+      <td>Better generalization — inductive biases constrain the model to valid solutions</td>
+    </tr>
+    <tr>
+      <td><strong>Architecture</strong></td>
+      <td>Generic (fully connected layers)</td>
+      <td>Task-specific (CNNs, RNNs, GNNs guided by data structure)</td>
+    </tr>
+    <tr>
+      <td><strong>Failure modes</strong></td>
+      <td>Hard to detect — model can be confidently wrong in a physically impossible way</td>
+      <td>More constrained — domain constraints prevent some failure modes</td>
+    </tr>
+    <tr>
+      <td><strong>Interpretability</strong></td>
+      <td>Black box</td>
+      <td>Predictions can be validated against domain understanding</td>
+    </tr>
+  </table>
+
+  <h3>9.4 Importance in Specific Domains</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Healthcare</div>
+      <p>Anatomical knowledge shapes architectures (U-Net for organs). Clinical knowledge defines valid labels and crucial evaluation metrics (sensitivity, specificity).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">NLP</div>
+      <p>Linguistic knowledge (syntax, semantics, coreference) informed early architectures. Pre-training on language modeling reflects the domain prior: language has long-range dependencies.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Finance</div>
+      <p>Market microstructure knowledge guides feature design. Regulatory constraints define what decisions the model is allowed to make. Look-ahead bias must be carefully avoided.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Physics / Science</div>
+      <p>Physical laws (conservation, symmetry) are encoded as constraints. Physics-Informed Neural Networks (PINNs) embed PDEs directly into the loss function.</p>
+    </div>
+  </div>
+
+  <h3>9.5 The Right Balance — Domain Knowledge + Data</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Too little domain knowledge:</strong> The model must learn everything from scratch. Requires enormous data and compute. May learn wrong patterns. Hard to debug.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Too much domain knowledge (over-constrained):</strong> The model cannot capture patterns that violate our assumptions. Misses genuinely novel discoveries in the data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Right balance:</strong> Use domain knowledge to define the search space and architecture, but let the data fit the parameters within that space. This is the philosophy behind CNNs, RNNs, GNNs, and Transformers — they encode structural priors but learn their weights from data.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why Domain Knowledge Matters in Deep Learning</div>
+    <p>1. <strong>Inductive bias:</strong> Domain knowledge encodes assumptions about the data structure that make learning more efficient. CNNs assume spatial locality. RNNs assume temporal structure. These biases allow learning from less data.</p>
+    <p>2. <strong>Data efficiency:</strong> With domain-guided feature engineering, a smaller model can outperform a larger purely data-driven model on limited data.</p>
+    <p>3. <strong>Trustworthiness:</strong> In high-stakes applications (medicine, law, safety), a model that incorporates domain knowledge can be more easily validated, audited, and trusted by practitioners.</p>
+    <p>4. <strong>Problem formulation:</strong> Choosing the right input, output, loss function, and evaluation metric is impossible without domain understanding. Getting this wrong means even a perfect optimizer cannot save the model.</p>
+  </div>
+
+  <!-- FINAL SUMMARY BOX -->
+  <div class="summary-box">
+    <h4>Module 2 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Hyperparameters</strong> are set before training. Parameters are learned during training. Hyperparameters include α, number of layers, batch size, epochs, regularization.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Learning rate α</strong> is the most important hyperparameter. Tune it first, on a log scale. Use learning rate schedules for better convergence.</div></li>
+      <li><span class="bullet">3.</span><div><strong>Tuning strategies</strong>: Random search is better than grid search for deep learning. Coarse-to-fine and Bayesian optimization are used in practice. Always tune on the dev set, not the test set.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Vanilla GD problems</strong>: oscillation in ravines, uniform α for all params, noisy gradients, saddle points. These motivated Momentum, RMSProp, and Adam.</div></li>
+      <li><span class="bullet">5.</span><div><strong>Momentum</strong>: Uses EWMA of gradients (β₁=0.9) to smooth the update path and accelerate learning in consistent directions.</div></li>
+      <li><span class="bullet">6.</span><div><strong>RMSProp</strong>: Divides each gradient by √(EWMA of squared gradients) to adapt step size per parameter. Large gradient history → smaller step.</div></li>
+      <li><span class="bullet">7.</span><div><strong>Adam</strong> = Momentum + RMSProp + Bias Correction. Default optimizer in deep learning. Only α needs tuning. Update: W := W − α · V̂_dW / (√Ŝ_dW + ε).</div></li>
+      <li><span class="bullet">8.</span><div><strong>Domain knowledge</strong> guides data collection, feature engineering, architecture design, loss function choice, and evaluation. It encodes inductive biases that improve data efficiency, generalization, and trustworthiness.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Neural Networks — Module 2</span>
+  <span>Hyperparameters · Momentum · RMSProp · Adam · Domain Knowledge</span>
+</div>
+
+</body>
+</html>

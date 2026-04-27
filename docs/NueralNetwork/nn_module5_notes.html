@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks – Module 5 Notes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f9faf7;
+    --surface: #ffffff;
+    --surface2: #f2f4ef;
+    --border: #dde2d8;
+    --border2: #c8d0c0;
+    --text: #161a14;
+    --text2: #424840;
+    --text3: #6e7868;
+    --accent: #1e5fa8;
+    --accent-bg: #edf3fc;
+    --accent-border: #b8d0ef;
+    --green: #1a6b3c;
+    --green-bg: #edf7f2;
+    --green-border: #a8d9bc;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5c5c;
+    --teal-bg: #eaf6f6;
+    --teal-border: #8fd4d4;
+    --olive: #3a4a1a;
+    --olive-bg: #f2f5e8;
+    --olive-border: #b8c890;
+    --slate: #1a2a4a;
+    --slate-bg: #edf0f8;
+    --slate-border: #a8b8d8;
+    --code-bg: #eeecea;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: #0d1f0d;
+    color: #f0f5ec;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6aaf6a; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2;
+    color: #f0f5ec; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: #5a7a5a; margin-top: 1rem;
+  }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem;
+    font-family: 'Inter', sans-serif; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .part-cv     { background: #1a4a8c; }
+  .part-nlp    { background: #1a5c3a; }
+  .part-wind   { background: #4a3a0a; }
+  .part-res    { background: #3a1a5c; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .cv-h   { border-left: 4px solid #1a4a8c; }
+  .nlp-h  { border-left: 4px solid #1a5c3a; }
+  .wind-h { border-left: 4px solid #4a3a0a; }
+  .res-h  { border-left: 4px solid #3a1a5c; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key  { background: var(--accent-bg);  border-color: var(--accent);  }
+  .callout-key .callout-title  { color: var(--accent);  }
+  .callout-key p  { color: #2a4a7a; }
+
+  .callout-tip  { background: var(--green-bg);  border-color: var(--green);  }
+  .callout-tip .callout-title  { color: var(--green);  }
+  .callout-tip p  { color: #14502c; }
+
+  .callout-warn { background: var(--amber-bg); border-color: var(--amber); }
+  .callout-warn .callout-title { color: var(--amber); }
+  .callout-warn p { color: #5a3800; }
+
+  .callout-exam { background: var(--red-bg);   border-color: var(--red);   }
+  .callout-exam .callout-title { color: var(--red);   }
+  .callout-exam p { color: #6a1010; }
+
+  .callout-formula { background: var(--purple-bg); border-color: var(--purple); }
+  .callout-formula .callout-title { color: var(--purple); }
+  .callout-formula p { color: #3a2460; }
+
+  .callout-teal { background: var(--teal-bg);  border-color: var(--teal);  }
+  .callout-teal .callout-title { color: var(--teal);  }
+  .callout-teal p { color: #084040; }
+
+  .callout-olive { background: var(--olive-bg); border-color: var(--olive); }
+  .callout-olive .callout-title { color: var(--olive); }
+  .callout-olive p { color: #283410; }
+
+  .callout-slate { background: var(--slate-bg); border-color: var(--slate); }
+  .callout-slate .callout-title { color: var(--slate); }
+  .callout-slate p { color: #101828; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green);  font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── RESEARCH CARD ── */
+  .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 1.5rem 0; }
+  .res-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; }
+  .res-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 12px 0 0 12px; }
+  .res-card.rc-blue::before  { background: #1a4a8c; }
+  .res-card.rc-green::before { background: #1a6b3c; }
+  .res-card.rc-purple::before{ background: #4a2d8c; }
+  .res-card.rc-amber::before { background: #7a4d00; }
+  .res-card.rc-teal::before  { background: #0a5c5c; }
+  .res-card.rc-red::before   { background: #8b1a1a; }
+  .res-card.rc-olive::before { background: #3a4a1a; }
+  .res-card.rc-slate::before { background: #1a2a4a; }
+  .res-card .res-tag { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.4rem; }
+  .res-card .res-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+  .res-card p { font-size: 14px; line-height: 1.65; margin-bottom: 0.5rem; }
+  .res-card p:last-child { margin-bottom: 0; }
+  .res-card .res-examples { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.75rem; }
+
+  /* ── PIPELINE BOX ── */
+  .pipeline { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; }
+  .pipeline-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .pipeline-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .pipeline-step { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.75rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text2); white-space: nowrap; }
+  .pipeline-arrow { color: var(--text3); font-size: 16px; font-weight: 600; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; color: var(--text); margin-bottom: 1rem; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #0d1f0d; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+    .pipeline-steps { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Neural Networks &amp; Deep Learning — Final Module</div>
+  <h1><span>Module 5:</span> Applications &amp; Research Directions</h1>
+  <div class="subtitle">Computer Vision · Natural Language Processing · Wind Estimation · Research Frontiers in Deep Learning</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Deep Learning in Computer Vision</a>
+    <a href="#s2"><span class="num">2.</span> Object Detection</a>
+    <a href="#s3"><span class="num">3.</span> Image Segmentation</a>
+    <a href="#s4"><span class="num">4.</span> Other CV Applications</a>
+    <a href="#s5"><span class="num">5.</span> Deep Learning in NLP</a>
+    <a href="#s6"><span class="num">6.</span> Word Embeddings</a>
+    <a href="#s7"><span class="num">7.</span> Transformers &amp; Attention in NLP</a>
+    <a href="#s8"><span class="num">8.</span> NLP Applications</a>
+    <a href="#s9"><span class="num">9.</span> Wind Estimation with Deep Learning</a>
+    <a href="#s10"><span class="num">10.</span> Research Directions — Overview</a>
+    <a href="#s11"><span class="num">11.</span> Explainability &amp; Fairness</a>
+    <a href="#s12"><span class="num">12.</span> Efficient &amp; Federated Learning</a>
+    <a href="#s13"><span class="num">13.</span> Self-Supervised &amp; Foundation Models</a>
+    <a href="#s14"><span class="num">14.</span> Multimodal, Physics &amp; Neuro-AI</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: COMPUTER VISION ████████████ -->
+<div class="part-banner part-cv">Part 1 — Applications to Computer Vision</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header cv-h">
+    <div class="section-num">Section 1</div>
+    <h2>Deep Learning in Computer Vision — Landscape</h2>
+  </div>
+
+  <h3>1.1 Why Deep Learning Transformed Computer Vision</h3>
+  <p>Before deep learning, computer vision relied on hand-crafted features: SIFT, HOG, SURF, Gabor filters. Engineers spent years designing features that might capture edges, corners, and textures. Deep learning replaced all of this with <strong>learned features</strong> — the network discovers which features are useful directly from data.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>2012 turning point:</strong> AlexNet's 15.3% ImageNet top-5 error (vs ~26% for hand-crafted methods) demonstrated that CNNs could exceed human-engineered features by a massive margin. Every year since, deep models have improved further.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Feature hierarchy:</strong> Deep CNNs automatically learn a hierarchy — edges → textures → parts → objects — that mirrors how neuroscientists believe the human visual cortex processes information (V1 → V2 → V4 → IT cortex).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transfer learning revolution:</strong> A CNN trained on ImageNet (1.2M images, 1000 classes) learns general visual features reusable across almost any vision task. Fine-tune the last few layers on your specific data — even with just hundreds of examples — and achieve strong performance.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Scale:</strong> Modern vision models (ViT-22B, Florence) are trained on billions of image-text pairs and show emergent capabilities not present in smaller models.</div></li>
+  </ul>
+
+  <h3>1.2 Computer Vision Task Hierarchy</h3>
+
+  <div class="diagram">
+    <pre>
+  TASK                 OUTPUT               MODEL EXAMPLES        DIFFICULTY
+  ─────────────────────────────────────────────────────────────────────────
+  Classification       1 label / image      ResNet, ViT           ★★☆☆☆
+  Classification +     1 label + 1 box      YOLO (simple mode)    ★★★☆☆
+    Localization
+  Object Detection     N labels + N boxes   YOLO, Faster R-CNN    ★★★★☆
+  Semantic Segmtn      Class per pixel      FCN, DeepLab          ★★★★☆
+  Instance Segmtn      Class + mask/object  Mask R-CNN            ★★★★★
+  Panoptic Segmtn      Instance + stuff     Panoptic FPN          ★★★★★
+  Pose Estimation      Keypoints on body    OpenPose, HRNet       ★★★★☆
+  Depth Estimation     Depth map / image    Monodepth2, DPT       ★★★★☆
+  3D Reconstruction    3D point cloud/mesh  NeRF, MVSNet          ★★★★★
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — Computer vision task hierarchy from simple classification to complex 3D reconstruction.</div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header cv-h">
+    <div class="section-num">Section 2</div>
+    <h2>Object Detection — Architecture and Methods</h2>
+  </div>
+
+  <h3>2.1 The Object Detection Problem</h3>
+  <p>Object detection requires answering two questions simultaneously for every object in the image: <strong>What is it?</strong> (classification) and <strong>Where is it?</strong> (localization via bounding box). Unlike classification, detection must handle a variable number of objects at varying scales and positions.</p>
+
+  <h3>2.2 Two-Stage Detectors — R-CNN Family</h3>
+
+  <div class="pipeline">
+    <div class="pipeline-title">R-CNN Pipeline (original)</div>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">Input Image</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Selective Search (~2000 region proposals)</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Warp each region to fixed size</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">CNN feature extraction (per region)</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">SVM classifier + Bounding box regressor</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Detections</div>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>R-CNN (2014):</strong> First deep learning detector. Extracts ~2000 region proposals with Selective Search, warps each to fixed size, runs CNN on each separately. Very slow: 47 seconds per image at test time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fast R-CNN (2015):</strong> Key improvement: run CNN on the entire image ONCE to get a shared feature map. Then project each region proposal onto the feature map and use RoI (Region of Interest) Pooling to extract fixed-size features per region. 9× faster than R-CNN.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Faster R-CNN (2015):</strong> Eliminates external Selective Search entirely. Adds a Region Proposal Network (RPN) — a small CNN that slides over the feature map and proposes candidate object regions (using anchor boxes of multiple scales and aspect ratios). End-to-end trainable. 140ms per image.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Anchor boxes:</strong> Pre-defined bounding boxes of various scales (small, medium, large) and aspect ratios (1:1, 1:2, 2:1) centered at each position in the feature map. The RPN predicts offsets from these anchors rather than absolute coordinates.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Mask R-CNN (2017):</strong> Extends Faster R-CNN by adding a mask prediction branch — for each detected object, predicts a pixel-wise binary mask. Enables instance segmentation (separate mask per object instance). RoIAlign (instead of RoIPool) improves spatial alignment.</div></li>
+  </ul>
+
+  <h3>2.3 One-Stage Detectors — YOLO Family</h3>
+  <p>Two-stage detectors are accurate but slow. One-stage detectors predict bounding boxes and class probabilities in a single forward pass — making them suitable for real-time applications.</p>
+
+  <div class="diagram">
+    <pre>
+  YOLO (You Only Look Once) Core Idea:
+
+  1. Divide image into S×S grid (e.g. 13×13)
+  2. Each grid cell predicts:
+     - B bounding boxes (with x, y, w, h, confidence)
+     - C class probabilities
+  3. Final detections = boxes × class probs, filtered by NMS
+
+  Input (416×416)
+       │
+       ▼
+  [Backbone CNN: DarkNet/CSPNet]  ←  feature extraction
+       │
+  [Neck: FPN / PANet]             ←  multi-scale feature fusion
+       │
+  [Detection Head]                ←  predict boxes at 3 scales
+  ┌──────────┬──────────┬──────────┐
+  │ 52×52    │ 26×26    │ 13×13   │  ← small, medium, large objects
+  └──────────┴──────────┴──────────┘
+  Post-processing: Non-Maximum Suppression (NMS) removes duplicate boxes
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — YOLO architecture. Single forward pass, multi-scale detection heads.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>YOLOv1 (2015):</strong> First version. Treats detection as regression — directly predicts bounding boxes and class probabilities from the full image in one shot. Struggled with small objects and clusters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>YOLOv3 (2018):</strong> Introduced multi-scale detection (3 scales at 3 different feature map resolutions). Much better at small objects. Still the most widely deployed version in industry.</div></li>
+    <li><span class="bullet">▸</span><div><strong>YOLOv8/v9 (2023–24):</strong> State-of-the-art speed-accuracy tradeoff. Anchor-free, decoupled head, task-aligned assignment. Runs in real-time on edge devices.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-Maximum Suppression (NMS):</strong> Post-processing step. Multiple boxes may predict the same object. NMS keeps the highest-confidence box and suppresses overlapping boxes with IoU above a threshold. Essential for clean detections.</div></li>
+    <li><span class="bullet">▸</span><div><strong>IoU (Intersection over Union):</strong> Metric for bounding box overlap. IoU = Area(intersection) / Area(union). A predicted box with IoU > 0.5 with the ground truth box is typically considered a correct detection.</div></li>
+  </ul>
+
+  <h3>2.4 Detection Metrics — mAP</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Precision:</strong> Of all predicted detections, what fraction is correct? Precision = TP / (TP + FP).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Recall:</strong> Of all actual objects, what fraction did we detect? Recall = TP / (TP + FN).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Average Precision (AP):</strong> Area under the Precision-Recall curve for one class. Computed by sweeping the confidence threshold and plotting precision vs recall.</div></li>
+    <li><span class="bullet">▸</span><div><strong>mAP (mean AP):</strong> Mean of AP values across all C classes. The standard metric for comparing detectors on benchmarks like COCO and PASCAL VOC. Higher is better.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Two-Stage vs One-Stage Detectors</div>
+    <p><strong>Two-stage (Faster R-CNN, Mask R-CNN):</strong> Stage 1 generates region proposals; Stage 2 classifies and refines them. Higher accuracy, especially for small objects. Slower (~5–10 FPS).</p>
+    <p><strong>One-stage (YOLO, SSD):</strong> Single pass predicts all boxes. Faster (real-time, 30–100+ FPS). Slightly lower accuracy on dense small objects. Used in autonomous driving, surveillance, robotics.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header cv-h">
+    <div class="section-num">Section 3</div>
+    <h2>Image Segmentation — Semantic, Instance, Panoptic</h2>
+  </div>
+
+  <h3>3.1 Semantic Segmentation</h3>
+  <p>Assign a class label to every single pixel in the image. Unlike detection (bounding boxes), segmentation provides exact object boundaries. All instances of the same class get the same label (cannot distinguish individual cars, only "car" vs "not car").</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Fully Convolutional Network (FCN):</strong> First deep learning segmentation model. Replaced FC layers with 1×1 Conv layers (making the classifier spatially aware). Added skip connections from earlier layers to recover spatial details lost during downsampling. Output: dense prediction of same H×W as input.</div></li>
+    <li><span class="bullet">▸</span><div><strong>U-Net (2015):</strong> Encoder-decoder with symmetric skip connections between corresponding encoder and decoder layers. Encoder captures context; decoder enables precise localization. Skip connections preserve fine-grained spatial detail. Dominant in medical image segmentation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DeepLab series:</strong> Uses Atrous (dilated) Convolutions — inserts holes (zeros) into the filter, expanding the receptive field without increasing parameters or reducing resolution. ASPP (Atrous Spatial Pyramid Pooling) captures context at multiple scales using different dilation rates in parallel.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dilated Conv receptive field:</strong> With dilation rate d, a 3×3 filter covers a (2d+1)×(2d+1) area. With d=6: covers 13×13. With d=12: covers 25×25. All without more parameters.</div></li>
+  </ul>
+
+  <h3>3.2 Instance Segmentation</h3>
+  <p>Goes further than semantic segmentation — distinguishes individual object instances (Car #1 gets mask A, Car #2 gets mask B, even though both are "car"). Combines detection and segmentation.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Mask R-CNN:</strong> Extends Faster R-CNN with a mask head — for each detected bounding box, predicts a 28×28 binary mask independently for each class. Three parallel outputs: class score + box offset + instance mask.</div></li>
+    <li><span class="bullet">▸</span><div><strong>RoIAlign:</strong> The key fix in Mask R-CNN over Faster R-CNN's RoIPool. RoIPool uses quantization (rounding) which misaligns features with spatial positions. RoIAlign uses bilinear interpolation to extract features at exact float coordinates — critical for pixel-accurate masks.</div></li>
+  </ul>
+
+  <h3>3.3 Medical Image Segmentation (Major Application)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>U-Net dominance:</strong> U-Net has become the standard backbone for virtually all medical image segmentation tasks: brain tumor (BraTS), organ segmentation (multi-organ challenge), cell segmentation (microscopy), retinal vessel segmentation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Challenges specific to medical imaging:</strong> Limited labeled data (expert annotation is expensive and time-consuming). Class imbalance (tumor pixels are tiny fraction of CT volume). 3D volumetric data (CT, MRI) requires 3D U-Net. Varying imaging protocols across hospitals.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dice Loss:</strong> Cross-entropy loss performs poorly with extreme class imbalance (e.g., tumor vs. background). Dice Loss directly optimizes the Dice coefficient (2|A∩B| / (|A|+|B|)) — a direct measure of segmentation overlap. Standard for medical segmentation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SAM (Segment Anything Model, Meta 2023):</strong> Foundation model for segmentation. Trained on 1 billion masks. Given any prompt (point, box, or text), segments any object in any image zero-shot. Transformative for medical imaging, satellite analysis, robotics.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header cv-h">
+    <div class="section-num">Section 4</div>
+    <h2>Other Major Computer Vision Applications</h2>
+  </div>
+
+  <h3>4.1 Image Captioning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Task:</strong> Generate a natural language description of an image automatically.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> CNN encoder (e.g. ResNet or ViT) extracts image features → fed as initial hidden state or context to an LSTM/Transformer decoder → decoder generates the caption word by word.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Attention mechanism:</strong> The decoder attends to different spatial regions of the image at each word generation step. "Fluffy" attends to the texture; "dog" attends to the animal region. Makes captions more accurate and provides visual explanations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Accessibility (image descriptions for visually impaired), social media auto-captioning, content-based image retrieval, visual question answering.</div></li>
+  </ul>
+
+  <h3>4.2 Face Recognition and Verification</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Two tasks:</strong> Verification (are these two images the same person? 1:1 comparison) vs Recognition (who is this person? 1:N search in a database).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Deep face embedding:</strong> A CNN maps each face image to a compact embedding vector (128–512 dimensional). Faces of the same person should be nearby in embedding space; different people should be far apart.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Siamese Networks:</strong> Two identical CNNs (shared weights) process two face images and produce embeddings. A contrastive loss or cosine similarity measures distance between embeddings. Used for verification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Triplet Loss:</strong> Trained with triplets (anchor, positive, negative). Loss = max(0, d(anchor, positive) − d(anchor, negative) + margin). Forces the anchor to be closer to the same-person positive than to the different-person negative by at least a margin.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Phone unlock (Face ID), airport boarding, law enforcement, access control. Ethical concerns: surveillance, bias across demographics.</div></li>
+  </ul>
+
+  <h3>4.3 Autonomous Driving Perception</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Sensor fusion:</strong> Autonomous vehicles use multiple sensor modalities: Camera (RGB), LiDAR (3D point cloud), RADAR (velocity), HD maps. Deep learning fuses these inputs for robust 3D perception.</div></li>
+    <li><span class="bullet">▸</span><div><strong>3D Object Detection:</strong> Detect pedestrians, vehicles, cyclists in 3D space (not just 2D bounding boxes). PointNet / PointPillar processes raw LiDAR point clouds.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Lane detection:</strong> CNN-based segmentation models identify lane markings. Used for lane-keeping assist and highway autopilot.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Optical flow:</strong> CNN predicts pixel-level motion between consecutive video frames. Used for understanding scene dynamics, predicting future states.</div></li>
+  </ul>
+
+  <h3>4.4 Medical Imaging Applications</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Radiology / Pathology</div>
+      <p>CNN detects pneumonia in chest X-rays (CheXNet). Classifies diabetic retinopathy from retinal fundus images. Detects cancer from histopathology slides (whole-slide images).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Dermatology</div>
+      <p>Classify skin lesions (benign vs malignant melanoma) from dermoscopy images. Stanford's DermNet CNN matched board-certified dermatologist performance.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Radiology AI</div>
+      <p>Auto-detect COVID-19 from CT scans. Measure organ volumes from MRI. Detect vertebral fractures, pulmonary nodules. Reduces radiologist workload.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Drug Discovery</div>
+      <p>CNN analyzes microscopy images of cells after drug treatment. Identifies drug candidates based on cell morphology changes. High-throughput screening at scale.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ████████████ PART 2: NLP ████████████ -->
+<div class="part-banner part-nlp">Part 2 — Applications to Natural Language Processing</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header nlp-h">
+    <div class="section-num">Section 5</div>
+    <h2>Deep Learning in NLP — The Revolution</h2>
+  </div>
+
+  <h3>5.1 Why Deep Learning Transformed NLP</h3>
+  <p>Before deep learning, NLP relied on hand-engineered features (n-gram counts, TF-IDF), sparse representations (bag of words), and shallow models (Naive Bayes, SVM, logistic regression). These methods could not capture semantics, long-range dependencies, or the ambiguity of natural language.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Distributed representations:</strong> Deep learning represents words as dense, low-dimensional vectors (embeddings) where semantically similar words are nearby. "King" and "Queen" are close; "King" and "Carrot" are far. This captures meaning that sparse BOW cannot.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Context sensitivity:</strong> The word "bank" means different things in "river bank" and "bank account." Deep models (especially Transformers) produce context-dependent representations — the embedding of "bank" changes based on surrounding words.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Long-range dependencies:</strong> In "The cat, which sat on the mat that was in the living room of the old house, was hungry", "cat" and "was hungry" are connected across 20 words. RNNs struggle; Transformers handle this naturally via self-attention.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pre-training paradigm:</strong> Train on massive unlabeled text (self-supervised) → fine-tune on small labeled datasets. GPT-3 was trained on 500B tokens; GPT-4 on trillions. This massively reduces data requirements for downstream tasks.</div></li>
+  </ul>
+
+  <h3>5.2 NLP Task Categories</h3>
+
+  <table class="compare-table">
+    <tr><th>Category</th><th>Task</th><th>Example</th><th>Output</th></tr>
+    <tr>
+      <td><strong>Text Classification</strong></td>
+      <td>Sentiment analysis, topic classification, spam detection</td>
+      <td>"This movie was great!" → Positive</td>
+      <td>Class label</td>
+    </tr>
+    <tr>
+      <td><strong>Sequence Labeling</strong></td>
+      <td>Named Entity Recognition (NER), POS tagging</td>
+      <td>"Barack Obama visited Paris" → [PER, PER, O, LOC]</td>
+      <td>Label per token</td>
+    </tr>
+    <tr>
+      <td><strong>Seq-to-Seq</strong></td>
+      <td>Machine translation, summarization, Q&amp;A</td>
+      <td>English → French</td>
+      <td>Sequence</td>
+    </tr>
+    <tr>
+      <td><strong>Language Modeling</strong></td>
+      <td>Next word prediction, text generation</td>
+      <td>"The quick brown fox ___" → "jumps"</td>
+      <td>Next token probability</td>
+    </tr>
+    <tr>
+      <td><strong>Natural Language Inference</strong></td>
+      <td>Entailment, contradiction, neutrality</td>
+      <td>Premise + Hypothesis → Entails/Contradicts/Neutral</td>
+      <td>3-class label</td>
+    </tr>
+    <tr>
+      <td><strong>Question Answering</strong></td>
+      <td>Extractive QA, generative QA, visual QA</td>
+      <td>Context + Question → Answer span</td>
+      <td>Text span / generated text</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header nlp-h">
+    <div class="section-num">Section 6</div>
+    <h2>Word Embeddings — Representing Language</h2>
+  </div>
+
+  <h3>6.1 One-Hot Encoding (Baseline)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Representation:</strong> Vocabulary of V words → each word is a V-dimensional vector with a single 1 and V-1 zeros.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Problems:</strong> High dimensionality (V can be 100,000+). No notion of similarity — cosine distance between any two distinct words is 1.0. "Cat" and "Kitten" are as similar as "Cat" and "Submarine."</div></li>
+  </ul>
+
+  <h3>6.2 Word2Vec (Mikolov et al., 2013)</h3>
+  <p>Train a shallow neural network to predict either (a) the context from the word, or (b) the word from its context. The hidden layer weights become the word embeddings.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>CBOW (Continuous Bag of Words):</strong> Given surrounding context words, predict the center word. Input: context word embeddings → average → predict center word via softmax. Fast to train, works well for frequent words.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Skip-gram:</strong> Given one center word, predict surrounding context words. Input: center word → predict each context word. Slower but better for rare words and analogies.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Semantic arithmetic:</strong> Learned embeddings capture semantic relationships: vec("King") − vec("Man") + vec("Woman") ≈ vec("Queen"). vec("Paris") − vec("France") + vec("Italy") ≈ vec("Rome"). Remarkable emergent property.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Limitation:</strong> Context-independent — "bank" always has the same embedding regardless of context. Pre-trained embeddings are static.</div></li>
+  </ul>
+
+  <h3>6.3 GloVe (Global Vectors for Word Representation)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Word2Vec uses local context windows. GloVe uses global word-word co-occurrence statistics across the entire corpus. Trains embeddings to satisfy: wᵢᵀ·w̃ⱼ + bᵢ + b̃ⱼ = log Xᵢⱼ, where Xᵢⱼ is the co-occurrence count.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Advantage:</strong> Combines the strengths of global matrix factorization (LSA) and local context window methods (Word2Vec). Often produces better analogical reasoning.</div></li>
+  </ul>
+
+  <h3>6.4 Contextualized Embeddings — ELMo</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with Word2Vec/GloVe:</strong> Same embedding for "play" whether it's "play guitar" or "a play at the theatre." Language is deeply context-dependent.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ELMo (Embeddings from Language Models):</strong> Uses a bidirectional LSTM language model. The embedding for each word is derived from all internal LSTM states of the entire sentence — different contexts give different embeddings. "Bank" has a different representation in each sentence.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Significance:</strong> ELMo demonstrated the power of contextual representations, which was then taken much further by BERT and GPT using Transformers.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header nlp-h">
+    <div class="section-num">Section 7</div>
+    <h2>Transformers and Attention in NLP</h2>
+  </div>
+
+  <h3>7.1 The Transformer Architecture</h3>
+  <p>The Transformer (Vaswani et al., "Attention Is All You Need," 2017) replaced RNNs in NLP entirely for most tasks. It processes sequences in parallel (not sequentially) using Self-Attention mechanisms.</p>
+
+  <div class="diagram">
+    <pre>
+  TRANSFORMER ENCODER BLOCK:
+
+  Input tokens: [x₁, x₂, ..., xₙ]
+       │
+  [Token Embedding + Positional Encoding]
+       │
+  ┌────────────────────────────────────┐
+  │  Multi-Head Self-Attention          │  ← attends to ALL other tokens
+  │  Add &amp; Norm (Residual connection)  │
+  │  Feed-Forward Network (per token)  │  ← independent dense layers
+  │  Add &amp; Norm                        │
+  └────────────────────────────────────┘  ← stack N times (e.g. 12 layers)
+       │
+  [CLS] representation → Classification head
+  All token representations → Sequence tasks (NER, QA)
+    </pre>
+    <div class="diagram-caption">Figure 7.1 — Transformer Encoder block. Self-attention + FFN + residual connections, stacked N times.</div>
+  </div>
+
+  <h3>7.2 Self-Attention — The Core Mechanism</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Scaled Dot-Product Self-Attention</div>
+    <div class="formula">
+      For each token, compute Query (Q), Key (K), Value (V):<br>
+      Q = X · Wq,   K = X · Wk,   V = X · Wv    <span class="comment">← learned projections</span><br><br>
+      Attention(Q, K, V) = softmax( Q·Kᵀ / √dₖ ) · V<br><br>
+      Q·Kᵀ: (n×dₖ) · (dₖ×n) = (n×n)   <span class="comment">← attention score matrix</span><br>
+      / √dₖ: scale to prevent softmax saturation<br>
+      softmax: normalize scores to probabilities → how much to attend to each token<br>
+      ×V: weighted sum of value vectors → new contextual representation
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Query-Key-Value intuition:</strong> Q = "what am I looking for?", K = "what do I contain?", V = "what information will I contribute?". Attention score between tokens i and j = how much Q of token i matches K of token j.</div></li>
+    <li><span class="bullet">▸</span><div><strong>O(n²) attention:</strong> Every token attends to every other token. Attention score matrix is n×n. For a sentence of 512 tokens: 512² = 262,144 scores computed. This is the main computational bottleneck for long sequences.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Multi-Head Attention:</strong> Run h parallel attention heads with different Wq, Wk, Wv projections. Each head learns to attend to different aspects (syntax, semantics, coreference). Concatenate all heads, project back to model dimension.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Positional Encoding:</strong> Unlike RNNs, Transformers have no inherent notion of sequence order. Positional encodings (sinusoidal or learned) are added to token embeddings to provide position information.</div></li>
+  </ul>
+
+  <h3>7.3 BERT — Bidirectional Encoder</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> 12 Transformer encoder blocks (BERT-base) or 24 (BERT-large). Processes the entire sequence bidirectionally — each token attends to ALL other tokens in both directions simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pre-training tasks:</strong> (1) Masked Language Modeling (MLM): randomly mask 15% of tokens, predict them from context. (2) Next Sentence Prediction (NSP): predict whether two sentences are consecutive. Trained on 3.3B words (BooksCorpus + Wikipedia).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fine-tuning:</strong> Add a task-specific head (classification, NER, QA span predictor) on top of BERT and fine-tune all weights on labeled task data. BERT set new state-of-the-art on 11 NLP benchmarks simultaneously on release.</div></li>
+    <li><span class="bullet">▸</span><div><strong>[CLS] token:</strong> A special token prepended to every input. Its final representation serves as the aggregate sequence representation for classification tasks.</div></li>
+  </ul>
+
+  <h3>7.4 GPT Family — Autoregressive Decoder</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Transformer decoder blocks. Uses causal (masked) self-attention — each token only attends to previous tokens (left-to-right). Pre-trained on next-word prediction (autoregressive language modeling).</div></li>
+    <li><span class="bullet">▸</span><div><strong>GPT-3 (2020):</strong> 175 billion parameters. Demonstrated few-shot and zero-shot learning — given a few examples in the prompt, it can perform new tasks without any gradient updates (in-context learning).</div></li>
+    <li><span class="bullet">▸</span><div><strong>ChatGPT / GPT-4:</strong> GPT + Reinforcement Learning from Human Feedback (RLHF). Human raters rank model outputs; a reward model is trained on these rankings; GPT is fine-tuned with PPO to maximize reward. Makes the model helpful, harmless, and honest.</div></li>
+    <li><span class="bullet">▸</span><div><strong>BERT vs GPT:</strong> BERT: bidirectional, best for understanding tasks (classification, NER, QA). GPT: unidirectional, best for generation tasks (text generation, dialogue, code). Modern LLMs (GPT-4, Claude, Gemini) are GPT-style but with many improvements.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header nlp-h">
+    <div class="section-num">Section 8</div>
+    <h2>NLP Applications — In Depth</h2>
+  </div>
+
+  <h3>8.1 Machine Translation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Evolution:</strong> Rule-based → Statistical MT (phrase tables) → Neural MT (Seq2Seq + Attention) → Transformer MT. Each step dramatically improved fluency and accuracy.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transformer MT:</strong> Encoder processes source sentence; decoder generates target sentence autoregressively. Attention between encoder and decoder (cross-attention) aligns source and target positions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>BLEU score:</strong> Bilingual Evaluation Understudy. Measures n-gram overlap between generated translation and reference translations. Standard evaluation metric. Higher is better (0–100 scale).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Real-world deployment:</strong> Google Translate (100+ languages), DeepL, AWS Translate all use Transformer-based neural MT. Google processes billions of translation requests daily.</div></li>
+  </ul>
+
+  <h3>8.2 Sentiment Analysis</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Task:</strong> Determine opinion polarity (positive/negative/neutral) or fine-grained sentiment from text.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architectures used:</strong> Early: LSTM/BiLSTM → Transformer (BERT fine-tuned on SST, IMDB). BERT achieves 95%+ accuracy on standard benchmarks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Aspect-based SA:</strong> Determine sentiment toward specific aspects: "The food was great but the service was terrible." → food: positive, service: negative.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Brand monitoring, customer feedback analysis, political opinion tracking, financial market sentiment.</div></li>
+  </ul>
+
+  <h3>8.3 Question Answering (QA)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Extractive QA:</strong> Given a document and question, identify the exact span of text in the document that answers the question. BERT fine-tuned on SQuAD dataset — predicts start and end token positions of the answer span.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Open-domain QA:</strong> No document given — the model must retrieve relevant documents first, then extract/generate the answer. Retrieval-Augmented Generation (RAG) — neural retriever finds relevant passages; generator produces answer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Generative QA:</strong> Generate a free-form answer (not just extract a span). GPT-style models excel here. Evaluated by human judges or LLM-as-judge on criteria like correctness, fluency, faithfulness.</div></li>
+  </ul>
+
+  <h3>8.4 Text Summarization</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Extractive:</strong> Select the most important sentences from the source text. No generation — just selection. BertSum: BERT encodes the document, a classifier selects sentences.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Abstractive:</strong> Generate a new, shorter text that captures the main points — may use words not in the original. Seq2Seq Transformer (BART, T5). Can produce more fluent summaries than extractive.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ROUGE metric:</strong> Recall-Oriented Understudy for Gisting Evaluation. Measures n-gram recall between generated summary and reference summaries. Standard evaluation metric alongside human evaluation.</div></li>
+  </ul>
+
+  <h3>8.5 Named Entity Recognition (NER)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Task:</strong> Label each token as a named entity type: Person (PER), Organization (ORG), Location (LOC), Date, etc., or Other (O).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> BiLSTM + CRF was the standard for years. Now: BERT fine-tuned with a token classification head. CRF (Conditional Random Field) layer on top enforces label dependencies (e.g., I-PER cannot follow B-ORG).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Information extraction, knowledge graph construction, medical record parsing (diseases, drugs, symptoms), legal document analysis.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 3: WIND ESTIMATION ████████████ -->
+<div class="part-banner part-wind">Part 3 — Deep Learning for Wind Estimation</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header wind-h">
+    <div class="section-num">Section 9</div>
+    <h2>Deep Learning for Wind Estimation</h2>
+  </div>
+
+  <h3>9.1 Why Wind Estimation Matters</h3>
+  <p>Accurate wind estimation and forecasting is critical across many high-stakes applications. Errors in wind prediction directly cost lives (aviation safety), billions in revenue (energy trading), and impact climate models. Traditional numerical methods (NWP — Numerical Weather Prediction) are computationally expensive and struggle with local terrain effects and rapidly changing conditions.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Wind Energy</div>
+      <p>Wind farms must predict output hours/days ahead for grid integration and energy trading. 1% improvement in wind forecast accuracy = millions in revenue gains for large wind farms.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Aviation Safety</div>
+      <p>Low-level wind shear, turbulence, and wake turbulence are major hazards. Deep learning improves wind field estimation from radar, lidar, and ATIS data for safer approach/departure.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Structural Engineering</div>
+      <p>Bridges, skyscrapers, and offshore platforms must account for wind loads. Real-time deep learning models estimate wind pressure distributions for structural health monitoring.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Climate Science</div>
+      <p>Accurate regional wind patterns are essential for climate modeling, pollutant dispersion modeling, wildfire spread prediction, and agricultural planning.</p>
+    </div>
+  </div>
+
+  <h3>9.2 Wind Data Sources for Deep Learning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Numerical Weather Prediction (NWP) outputs:</strong> ERA5, GFS, ECMWF reanalysis datasets. High spatial and temporal resolution gridded wind field data. Used both as input features and as training targets.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Anemometer measurements:</strong> Point measurements from met masts and weather stations. High temporal resolution (1Hz–1min). Spatially sparse — only at instrumented locations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>LiDAR (Light Detection And Ranging):</strong> Remote sensing technology that scans a wind field volume using laser pulses. Provides detailed 2D/3D wind profiles. Used in wind farm assessment, aviation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SCADA data:</strong> Supervisory Control and Data Acquisition — wind turbine operational data (rotor speed, power output, pitch angle) used to infer wind conditions from turbine response.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Satellite imagery:</strong> Sea surface roughness from SAR (Synthetic Aperture Radar) correlates with near-surface wind speed over oceans. Deep learning extracts wind from SAR images.</div></li>
+  </ul>
+
+  <h3>9.3 Deep Learning Approaches for Wind Forecasting</h3>
+  <h4>A. Short-Term Wind Speed Forecasting (Seconds to Hours)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>LSTM/GRU-based:</strong> Use historical time series of wind speed, direction, and meteorological variables to forecast future wind speed at a single point. LSTM captures temporal dependencies in the wind time series.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CNN-LSTM hybrid:</strong> CNN extracts spatial patterns from gridded NWP data or wind field images; LSTM models temporal evolution. Particularly effective for turbine wake modeling in wind farms.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Encoder-Decoder with Attention:</strong> Attends to the most relevant historical time steps when making each future prediction. Provides interpretability — which past conditions drove the forecast?</div></li>
+  </ul>
+
+  <h4>B. Wind Field Reconstruction and Super-Resolution</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> NWP models have coarse spatial resolution (several km). Wind farms and urban applications need fine-grained wind fields (tens of meters). Downscaling = spatial super-resolution of wind.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CNN / U-Net for super-resolution:</strong> Train a CNN to map coarse NWP wind fields to high-resolution fields (using simulation data as ground truth). Deep learning surpasses traditional statistical downscaling methods significantly.</div></li>
+    <li><span class="bullet">▸</span><div><strong>GAN for wind super-resolution:</strong> SRGAN-style architecture applied to wind fields. Generator creates high-resolution wind field; discriminator ensures it looks physically realistic. Captures fine-grained turbulence that MSE-trained networks miss.</div></li>
+  </ul>
+
+  <h4>C. Wake Effect Modeling in Wind Farms</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Wake effect:</strong> Upstream turbines extract energy from wind and create a wake (region of reduced speed, increased turbulence) that impacts downstream turbines. Accurate wake modeling is critical for farm layout optimization and power prediction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Physics-Informed Neural Networks (PINNs):</strong> Embed the Navier-Stokes equations as a loss term. Network learns to satisfy both training data AND physical fluid dynamics laws. Enables wake field reconstruction from sparse sensor measurements.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Graph Neural Networks:</strong> Model the wind farm as a graph — turbines are nodes, aerodynamic interactions are edges. GNN propagates information across the graph to predict power output and wake patterns for each turbine.</div></li>
+  </ul>
+
+  <h4>D. Extreme Wind Event Detection</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Task:</strong> Early detection of hurricanes, typhoons, thunderstorm downbursts, and other extreme wind events from satellite imagery and NWP data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Approach:</strong> CNN classifiers applied to satellite image sequences. 3D-CNN / CNN-LSTM for spatiotemporal event evolution. Transfer learning from pre-trained weather models.</div></li>
+    <li><span class="bullet">▸</span><div><strong>GraphCast (DeepMind, 2022):</strong> Graph Neural Network trained on ERA5 reanalysis data. Predicts global weather (including wind at 37 pressure levels) at 10-day forecast horizon in under 1 minute — vs 1 hour for ECMWF NWP. Outperforms NWP on most variables.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  Deep Learning Wind Estimation Pipeline:
+
+  DATA SOURCES              DEEP LEARNING MODEL            OUTPUTS
+  ─────────────────         ──────────────────────         ──────────────────
+  NWP model output ───┐
+  Anemometer data ────┤     ┌─────────────────────┐        Wind speed forecast
+  LiDAR scans ────────┼────▶│ CNN / LSTM / GNN /  │───────▶Wind direction
+  Satellite SAR ──────┤     │ Transformer / PINN  │        Turbulence intensity
+  SCADA turbine data ─┘     └─────────────────────┘        Extreme event alerts
+                              ↑                             Wake field maps
+                         Physics constraints
+                         (Navier-Stokes, mass
+                          conservation) as loss
+    </pre>
+    <div class="diagram-caption">Figure 9.1 — Deep learning pipeline for wind estimation. Multiple data sources → task-specific DL models → actionable outputs.</div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why Deep Learning Outperforms Traditional Methods for Wind</div>
+    <p>1. <strong>Non-linear patterns:</strong> Wind turbulence, terrain effects, and mesoscale interactions are highly non-linear — beyond the capacity of linear regression or ARIMA models.</p>
+    <p>2. <strong>Multi-source fusion:</strong> Deep learning naturally integrates heterogeneous data sources (NWP, LiDAR, SCADA) into a unified prediction framework.</p>
+    <p>3. <strong>Spatial-temporal learning:</strong> CNN+LSTM or Transformer architectures jointly capture spatial wind field patterns AND temporal evolution — impossible with classical statistical models.</p>
+    <p>4. <strong>Physics integration:</strong> PINNs incorporate fluid dynamics constraints, ensuring predictions are physically consistent even where training data is sparse.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 4: RESEARCH DIRECTIONS ████████████ -->
+<div class="part-banner part-res">Part 4 — Research Directions in Deep Learning</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header res-h">
+    <div class="section-num">Section 10</div>
+    <h2>Research Directions — Overview</h2>
+  </div>
+
+  <p>Despite remarkable progress, deep learning has fundamental open problems. The research community is actively working on making models more efficient, trustworthy, generalizable, and scientifically grounded. This section covers the most important active research directions that define where the field is heading.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Why Research Directions Matter for Exams</div>
+    <p>Understanding research directions shows you can connect technical foundations (modules 1–4) to real-world limitations and future possibilities. Examiners frequently ask: "What are the limitations of current deep learning and how is research addressing them?" This section directly answers that.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header res-h">
+    <div class="section-num">Section 11</div>
+    <h2>Explainability, Interpretability and Fairness</h2>
+  </div>
+
+  <h3>11.1 The Black Box Problem</h3>
+  <p>Deep neural networks are fundamentally opaque — given an input, they produce an output, but the internal reasoning is inscrutable. This is a critical barrier to deployment in high-stakes domains (medicine, law, finance, autonomous systems) where decisions must be explainable and auditable.</p>
+
+  <div class="res-grid">
+    <div class="res-card rc-blue">
+      <div class="res-tag">Explainability Method</div>
+      <div class="res-title">LIME — Local Interpretable Model-Agnostic Explanations</div>
+      <p>Perturbs the input (mask parts of image/text), observes how the output changes, fits a simple linear model locally to approximate the deep model's behavior near that input. Works with any black-box model.</p>
+      <p>Output: which input features most influenced this prediction.</p>
+      <div class="res-examples">Applications: medical diagnosis, loan approval, fraud detection</div>
+    </div>
+    <div class="res-card rc-green">
+      <div class="res-tag">Explainability Method</div>
+      <div class="res-title">SHAP — SHapley Additive exPlanations</div>
+      <p>Based on cooperative game theory (Shapley values). Assigns each feature a contribution score — how much did this feature shift the model's prediction from the average? Consistent and theoretically grounded.</p>
+      <p>Unified framework: works for tabular, image, and text models.</p>
+      <div class="res-examples">Widely used in finance, healthcare, regulatory compliance (GDPR)</div>
+    </div>
+    <div class="res-card rc-purple">
+      <div class="res-tag">Explainability Method</div>
+      <div class="res-title">Grad-CAM — Gradient-weighted Class Activation Maps</div>
+      <p>Uses gradients of the target class score flowing into the final Conv layer to produce a coarse localization map showing which regions of the image were most important for the classification decision.</p>
+      <p>Requires no architectural change — works on any CNN.</p>
+      <div class="res-examples">Medical imaging, autonomous driving, content moderation</div>
+    </div>
+    <div class="res-card rc-amber">
+      <div class="res-tag">Fairness Research</div>
+      <div class="res-title">Algorithmic Bias and Fairness</div>
+      <p>Deep learning models trained on biased historical data replicate and amplify those biases. Face recognition systems perform worse on darker skin tones. Hiring algorithms disadvantage women. Medical models perform worse on underrepresented groups.</p>
+      <p>Active research: measuring bias (demographic parity, equalized odds), debiasing training data, adversarial debiasing, fairness-aware loss functions.</p>
+      <div class="res-examples">Regulation: EU AI Act, US EEOC guidelines require fairness audits</div>
+    </div>
+  </div>
+
+  <h3>11.2 Adversarial Robustness</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Adversarial examples:</strong> Tiny, imperceptible perturbations added to an input (e.g., an image) can cause a deep network to misclassify with high confidence. A panda image with invisible noise → classified as "gibbon" by ResNet with 99.3% confidence. Humans notice nothing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it matters:</strong> Self-driving cars, medical AI, and security systems could be fooled by adversarial attacks in the real world. A stop sign with an adversarial patch → misclassified as "speed limit."</div></li>
+    <li><span class="bullet">▸</span><div><strong>Adversarial training:</strong> Include adversarially perturbed examples during training. Improves robustness but reduces clean accuracy — a fundamental tradeoff. An active research area with no fully satisfactory solution yet.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Certified robustness:</strong> Prove mathematically that within a ball of radius ε around any input, the model's prediction is constant. Randomized smoothing, interval bound propagation — computationally expensive but providing guarantees.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header res-h">
+    <div class="section-num">Section 12</div>
+    <h2>Efficient Deep Learning and Federated Learning</h2>
+  </div>
+
+  <h3>12.1 Efficient Deep Learning</h3>
+  <p>Modern models (GPT-4, Gemini Ultra, PaLM) have trillions of parameters and require enormous compute for training and inference. Deploying these on edge devices (smartphones, IoT, embedded systems) is impossible without model compression.</p>
+
+  <div class="res-grid">
+    <div class="res-card rc-teal">
+      <div class="res-tag">Compression Technique</div>
+      <div class="res-title">Model Pruning</div>
+      <p>Remove neurons, connections, or entire layers that contribute least to model performance (measured by weight magnitude or gradient sensitivity). After pruning, retrain to recover accuracy. Can achieve 10–100× compression with minimal accuracy loss.</p>
+      <p>Unstructured pruning: remove individual weights → sparse matrices. Structured pruning: remove entire filters/channels → smaller dense network. Structured is more hardware-friendly.</p>
+      <div class="res-examples">Lottery Ticket Hypothesis: a dense network contains a small sparse sub-network that can match full performance</div>
+    </div>
+    <div class="res-card rc-red">
+      <div class="res-tag">Compression Technique</div>
+      <div class="res-title">Knowledge Distillation</div>
+      <p>Train a small "student" model to mimic the outputs of a large pre-trained "teacher" model. Student learns from the teacher's soft probability outputs (not just hard labels) — these contain richer information about inter-class similarities.</p>
+      <p>Loss = α · cross-entropy(student, labels) + (1−α) · KL(student, teacher_softmax). The teacher's soft outputs are "dark knowledge."</p>
+      <div class="res-examples">DistilBERT: 40% smaller, 60% faster than BERT, retains 97% of BERT's language understanding</div>
+    </div>
+    <div class="res-card rc-olive">
+      <div class="res-tag">Compression Technique</div>
+      <div class="res-title">Quantization</div>
+      <p>Reduce numerical precision of weights and activations. Standard: FP32 (32-bit float). Quantized: INT8 (8-bit int), INT4, or even 1-bit (binary). INT8 quantization: 4× memory reduction, 2–4× inference speedup on compatible hardware with ~1% accuracy loss.</p>
+      <p>Post-training quantization: quantize after training. Quantization-aware training: simulate quantization during training → better accuracy.</p>
+      <div class="res-examples">Essential for mobile deployment: CoreML, TFLite, ONNX Runtime</div>
+    </div>
+    <div class="res-card rc-slate">
+      <div class="res-tag">Architecture Design</div>
+      <div class="res-title">Neural Architecture Search (NAS)</div>
+      <p>Automate the design of neural network architectures. Search over a space of possible architectures to find the optimal one for a given task and hardware constraint. Methods: reinforcement learning (controller proposes architectures), evolutionary algorithms, differentiable NAS (DARTS).</p>
+      <p>EfficientNet was discovered via NAS. MobileNetV3 also uses NAS. Dramatic improvements over hand-designed architectures.</p>
+      <div class="res-examples">EfficientNet: 8× smaller + 6× faster than ResNet with better accuracy</div>
+    </div>
+  </div>
+
+  <h3>12.2 Federated Learning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The privacy problem:</strong> Training deep learning models requires large amounts of data. In many domains (healthcare, finance, mobile), this data is sensitive and cannot be moved to a central server due to privacy regulations (GDPR, HIPAA).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Federated Learning (FL) solution:</strong> Bring the model to the data, not the data to the model. Each device (hospital, phone, bank) trains the model locally on its private data. Only model updates (gradients or weights) are sent to the central server — never raw data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>FedAvg algorithm:</strong> Server sends global model to all clients. Each client trains locally for E epochs. Clients send back updated weights. Server averages all client weights (weighted by dataset size) to get new global model. Repeat.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Challenges:</strong> Non-IID data (each client's data distribution is different — e.g., each hospital has different patient demographics). Heterogeneous hardware (different clients have different compute). Communication efficiency (sending large weight updates is expensive). Privacy attacks (gradient inversion can recover training data).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Google's Gboard keyboard trains next-word prediction on your phone without uploading your typing. Hospital consortiums train disease detection models without sharing patient records.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Federated Learning in 3 Points</div>
+    <p>1. <strong>Purpose:</strong> Enable training on distributed, private data without centralization — privacy-preserving deep learning.</p>
+    <p>2. <strong>Key mechanism:</strong> Local training + weight averaging (FedAvg). Only gradients/weights leave the device, never raw data.</p>
+    <p>3. <strong>Main challenges:</strong> Non-IID data distribution, communication cost, and gradient inversion attacks that may still leak private information.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header res-h">
+    <div class="section-num">Section 13</div>
+    <h2>Self-Supervised Learning and Foundation Models</h2>
+  </div>
+
+  <h3>13.1 Self-Supervised Learning (SSL)</h3>
+  <p>The dominant paradigm in modern deep learning. The core idea: create supervised learning signals automatically from unlabeled data by defining a pretext task, eliminating the need for expensive manual annotation.</p>
+
+  <div class="res-grid">
+    <div class="res-card rc-blue">
+      <div class="res-tag">SSL Method</div>
+      <div class="res-title">Masked Autoencoders (MAE)</div>
+      <p>Randomly mask 75% of image patches. Train encoder-decoder to reconstruct the masked patches. The encoder must learn rich semantic features to reconstruct from only 25% visible information. ViT pre-trained with MAE achieves SOTA on ImageNet.</p>
+      <div class="res-examples">He et al. (2021). Generalization: BEiT (BERT for images), VideoMAE (video)</div>
+    </div>
+    <div class="res-card rc-green">
+      <div class="res-tag">SSL Method</div>
+      <div class="res-title">Contrastive Learning (SimCLR, MoCo)</div>
+      <p>Create two augmented views of the same image (positive pair). Train encoder so same-image representations are close (attract) and different-image representations are far apart (repel). No labels needed. Representations rival supervised pre-training.</p>
+      <p>Loss: InfoNCE = −log[ exp(sim(z₁,z₂)/τ) / Σexp(sim(z₁,zₖ)/τ) ]</p>
+      <div class="res-examples">DINO, MoCo v3, SimCLR — used widely for vision pre-training</div>
+    </div>
+    <div class="res-card rc-purple">
+      <div class="res-tag">SSL Method</div>
+      <div class="res-title">Language Model Pre-training</div>
+      <p>Next token prediction (GPT family) and Masked Token Prediction (BERT family) are both SSL tasks — the label is created from the data itself. Training on trillions of tokens builds rich world knowledge and reasoning ability without any human annotation.</p>
+      <div class="res-examples">GPT-4, Claude, Gemini, LLaMA, Mistral — all SSL pre-trained</div>
+    </div>
+  </div>
+
+  <h3>13.2 Foundation Models</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Large models trained on broad data at scale that can be adapted (fine-tuned, prompted) for a wide variety of downstream tasks. The term was coined by Stanford HAI (2021). They are called "foundation" because other models and applications are built on top of them.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Key properties:</strong> Emergent abilities — capabilities not present in smaller models that appear only at scale (few-shot reasoning, chain-of-thought, arithmetic). Transfer to many tasks with minimal or zero task-specific training data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Examples:</strong> Language: GPT-4, Claude 3, Gemini Ultra, LLaMA 3. Vision: ViT-22B, SAM, DINOv2. Multimodal: GPT-4V, LLaVA, CLIP, Flamingo. Science: AlphaFold2 (protein structure), ESM-2 (protein language model), GraphCast (weather).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Instruction tuning:</strong> Fine-tune pre-trained LLMs on examples of instruction-following (Q&amp;A, task descriptions). Dramatically improves usability and alignment without needing task-specific datasets.</div></li>
+    <li><span class="bullet">▸</span><div><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> Human raters rank model responses → train reward model → fine-tune LLM with PPO to maximize reward. Used in ChatGPT, Claude, Gemini — aligns models with human preferences and values.</div></li>
+  </ul>
+
+  <h3>13.3 In-Context Learning and Prompting</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Zero-shot:</strong> Describe the task in natural language, no examples. GPT-4: "Translate to French: 'Hello world'" — no training needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Few-shot:</strong> Provide a few examples in the prompt, then the query. Model infers the pattern and applies it — no gradient update. Emergent in models above ~10B parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Chain-of-Thought (CoT):</strong> Include step-by-step reasoning examples in the prompt. Model produces intermediate reasoning steps before the final answer. Dramatically improves multi-step math, logical, and scientific reasoning.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header res-h">
+    <div class="section-num">Section 14</div>
+    <h2>Multimodal Models, Physics-Informed Learning and Neuro-AI</h2>
+  </div>
+
+  <h3>14.1 Multimodal Deep Learning</h3>
+
+  <div class="res-grid">
+    <div class="res-card rc-blue">
+      <div class="res-tag">Active Research Area</div>
+      <div class="res-title">Vision-Language Models</div>
+      <p>Models that jointly process images and text. CLIP (Contrastive Language-Image Pre-training) trains CNN image encoder + Transformer text encoder together on 400M image-text pairs with contrastive loss — aligns image and text representations in a shared embedding space.</p>
+      <p>Enables zero-shot image classification: compute similarity of image to text prompts "a photo of a dog", "a photo of a cat" → label = highest similarity.</p>
+      <div class="res-examples">DALL-E, Stable Diffusion, LLaVA, GPT-4V, Flamingo, CogVLM</div>
+    </div>
+    <div class="res-card rc-green">
+      <div class="res-tag">Active Research Area</div>
+      <div class="res-title">Text-to-Image Generation</div>
+      <p>Generate photorealistic images from text descriptions. Diffusion models (DDPM, DDIM) iteratively denoise random noise guided by a text embedding (CLIP). Stable Diffusion operates in latent space for efficiency.</p>
+      <p>Key components: CLIP text encoder → U-Net denoiser → VAE decoder. Score function guides the denoising process toward the text description.</p>
+      <div class="res-examples">DALL-E 3, Midjourney, Stable Diffusion, Imagen, Firefly</div>
+    </div>
+    <div class="res-card rc-purple">
+      <div class="res-tag">Active Research Area</div>
+      <div class="res-title">Diffusion Models</div>
+      <p>State-of-the-art generative models that have largely superseded GANs for image/audio synthesis. Forward process: gradually add Gaussian noise to data over T steps. Reverse process: learn to denoise step by step. Samples generated by running the learned reverse process from pure noise.</p>
+      <p>Advantages over GANs: stable training, no mode collapse, better sample diversity and quality on complex distributions.</p>
+      <div class="res-examples">Sora (video), AudioLM (audio), RFdiffusion (protein design)</div>
+    </div>
+  </div>
+
+  <h3>14.2 Physics-Informed Neural Networks (PINNs)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Core idea:</strong> Embed physical laws (PDEs, ODEs, conservation laws) directly into the neural network loss function. The network must simultaneously fit training data AND satisfy the governing physics equations at collocation points.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Loss = Data loss + Physics loss:</strong> L = λ_data · ‖u_pred − u_data‖² + λ_physics · ‖N[u_pred]‖² where N is the PDE residual (how much the network output violates the differential equation).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Advantages:</strong> Works with very sparse data (physics fills in the gaps). Predictions are physically consistent. No need to discretize the domain (mesh-free). Naturally enforces conservation laws.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Fluid mechanics (Navier-Stokes), heat transfer, structural mechanics, electromagnetism, quantum mechanics, epidemiological modeling, wind farm simulation.</div></li>
+  </ul>
+
+  <h3>14.3 Neuro-Inspired AI and Continual Learning</h3>
+
+  <div class="res-grid">
+    <div class="res-card rc-teal">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">Continual / Lifelong Learning</div>
+      <p>Standard deep networks suffer from catastrophic forgetting — learning a new task destroys performance on old tasks because weight updates for the new task overwrite old task knowledge.</p>
+      <p>Research: Elastic Weight Consolidation (EWC) — regularize updates to important weights. Progressive Neural Networks — add new capacity for new tasks. Replay methods — rehearse old task examples while learning new ones.</p>
+      <div class="res-examples">Critical for robotics, personalized AI, autonomous agents</div>
+    </div>
+    <div class="res-card rc-amber">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">Spiking Neural Networks (SNNs)</div>
+      <p>Third generation of neural networks inspired by biological neuron firing. Neurons communicate via discrete spikes (binary events) rather than continuous activations. Sparse, event-driven computation — far more energy-efficient.</p>
+      <p>Challenge: not differentiable → cannot use standard backprop. Research: surrogate gradients, spike timing dependent plasticity (STDP). Deployed on neuromorphic chips (Intel Loihi, IBM TrueNorth).</p>
+      <div class="res-examples">Edge AI, brain-computer interfaces, ultra-low-power IoT</div>
+    </div>
+    <div class="res-card rc-red">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">Graph Neural Networks (GNNs)</div>
+      <p>Extend deep learning to graph-structured data where relationships between entities are as important as the entities themselves. Message passing: each node aggregates information from its neighbors iteratively to update its representation.</p>
+      <p>Types: GCN (Graph Convolutional), GAT (Graph Attention), GraphSAGE, GIN. Deep learning now handles molecules, social networks, knowledge graphs, physical simulations natively.</p>
+      <div class="res-examples">AlphaFold2 (protein folding), drug discovery, recommendation systems</div>
+    </div>
+    <div class="res-card rc-olive">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">Causal Deep Learning</div>
+      <p>Standard deep learning learns correlations, not causation. Spurious correlations in training data lead to failures on distribution shift. A model may learn "grass is associated with cows" instead of learning what cows actually look like.</p>
+      <p>Research: Invariant Risk Minimization (IRM), causal representation learning, counterfactual reasoning. Goal: models that understand cause-effect relationships and generalize to new environments.</p>
+      <div class="res-examples">Medical AI, scientific discovery, policy evaluation</div>
+    </div>
+    <div class="res-card rc-slate">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">AI Safety and Alignment</div>
+      <p>As AI systems become more powerful, ensuring they behave safely, reliably, and in accordance with human values becomes critical. Key problems: reward hacking, distributional shift, scalable oversight, deceptive alignment.</p>
+      <p>Research: Constitutional AI (Anthropic), RLHF, interpretability (mechanistic interpretability — reverse-engineer what circuits in a neural network compute), debate, amplification.</p>
+      <div class="res-examples">Directly relevant to deployment of LLMs and autonomous AI systems</div>
+    </div>
+    <div class="res-card rc-blue">
+      <div class="res-tag">Research Direction</div>
+      <div class="res-title">AI for Scientific Discovery</div>
+      <p>Deep learning as a tool for accelerating science. AlphaFold2 solved protein structure prediction (50-year grand challenge) with near-experimental accuracy. Similar breakthroughs are being sought in materials science, drug discovery, mathematics, climate science, and particle physics.</p>
+      <p>Key tools: GNNs for molecular property prediction, Transformers for genomics, diffusion models for molecular design, PINNs for physics simulation.</p>
+      <div class="res-examples">AlphaFold2 (proteins), MusicLM (music), AlphaGeometry (math proofs)</div>
+    </div>
+  </div>
+
+  <!-- FULL SUMMARY BOX -->
+  <div class="summary-box">
+    <h4>Module 5 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">CV</span><div><strong>Computer Vision:</strong> Deep learning replaced hand-crafted features with learned hierarchies. Key tasks: Classification (ResNet, ViT), Detection (Faster R-CNN for accuracy, YOLO for speed — IoU and mAP metrics), Segmentation (FCN, U-Net, DeepLab with dilated Conv, Mask R-CNN for instances). Medical imaging, face recognition, and autonomous driving are key domains.</div></li>
+      <li><span class="bullet">NLP</span><div><strong>Natural Language Processing:</strong> Word embeddings (Word2Vec: skip-gram/CBOW; GloVe: global co-occurrence) provided dense semantic representations. ELMo gave contextualized embeddings. Transformers (self-attention, Q-K-V, multi-head, positional encoding) replaced RNNs. BERT (bidirectional, MLM pre-training) for understanding; GPT (autoregressive) for generation. Key applications: translation, sentiment, QA, NER, summarization.</div></li>
+      <li><span class="bullet">WND</span><div><strong>Wind Estimation:</strong> Deep learning (LSTM for temporal forecasting, CNN-LSTM for spatial-temporal, GAN for super-resolution, PINNs for physics-consistent wake modeling, GNNs for farm-level predictions) outperforms traditional NWP for local/short-term forecasting. Applications in wind energy, aviation, climate science.</div></li>
+      <li><span class="bullet">XAI</span><div><strong>Explainability &amp; Fairness:</strong> LIME, SHAP, Grad-CAM make black-box models interpretable. Adversarial robustness research addresses imperceptible input perturbations. Algorithmic bias is a critical concern — fairness metrics and debiasing methods are active research.</div></li>
+      <li><span class="bullet">EFF</span><div><strong>Efficient Learning:</strong> Pruning (remove unnecessary weights), Distillation (student learns from teacher), Quantization (reduce numerical precision → INT8). NAS automates architecture design. Federated Learning enables privacy-preserving training across decentralized devices (FedAvg algorithm).</div></li>
+      <li><span class="bullet">SSL</span><div><strong>Self-Supervised &amp; Foundation Models:</strong> MAE, Contrastive Learning (SimCLR), and Language Model pre-training create rich representations from unlabeled data. Foundation Models (GPT-4, BERT, SAM) are large-scale models adaptable to many tasks via fine-tuning, prompting, or in-context learning. RLHF aligns LLMs with human values.</div></li>
+      <li><span class="bullet">NEW</span><div><strong>Emerging Frontiers:</strong> Diffusion Models (stable generation, supersede GANs), Vision-Language Models (CLIP, DALL-E), PINNs (physics-constrained learning), GNNs (graph-structured data), Continual Learning (prevent forgetting), SNNs (neuromorphic, energy-efficient), Causal Learning (correlations → causation), AI Safety (alignment, interpretability), AI for Science (AlphaFold2, drug discovery).</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Neural Networks — Module 5 (Final Module)</span>
+  <span>CV · NLP · Wind Estimation · Research Directions</span>
+</div>
+
+</body>
+</html>
