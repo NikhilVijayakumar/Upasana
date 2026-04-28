@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Learning Techniques – Module 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --surface2: #f0f2f8;
+    --border: #dde0ec;
+    --border2: #c4c8e0;
+    --text: #14161e;
+    --text2: #3e4258;
+    --text3: #6e7290;
+    --accent: #2a52be;
+    --accent-bg: #eef1fc;
+    --accent-border: #b4c0f0;
+    --green: #176b40;
+    --green-bg: #eaf5f0;
+    --green-border: #9ed4b8;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5a5a;
+    --teal-bg: #e8f5f5;
+    --teal-border: #88d0d0;
+    --orange: #7a3000;
+    --orange-bg: #fdf2ea;
+    --orange-border: #e8b88a;
+    --code-bg: #eceef5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #101428 0%, #1a2060 100%);
+    color: #eef0fc;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #7890e8; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2; color: #eef0fc; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle { font-family: 'Inter', sans-serif; font-size: 14px; color: #5870c8; margin-top: 1rem; }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .pb-cnn  { background: #1a2060; }
+  .pb-det  { background: #1a5a1a; }
+  .pb-yolo { background: #5a1a00; }
+  .pb-trk  { background: #1a1a5a; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .sh-cnn  { border-left: 4px solid #1a2060; }
+  .sh-det  { border-left: 4px solid #1a5a1a; }
+  .sh-yolo { border-left: 4px solid #5a1a00; }
+  .sh-trk  { border-left: 4px solid #1a1a5a; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-key     { background: var(--accent-bg);  border-color: var(--accent);  }
+  .callout-key .callout-title     { color: var(--accent);  }
+  .callout-key p   { color: #1e3a8a; }
+  .callout-tip     { background: var(--green-bg);   border-color: var(--green);   }
+  .callout-tip .callout-title     { color: var(--green);   }
+  .callout-tip p   { color: #0f4a2c; }
+  .callout-warn    { background: var(--amber-bg);   border-color: var(--amber);   }
+  .callout-warn .callout-title    { color: var(--amber);   }
+  .callout-warn p  { color: #5a3800; }
+  .callout-exam    { background: var(--red-bg);     border-color: var(--red);     }
+  .callout-exam .callout-title    { color: var(--red);     }
+  .callout-exam p  { color: #6a1010; }
+  .callout-formula { background: var(--purple-bg);  border-color: var(--purple);  }
+  .callout-formula .callout-title { color: var(--purple);  }
+  .callout-formula p { color: #38206a; }
+  .callout-teal    { background: var(--teal-bg);    border-color: var(--teal);    }
+  .callout-teal .callout-title    { color: var(--teal);    }
+  .callout-teal p  { color: #0a3a3a; }
+  .callout-orange  { background: var(--orange-bg);  border-color: var(--orange);  }
+  .callout-orange .callout-title  { color: var(--orange);  }
+  .callout-orange p { color: #5a2000; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green);  font-weight: 500; }
+  .formula .rd  { color: var(--red);    font-weight: 500; }
+  .formula .or  { color: var(--orange); font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── TABLE ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── ARCH TABLE ── */
+  .arch-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 14px; }
+  .arch-table th { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; background: #101428; color: #99aaee; padding: 0.6rem 0.9rem; text-align: left; border: 1px solid #222; letter-spacing: 0.05em; text-transform: uppercase; }
+  .arch-table td { padding: 0.55rem 0.9rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); font-size: 13.5px; line-height: 1.6; }
+  .arch-table tr:nth-child(even) td { background: var(--surface2); }
+  .arch-table td.ln { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-weight: 500; font-size: 13px; }
+  .arch-table td.od { font-family: 'JetBrains Mono', monospace; color: var(--purple); font-size: 13px; }
+  .arch-table td.nt { font-family: 'Inter', sans-serif; color: var(--text3); font-size: 13px; }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── VERSION CARD GRID ── */
+  .ver-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 1.5rem 0; }
+  .ver-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .ver-card .ver-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; display: inline-block; padding: 2px 8px; border-radius: 4px; margin-bottom: 0.5rem; }
+  .vc-v1  .ver-badge { background: #f0ede8; color: #5a4a30; }
+  .vc-v2  .ver-badge { background: #edf3fc; color: #1a3a8c; }
+  .vc-v3  .ver-badge { background: #f3f0fb; color: #3a1a7c; }
+  .vc-v4  .ver-badge { background: #eaf5f0; color: #0f4a2c; }
+  .vc-v5  .ver-badge { background: #fdf2ea; color: #5a2000; }
+  .vc-v7  .ver-badge { background: #fef9ed; color: #5a3800; }
+  .vc-v8  .ver-badge { background: #fdf0f0; color: #6a1010; }
+  .ver-card .ver-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+  .ver-card .ver-year { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-bottom: 0.75rem; }
+  .ver-card p { font-size: 14.5px; line-height: 1.65; margin-bottom: 0.5rem; }
+  .ver-card p:last-child { margin-bottom: 0; }
+  .ver-card .ver-key { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: var(--text3); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.75rem; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #101428; color: #c4ccf0; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── PIPELINE ── */
+  .pipeline { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; }
+  .pipeline-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .pipeline-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .pipeline-step { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.75rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--text2); white-space: nowrap; }
+  .pipeline-arrow { color: var(--text3); font-size: 16px; font-weight: 600; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Deep Learning Techniques — Module 1</div>
+  <h1><span>Module 1:</span> State-of-the-Art CNNs, Object Detection &amp; Tracking</h1>
+  <div class="subtitle">VGGNet · ResNet · EfficientNet · Mask R-CNN · YOLO · YOLOv5 · YOLOv7 · DeepSORT</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> VGGNet — In Depth</a>
+    <a href="#s2"><span class="num">2.</span> ResNet — Residual Learning</a>
+    <a href="#s3"><span class="num">3.</span> EfficientNet — Compound Scaling</a>
+    <a href="#s4"><span class="num">4.</span> CNN Comparison Summary</a>
+    <a href="#s5"><span class="num">5.</span> Object Detection — Fundamentals</a>
+    <a href="#s6"><span class="num">6.</span> Mask R-CNN — Full Architecture</a>
+    <a href="#s7"><span class="num">7.</span> YOLO — v1 to v4 Evolution</a>
+    <a href="#s8"><span class="num">8.</span> YOLOv5 — In Depth</a>
+    <a href="#s9"><span class="num">9.</span> YOLOv7 — In Depth</a>
+    <a href="#s10"><span class="num">10.</span> YOLO Versions Compared</a>
+    <a href="#s11"><span class="num">11.</span> Object Tracking — Problem Setup</a>
+    <a href="#s12"><span class="num">12.</span> DeepSORT — Full Algorithm</a>
+    <a href="#s13"><span class="num">13.</span> Tracking Metrics &amp; Applications</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: STATE-OF-ART CNNs ████████████ -->
+<div class="part-banner pb-cnn">Part 1 — State-of-the-Art CNN Architectures</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-cnn">
+    <div class="section-num">Section 1</div>
+    <h2>VGGNet — Depth Through Uniformity</h2>
+  </div>
+
+  <h3>1.1 Background and Motivation</h3>
+  <p>VGGNet (Simonyan &amp; Zisserman, Oxford Visual Geometry Group — 2014) explored a fundamental question: if we keep the architecture simple and uniform, how much does increasing depth help? Their answer was definitive — depth is the critical factor, even with the simplest possible building blocks.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>ILSVRC 2014 result:</strong> VGG-16 achieved 7.3% top-5 error on ImageNet. VGG-19 achieved 7.1%. Came 2nd to GoogLeNet but became far more widely used due to its simplicity and transferability.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Core philosophy:</strong> Use only 3×3 Conv (smallest possible, captures all 8-directional spatial context), stride 1, same padding. Use 2×2 MaxPool stride 2 for downsampling. Nothing else. No inception modules, no asymmetric convolutions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Variants:</strong> VGG-11 (8 conv + 3 FC), VGG-13, VGG-16, VGG-19. Number indicates total weight layers. VGG-16 is the most widely used.</div></li>
+  </ul>
+
+  <h3>1.2 The 3×3 Filter Argument — Why Stacking Works</h3>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Core Insight — Small Filters Stacked Are Better Than Large Filters Alone</div>
+    <p><strong>Two 3×3 layers</strong> → effective 5×5 receptive field. Uses 2×9 = 18 weights + 2 non-linearities.</p>
+    <p><strong>One 5×5 layer</strong> → same 5×5 field. Uses 25 weights + 1 non-linearity.</p>
+    <p><strong>Three 3×3 layers</strong> → effective 7×7 field. Uses 3×9 = 27 weights vs 49 for one 7×7.</p>
+    <p>Result: Stacked small filters are (1) cheaper in parameters, (2) have more non-linearities, (3) act as implicit regularizers. VGG proved this experimentally at scale.</p>
+  </div>
+
+  <h3>1.3 VGG-16 — Complete Architecture</h3>
+
+  <table class="arch-table">
+    <tr><th>Block</th><th>Layer</th><th>Operation</th><th>Output Shape</th><th>Notes</th></tr>
+    <tr><td class="ln" rowspan="3">Block 1</td><td>Conv1_1</td><td>3×3 Conv, 64 filters, pad=1, ReLU</td><td class="od">224×224×64</td><td class="nt">Input: 224×224×3</td></tr>
+    <tr><td>Conv1_2</td><td>3×3 Conv, 64 filters, pad=1, ReLU</td><td class="od">224×224×64</td><td class="nt">Same spatial size</td></tr>
+    <tr><td>Pool1</td><td>MaxPool 2×2 stride 2</td><td class="od">112×112×64</td><td class="nt">Spatial ÷2</td></tr>
+    <tr><td class="ln" rowspan="3">Block 2</td><td>Conv2_1</td><td>3×3 Conv, 128 filters, pad=1, ReLU</td><td class="od">112×112×128</td><td class="nt">Channels ×2</td></tr>
+    <tr><td>Conv2_2</td><td>3×3 Conv, 128 filters, pad=1, ReLU</td><td class="od">112×112×128</td><td class="nt"></td></tr>
+    <tr><td>Pool2</td><td>MaxPool 2×2 stride 2</td><td class="od">56×56×128</td><td class="nt">Spatial ÷2</td></tr>
+    <tr><td class="ln" rowspan="4">Block 3</td><td>Conv3_1</td><td>3×3 Conv, 256 filters, pad=1, ReLU</td><td class="od">56×56×256</td><td class="nt">Channels ×2</td></tr>
+    <tr><td>Conv3_2</td><td>3×3 Conv, 256 filters, pad=1, ReLU</td><td class="od">56×56×256</td><td class="nt"></td></tr>
+    <tr><td>Conv3_3</td><td>3×3 Conv, 256 filters, pad=1, ReLU</td><td class="od">56×56×256</td><td class="nt">3 conv per block</td></tr>
+    <tr><td>Pool3</td><td>MaxPool 2×2 stride 2</td><td class="od">28×28×256</td><td class="nt">Spatial ÷2</td></tr>
+    <tr><td class="ln" rowspan="4">Block 4</td><td>Conv4_1–3</td><td>3×3 Conv, 512 filters, pad=1, ReLU (×3)</td><td class="od">28×28×512</td><td class="nt">Channels ×2</td></tr>
+    <tr><td>Pool4</td><td>MaxPool 2×2 stride 2</td><td class="od">14×14×512</td><td class="nt">Spatial ÷2</td></tr>
+    <tr><td class="ln" rowspan="3">Block 5</td><td>Conv5_1–3</td><td>3×3 Conv, 512 filters, pad=1, ReLU (×3)</td><td class="od">14×14×512</td><td class="nt">Same channels</td></tr>
+    <tr><td>Pool5</td><td>MaxPool 2×2 stride 2</td><td class="od">7×7×512</td><td class="nt">Spatial ÷2</td></tr>
+    <tr><td class="ln" rowspan="3">Head</td><td>FC6</td><td>Flatten → Dense 4096 + ReLU + Dropout(0.5)</td><td class="od">4096</td><td class="nt">7×7×512 = 25088 in</td></tr>
+    <tr><td>FC7</td><td>Dense 4096 + ReLU + Dropout(0.5)</td><td class="od">4096</td><td class="nt">100M+ params here</td></tr>
+    <tr><td>FC8</td><td>Dense 1000 + Softmax</td><td class="od">1000</td><td class="nt">Output classes</td></tr>
+  </table>
+
+  <h3>1.4 Parameter Analysis and Bottleneck</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Total parameters: ~138 million.</strong> Breakdown: All 13 Conv layers together ≈ 14.7M. FC6 alone: 7×7×512×4096 = <strong>102.7M</strong>. FC7: 4096×4096 = 16.8M. FC8: 4.1M. FC layers hold 89% of all parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pattern — double channels, halve spatial:</strong> Each pooling halves H and W (224→112→56→28→14→7). Each new block doubles channel depth (64→128→256→512). This is the fundamental VGG design pattern.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Memory at inference:</strong> ~528 MB for FP32 weights. The FC layers are the bottleneck — modern networks replace them with Global Average Pooling (GAP), saving 100M+ parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>VGG as feature extractor:</strong> Remove FC layers; use Pool5 output (7×7×512) or any intermediate feature map as a rich image descriptor. Used in style transfer, detection, and countless downstream tasks.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — VGG Key Facts</div>
+    <p>1. Only 3×3 Conv and 2×2 MaxPool — no other layer types in the feature extractor. 2. Channels double at each block: 64→128→256→512→512. 3. Spatial dims halve at each pool: 224→112→56→28→14→7. 4. 138M params; 89% in 3 FC layers. 5. VGG-16 = 13 Conv + 3 FC = 16 weight layers. 6. Strong transfer learning backbone despite age.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-cnn">
+    <div class="section-num">Section 2</div>
+    <h2>ResNet — Residual Learning for Very Deep Networks</h2>
+  </div>
+
+  <h3>2.1 The Degradation Problem</h3>
+  <p>Simply adding more layers to VGG-style networks did not keep helping after ~20 layers. Surprisingly, <em>adding layers made training accuracy worse</em> — not because of overfitting (the training loss itself was higher), but because very deep networks were harder to optimize with standard backpropagation. Gradients vanished through too many layers.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">He et al.'s Insight — The Degradation Problem</div>
+    <p>If a 56-layer network is strictly harder to optimize than a 20-layer network, there is something wrong with how deeper networks learn. A 56-layer net should be at least as good as a 20-layer net — it could theoretically just set the extra 36 layers to identity mappings. But in practice, networks cannot learn identity mappings through long chains of non-linear transformations. <strong>The solution: explicitly build identity mappings as shortcut connections.</strong></p>
+  </div>
+
+  <h3>2.2 The Residual Block — Core Innovation</h3>
+
+  <div class="diagram">
+    <pre>
+  PLAIN BLOCK (VGG-style):          RESIDUAL BLOCK (ResNet):
+
+  Input: x                          Input: x ─────────────────────┐
+     │                                  │                          │ skip
+  [Conv 3×3 + BN + ReLU]           [Conv 3×3 + BN + ReLU]        │ connection
+     │                                  │                          │ (identity)
+  [Conv 3×3 + BN + ReLU]           [Conv 3×3 + BN]               │
+     │                                  │                          │
+  Output: H(x)                     [    + x    ] ◀────────────────┘
+                                        │
+                                    [  ReLU  ]
+                                    Output: H(x) = F(x) + x
+
+  Network learns H(x) directly.    Network learns residual F(x) = H(x) − x.
+                                    Then H(x) = F(x) + x.
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — Plain block vs Residual block. The skip connection (shortcut) allows gradients to flow directly to earlier layers.</div>
+  </div>
+
+  <h3>2.3 Why Residual Learning Works — Three Perspectives</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Perspective 1 — Easier optimization:</strong> If the optimal function is close to identity (H(x) ≈ x), it is much easier to push F(x) → 0 (a small perturbation from zero) than to learn H(x) ≈ x through stacked non-linear transformations. The residual formulation reframes what needs to be learned into a simpler target.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Perspective 2 — Gradient highway:</strong> During backpropagation, gradients flow through the skip connection directly: ∂L/∂x = ∂L/∂(F+x) = ∂L/∂F + 1. The "+1" ensures that even if the residual branch gradient ∂L/∂F is tiny (vanishing), a gradient of 1 still flows through the identity path. Deep networks can now receive non-zero gradient signals at early layers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Perspective 3 — Ensemble of shallow networks:</strong> Residual networks can be unrolled as an exponential ensemble of shallow networks of different depths. This gives them ensemble-like properties — robustness and good generalization.</div></li>
+  </ul>
+
+  <h3>2.4 Residual Block Variants</h3>
+
+  <div class="diagram">
+    <pre>
+  BASIC BLOCK (ResNet-18, 34):      BOTTLENECK BLOCK (ResNet-50, 101, 152):
+
+  Input: x (C channels)             Input: x (256 channels)
+     │                                  │
+  [3×3 Conv, C filters, BN, ReLU]  [1×1 Conv, 64 filters, BN, ReLU]  ← reduce channels
+     │                                  │
+  [3×3 Conv, C filters, BN]         [3×3 Conv, 64 filters, BN, ReLU]  ← spatial conv
+     │           ┌── x ──┐              │
+  [ + ] ◀────────┘        │         [1×1 Conv, 256 filters, BN]        ← restore channels
+  [ReLU]                  │             │           ┌── x ──┐
+  Output                  │         [ + ] ◀─────────┘        │
+                          │         [ReLU]                    │
+                  Identity or        Output               1×1 Conv
+                  1×1 Conv           (when dim changes)   projection
+    </pre>
+    <div class="diagram-caption">Figure 2.2 — Basic block (2 Conv layers) vs Bottleneck block (3 Conv layers with 1×1 compression). Bottleneck enables deeper nets with same compute.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Basic block:</strong> Two 3×3 Conv layers. Used in ResNet-18 and ResNet-34. Straightforward.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Bottleneck block:</strong> 1×1 Conv (reduce channels: 256→64) → 3×3 Conv (spatial processing at lower dim) → 1×1 Conv (expand channels: 64→256). Much cheaper computationally: 1×1+3×3+1×1 vs 3×3+3×3. Enables ResNet-50, 101, 152 without excessive compute.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Projection shortcut:</strong> When input and output dimensions differ (e.g., spatial halving or channel doubling), the skip connection uses a 1×1 Conv projection to match dimensions. Otherwise it is a pure identity (no parameters).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Batch Normalization placement:</strong> Standard: Conv → BN → ReLU → Conv → BN → ADD → ReLU. Pre-activation ResNet (He et al., 2016): BN → ReLU → Conv → BN → ReLU → Conv → ADD. Pre-activation performs slightly better and simplifies analysis.</div></li>
+  </ul>
+
+  <h3>2.5 ResNet Family — Configurations</h3>
+
+  <table class="compare-table">
+    <tr><th>Model</th><th>Layers</th><th>Block Type</th><th>Residual Blocks (per stage)</th><th>Params</th><th>Top-1 Acc (ImageNet)</th></tr>
+    <tr><td><strong>ResNet-18</strong></td><td>18</td><td>Basic</td><td>2, 2, 2, 2</td><td>11.7M</td><td>69.8%</td></tr>
+    <tr><td><strong>ResNet-34</strong></td><td>34</td><td>Basic</td><td>3, 4, 6, 3</td><td>21.8M</td><td>73.3%</td></tr>
+    <tr><td><strong>ResNet-50</strong></td><td>50</td><td>Bottleneck</td><td>3, 4, 6, 3</td><td>25.6M</td><td>76.1%</td></tr>
+    <tr><td><strong>ResNet-101</strong></td><td>101</td><td>Bottleneck</td><td>3, 4, 23, 3</td><td>44.5M</td><td>77.4%</td></tr>
+    <tr><td><strong>ResNet-152</strong></td><td>152</td><td>Bottleneck</td><td>3, 8, 36, 3</td><td>60.2M</td><td>78.3%</td></tr>
+  </table>
+
+  <h3>2.6 ResNet Architecture — Stage Structure</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Stage 0 — Stem:</strong> 7×7 Conv, 64 filters, stride 2 → 112×112. BN + ReLU. 3×3 MaxPool stride 2 → 56×56×64. Large initial Conv captures broad patterns quickly.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 1 (conv2_x):</strong> 56×56, 64 channels. No spatial downsampling. Residual blocks (basic or bottleneck). First stage sets the feature base.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 2 (conv3_x):</strong> 28×28, 128 channels. First block uses stride 2 for spatial halving + projection for channel doubling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 3 (conv4_x):</strong> 14×14, 256 channels. Deepest stage — most residual blocks. Core of representational learning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 4 (conv5_x):</strong> 7×7, 512 channels (for ResNet-18/34) or 2048 channels (for ResNet-50+).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Head:</strong> Global Average Pooling (GAP) → 1×1×C → Dense(1000) + Softmax. GAP replaces FC layers — only 1000 parameters in the classification head regardless of backbone depth.</div></li>
+  </ul>
+
+  <h3>2.7 ResNet Variants and Successors</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Wide ResNet (WRN):</strong> Wider (more channels) but shallower. WRN-28-10 (28 layers, 10× wider) outperforms ResNet-1001 with 8× fewer parameters. Width sometimes > depth.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ResNeXt:</strong> Introduces grouped convolutions (cardinality). Replaces one large Conv with many parallel small Convs with shared weights. ResNeXt-50 32×4d: 32 groups of 4-channel Convs. Better accuracy for same params.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DenseNet:</strong> Every layer connects to ALL subsequent layers (not just next). Feature reuse is maximum. But memory-intensive — requires storing all intermediate feature maps.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SE-Net (Squeeze-and-Excitation):</strong> Adds a channel attention module to each residual block. Squeezes spatial info via GAP, excites channels with learned weights. Won ILSVRC 2017.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why ResNet Succeeded Where VGG Failed for Deep Networks</div>
+    <p>VGG: stacks plain layers → gradient vanishes through 16+ layers → degradation problem. ResNet: adds identity skip connections → gradient highway bypasses vanishing → can train 152+ layers. The key equation is H(x) = F(x) + x. The gradient ∂L/∂x = ∂L/∂F + 1 ensures the "+1" term always provides a non-zero gradient signal regardless of depth.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-cnn">
+    <div class="section-num">Section 3</div>
+    <h2>EfficientNet — Principled Network Scaling</h2>
+  </div>
+
+  <h3>3.1 The Scaling Problem</h3>
+  <p>After ResNet proved depth is crucial, researchers kept scaling networks — wider, deeper, higher resolution input. But each axis was scaled independently and arbitrarily. EfficientNet (Tan &amp; Le, Google Brain — 2019) asked: is there a <strong>principled way</strong> to scale CNNs that maximizes accuracy for a given compute budget?</p>
+
+  <h3>3.2 The Three Scaling Dimensions</h3>
+
+  <div class="diagram">
+    <pre>
+  THREE INDEPENDENT SCALING DIMENSIONS:
+
+  1. DEPTH (d):       more layers       → larger receptive field, more complex features
+                      ResNet-50 → 101 → 152 (same width, more layers)
+
+  2. WIDTH (w):       more channels     → richer representations per layer
+                      VGG-64 → 128 → 256 channels (same depth, wider)
+
+  3. RESOLUTION (r):  larger input image → finer spatial detail
+                      224×224 → 300×300 → 600×600 (same network, larger input)
+
+  ──────────────────────────────────────────────────────────────────────
+  Problem: scaling only ONE dimension has diminishing returns quickly.
+  Scaling them TOGETHER but UNBALANCED also suboptimal.
+  EfficientNet: scale ALL THREE jointly in a principled ratio.
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Three scaling dimensions. EfficientNet scales all three simultaneously using compound coefficients.</div>
+  </div>
+
+  <h3>3.3 Compound Scaling — The Core Formula</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Compound Scaling Coefficients</div>
+    <div class="formula">
+      Given a target compute budget φ (compound coefficient):<br><br>
+      <span class="hl">depth:      d = αᵠ</span><br>
+      <span class="var">width:      w = βᵠ</span><br>
+      <span class="gr">resolution: r = γᵠ</span><br><br>
+      Subject to:  α · β² · γ² ≈ 2   <span class="comment">← FLOPS double every time φ increases by 1</span><br>
+                   α ≥ 1, β ≥ 1, γ ≥ 1<br><br>
+      Found via grid search on small baseline (EfficientNet-B0):<br>
+      α = 1.2,  β = 1.1,  γ = 1.15
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why β² and γ²?</strong> FLOPS scale as O(d·w²·r²). Doubling width quadruples FLOPS (w²). Doubling resolution also quadruples FLOPS (r²). Doubling depth only doubles FLOPS (d). So the constraint α·β²·γ²≈2 ensures each unit increase in φ exactly doubles total FLOPS.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Intuition:</strong> Higher resolution inputs need deeper networks to process fine-grained details and wider networks to capture more patterns at each level. The three dimensions must grow in sync — they are not independent.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Grid search procedure:</strong> Fix φ=1. Search α, β, γ satisfying the constraint. Apply these optimal ratios as: d=α^φ, w=β^φ, r=γ^φ for any target φ.</div></li>
+  </ul>
+
+  <h3>3.4 MBConv — The Building Block of EfficientNet</h3>
+  <p>EfficientNet uses <strong>MBConv (Mobile Inverted Bottleneck Convolution)</strong> as its basic block, borrowed from MobileNetV2. This is the key to its parameter efficiency.</p>
+
+  <div class="diagram">
+    <pre>
+  MBConv Block (with SE — Squeeze and Excitation):
+
+  Input: x (C channels)
+      │
+  [1×1 Conv — Expand: C → t×C channels]     ← expansion factor t (e.g. 6)
+  [BN + Swish activation]
+      │
+  [3×3 or 5×5 Depthwise Conv — t×C groups]  ← spatial filtering (no channel mixing)
+  [BN + Swish]
+      │
+  [SE Block: GAP → FC(t×C/r) → FC(t×C) → sigmoid → scale features] ← channel attention
+      │
+  [1×1 Conv — Project: t×C → C_out channels] ← compress back
+  [BN (no activation)]
+      │
+  [+ x (skip if C_in == C_out)]               ← residual connection (when dims match)
+    </pre>
+    <div class="diagram-caption">Figure 3.2 — MBConv block with Squeeze-and-Excitation. Uses depthwise separable conv for efficiency + SE for channel attention.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Swish activation:</strong> f(x) = x · σ(x). Smoother than ReLU (differentiable everywhere). Outperforms ReLU on EfficientNet. Also called SiLU (Sigmoid Linear Unit).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inverted bottleneck:</strong> Unlike ResNet (wide→narrow→wide), MBConv goes narrow→wide→narrow. Expansion happens inside the depthwise conv step — hence "inverted."</div></li>
+    <li><span class="bullet">▸</span><div><strong>SE block (Squeeze-Excitation):</strong> Global Average Pooling squeezes spatial info → two FC layers produce per-channel weights (Excitation) → scale each channel by its learned weight. Adds channel attention: "which features matter for this image?"</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why efficient:</strong> Depthwise Conv has C_in parameters per spatial filter (no cross-channel mixing). Standard Conv has C_in×C_out×f×f. For C=128, f=3: depthwise = 128×9 = 1152 vs standard = 128×128×9 = 147,456. Over 100× fewer parameters for spatial filtering.</div></li>
+  </ul>
+
+  <h3>3.5 EfficientNet Variants (B0–B7)</h3>
+
+  <table class="compare-table">
+    <tr><th>Model</th><th>φ</th><th>Input Res.</th><th>Width</th><th>Depth</th><th>Params</th><th>Top-1 Acc</th><th>Relative Size</th></tr>
+    <tr><td><strong>B0</strong></td><td>0</td><td>224</td><td>1.0</td><td>1.0</td><td>5.3M</td><td>77.1%</td><td>Baseline</td></tr>
+    <tr><td><strong>B1</strong></td><td>0.5</td><td>240</td><td>1.0</td><td>1.1</td><td>7.8M</td><td>79.1%</td><td>1.5×</td></tr>
+    <tr><td><strong>B3</strong></td><td>1.5</td><td>300</td><td>1.2</td><td>1.4</td><td>12M</td><td>81.6%</td><td>2.3×</td></tr>
+    <tr><td><strong>B5</strong></td><td>2.5</td><td>456</td><td>1.6</td><td>2.2</td><td>30M</td><td>83.6%</td><td>5.7×</td></tr>
+    <tr><td><strong>B7</strong></td><td>3.5</td><td>600</td><td>2.0</td><td>3.1</td><td>66M</td><td>84.3%</td><td>12.5×</td></tr>
+  </table>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Efficiency comparison:</strong> EfficientNet-B7 achieves 84.3% top-1 with 66M parameters. ResNet-152 achieves 78.3% with 60M parameters. GPipe achieves 84.3% with 557M parameters. EfficientNet achieves the same top accuracy with 8.4× fewer parameters than GPipe.</div></li>
+    <li><span class="bullet">▸</span><div><strong>EfficientNetV2 (2021):</strong> Uses Fused-MBConv (replaces depthwise + pointwise with a single 3×3 Conv for early stages — faster on TPU/GPU). Progressive learning: trains on small images first, gradually increases image size. 5–11× faster training than EfficientNetV1.</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — EfficientNet in 4 Key Points</div>
+    <p>1. <strong>Problem solved:</strong> Arbitrary/one-dimensional scaling of CNNs (only depth, or only width) is suboptimal. All three dimensions interact. 2. <strong>Solution:</strong> Compound scaling — jointly scale depth (α^φ), width (β^φ), resolution (γ^φ) with α·β²·γ²≈2. 3. <strong>Building block:</strong> MBConv with Depthwise Separable Conv + SE channel attention + Swish activation. 4. <strong>Result:</strong> EfficientNet-B0 (5.3M params) outperforms ResNet-50 (25.6M params). Same accuracy as GPipe with 8× fewer parameters.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-cnn">
+    <div class="section-num">Section 4</div>
+    <h2>State-of-the-Art CNN Comparison</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr>
+      <th>Model</th><th>Year</th><th>Params</th><th>Top-1 Acc</th><th>Key Block</th><th>Core Contribution</th>
+    </tr>
+    <tr>
+      <td><strong>VGG-16</strong></td><td>2014</td><td>138M</td><td>74.4%</td><td>3×3 Conv stack</td>
+      <td>Depth via uniform simple filters; strong transfer learning backbone</td>
+    </tr>
+    <tr>
+      <td><strong>GoogLeNet</strong></td><td>2014</td><td>7M</td><td>74.8%</td><td>Inception module</td>
+      <td>Parallel multi-scale convolutions; 1×1 bottleneck; Global Avg Pool</td>
+    </tr>
+    <tr>
+      <td><strong>ResNet-50</strong></td><td>2015</td><td>25.6M</td><td>76.1%</td><td>Bottleneck residual</td>
+      <td>Skip connections solve vanishing gradient; enables 100+ layer nets</td>
+    </tr>
+    <tr>
+      <td><strong>ResNet-152</strong></td><td>2015</td><td>60M</td><td>78.3%</td><td>Bottleneck residual</td>
+      <td>Ultra-deep residual network; 152 layers; ILSVRC 2015 winner</td>
+    </tr>
+    <tr>
+      <td><strong>DenseNet-201</strong></td><td>2017</td><td>20M</td><td>77.2%</td><td>Dense block</td>
+      <td>Every layer connects to all later layers; maximum feature reuse</td>
+    </tr>
+    <tr>
+      <td><strong>SE-ResNet-50</strong></td><td>2018</td><td>28M</td><td>77.6%</td><td>SE Residual block</td>
+      <td>Squeeze-Excitation channel attention added to ResNet</td>
+    </tr>
+    <tr>
+      <td><strong>EfficientNet-B0</strong></td><td>2019</td><td>5.3M</td><td>77.1%</td><td>MBConv + SE</td>
+      <td>Compound scaling; best accuracy/params ratio; MBConv building block</td>
+    </tr>
+    <tr>
+      <td><strong>EfficientNet-B7</strong></td><td>2019</td><td>66M</td><td>84.3%</td><td>MBConv + SE</td>
+      <td>Scaled B0; state-of-the-art accuracy at the time</td>
+    </tr>
+    <tr>
+      <td><strong>Vision Transformer (ViT-L)</strong></td><td>2021</td><td>307M</td><td>85.2%</td><td>Transformer block</td>
+      <td>Attention-only architecture; patches as tokens; no Conv inductive bias</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ████████████ PART 2: OBJECT DETECTION ████████████ -->
+<div class="part-banner pb-det">Part 2 — Object Detection: Mask R-CNN</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-det">
+    <div class="section-num">Section 5</div>
+    <h2>Object Detection — Fundamentals</h2>
+  </div>
+
+  <h3>5.1 Core Concepts</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Bounding Box:</strong> Defined by (x_center, y_center, width, height) or (x_min, y_min, x_max, y_max). The spatial localization output for each detected object.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Anchor boxes:</strong> Pre-defined boxes of multiple sizes and aspect ratios placed at each position in the feature map. Detectors predict <em>offsets</em> from these anchors rather than absolute coordinates — makes the regression problem easier.</div></li>
+    <li><span class="bullet">▸</span><div><strong>IoU (Intersection over Union):</strong> IoU = Area(A ∩ B) / Area(A ∪ B). Measures overlap between predicted and ground-truth box. IoU ≥ 0.5 = correct detection (PASCAL VOC). IoU thresholds 0.5:0.05:0.95 averaged = COCO AP metric.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-Maximum Suppression (NMS):</strong> Multiple anchors may fire for the same object. NMS: (1) Sort all predictions by confidence. (2) Keep highest-confidence box. (3) Remove all other boxes with IoU > threshold with it. (4) Repeat. Keeps exactly one box per object.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Feature Pyramid Network (FPN):</strong> Multi-scale feature extraction. A top-down pathway with lateral connections merges deep (semantic) features with shallow (spatial) features at multiple resolutions. Essential for detecting objects at vastly different scales.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">IoU Formula and Confidence Score</div>
+    <div class="formula">
+      IoU(A, B) = |A ∩ B| / |A ∪ B|  =  |A ∩ B| / (|A| + |B| − |A ∩ B|)<br><br>
+      Detection confidence = P(object) × IoU(pred, ground_truth)<br><br>
+      mAP = (1/C) × Σ_c  AUC(Precision-Recall curve for class c)
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-det">
+    <div class="section-num">Section 6</div>
+    <h2>Mask R-CNN — Complete Architecture</h2>
+  </div>
+
+  <h3>6.1 Lineage: R-CNN → Fast → Faster → Mask</h3>
+
+  <table class="compare-table">
+    <tr><th>Model</th><th>Proposal Method</th><th>Shared Features</th><th>Speed</th><th>Output</th></tr>
+    <tr><td><strong>R-CNN</strong></td><td>Selective Search (CPU)</td><td>No — CNN per region</td><td>47 sec/img</td><td>Class + box</td></tr>
+    <tr><td><strong>Fast R-CNN</strong></td><td>Selective Search</td><td>Yes — shared backbone</td><td>2 sec/img</td><td>Class + box</td></tr>
+    <tr><td><strong>Faster R-CNN</strong></td><td>RPN (learned, GPU)</td><td>Yes</td><td>0.14 sec/img</td><td>Class + box</td></tr>
+    <tr><td><strong>Mask R-CNN</strong></td><td>RPN (learned, GPU)</td><td>Yes + FPN</td><td>~0.2 sec/img</td><td>Class + box + mask</td></tr>
+  </table>
+
+  <h3>6.2 Mask R-CNN Full Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT IMAGE (H × W × 3)
+        │
+  ┌─────────────────────────────────┐
+  │ BACKBONE (ResNet-50 or 101)     │  ← Extracts multi-scale feature maps
+  │ + FPN (Feature Pyramid Network) │    C2(256ch), C3(512ch), C4(1024ch), C5(2048ch)
+  └─────────┬───────────────────────┘    FPN outputs: P2, P3, P4, P5, P6
+            │                            (all 256 channels, different resolutions)
+  ┌─────────▼───────────────────────┐
+  │ REGION PROPOSAL NETWORK (RPN)   │  ← Slides 3×3 Conv over each FPN level
+  │                                 │    Predicts: objectness score + box offsets
+  │  Per anchor: 2k scores          │    Anchors: 3 scales × 3 ratios = 9 per position
+  │             4k box offsets      │    NMS → top 2000 proposals (train), 1000 (test)
+  └─────────┬───────────────────────┘
+            │ Region-of-Interest (RoI) proposals
+  ┌─────────▼────────────────────────────────────────────┐
+  │ ROI ALIGN                                            │
+  │ Maps each proposal to fixed 7×7 feature grid        │
+  │ Uses bilinear interpolation (no quantization)       │
+  │ Selects FPN level by proposal size:                 │
+  │   k = floor(4 + log2(√(wh)/224))                   │
+  └─────────┬───────┬─────────────────────────┬─────────┘
+            │       │                         │
+  ┌─────────▼──┐  ┌─▼────────────┐  ┌────────▼──────────┐
+  │ BOX HEAD   │  │ CLASS HEAD   │  │  MASK HEAD        │
+  │ 2 × FC     │  │ 2 × FC       │  │  4 × Conv 3×3     │
+  │ → box Δ   │  │ → Softmax(C) │  │  + Deconv (×2)    │
+  └────────────┘  └──────────────┘  │  → sigmoid → mask │
+                                    │  28×28 binary mask │
+                                    │  per class (C×28²) │
+                                    └───────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 6.1 — Complete Mask R-CNN architecture. Three parallel output heads: box regression, classification, and instance mask prediction.</div>
+  </div>
+
+  <h3>6.3 Key Components — Detailed</h3>
+
+  <h4>A. Backbone + FPN</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>ResNet-50/101 backbone:</strong> Extracts hierarchical feature maps C2 (1/4 res), C3 (1/8), C4 (1/16), C5 (1/32) from input image.</div></li>
+    <li><span class="bullet">▸</span><div><strong>FPN top-down pathway:</strong> Starts from C5 (high semantics, low resolution). Upsamples 2× and adds (lateral connection) with C4, C3, C2. Each level gets 256 channels via 1×1 Conv. Produces P2–P5 multi-scale feature maps with both rich semantics AND spatial precision.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Multi-scale detection:</strong> Small anchors are matched to P2 (high resolution). Large anchors to P5 (low resolution). Each level handles its appropriate scale range.</div></li>
+  </ul>
+
+  <h4>B. Region Proposal Network (RPN)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Operation:</strong> A 3×3 sliding window Conv over each FPN feature map. At each position, predicts for k=9 anchors: (1) binary objectness (object or background), (2) 4 box offset values (dx, dy, dw, dh).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Anchor definition:</strong> At each feature map position: 3 scales (32², 64², 128² pixels) × 3 aspect ratios (1:1, 1:2, 2:1) = 9 anchors. Anchors are aligned to input image coordinates.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training:</strong> Anchors with IoU ≥ 0.7 with any ground-truth box → positive. IoU &lt; 0.3 → negative. Others → ignored. Loss = binary cross-entropy (objectness) + smooth L1 (box offsets) for positives only.</div></li>
+  </ul>
+
+  <h4>C. RoIAlign — The Critical Fix</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with RoIPool:</strong> RoIPool quantizes (rounds) the RoI boundaries to discrete feature map cells. This introduces misalignment of up to half a cell — devastating for pixel-level mask prediction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>RoIAlign solution:</strong> Divides the RoI into k×k bins (typically 7×7 for detection, 14×14 for masks). Within each bin, samples 4 points using bilinear interpolation at exact float coordinates — no rounding. Results are max-pooled per bin.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Impact:</strong> Mask AP improved by 3–5% simply by switching from RoIPool to RoIAlign, without any other change. Critical for precise mask boundaries.</div></li>
+  </ul>
+
+  <h4>D. Mask Head</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Takes 14×14×256 RoIAlign output. Applies 4 × (3×3 Conv, 256 channels, ReLU). One transposed Conv (deconv) upsamples 14×14 → 28×28. Final 1×1 Conv → C×28×28 binary masks (one per class). Sigmoid activation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Class-specific masks:</strong> Predicts a separate 28×28 binary mask for each of C classes. At inference, only the mask for the predicted class is selected. This decouples mask prediction from classification — the mask head doesn't need to worry about which class it is, just the shape.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Mask loss:</strong> Average binary cross-entropy loss only over the ground-truth class mask. Computed only for positive (foreground) RoIs.</div></li>
+  </ul>
+
+  <h3>6.4 Multi-Task Loss</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Mask R-CNN Total Loss</div>
+    <div class="formula">
+      L_total = L_rpn_cls + L_rpn_box + L_cls + L_box + L_mask<br><br>
+      L_rpn_cls:  binary cross-entropy (objectness)         <span class="comment">← RPN</span><br>
+      L_rpn_box:  smooth L1 (anchor box regression)         <span class="comment">← RPN</span><br>
+      L_cls:      cross-entropy (C+1 classes)               <span class="comment">← classification head</span><br>
+      L_box:      smooth L1 (box refinement)                <span class="comment">← box head</span><br>
+      L_mask:     avg binary cross-entropy (28×28 mask)     <span class="comment">← mask head</span><br><br>
+      All 5 losses are summed with equal weight (λ=1 for each)
+    </div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — What Makes Mask R-CNN Unique</div>
+    <p>1. <strong>Three heads:</strong> Classification + Box regression + Instance mask — all sharing the same backbone and RoI features. 2. <strong>RoIAlign:</strong> Bilinear interpolation preserves spatial alignment — crucial for pixel-precise masks. 3. <strong>Class-specific masks:</strong> Predicts C binary masks per RoI; selects only the predicted class's mask. Decouples "what" from "where exactly." 4. <strong>FPN backbone:</strong> Multi-scale features handle objects at vastly different sizes.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 3: YOLO FAMILY ████████████ -->
+<div class="part-banner pb-yolo">Part 3 — YOLO Family: v1 to v7</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-yolo">
+    <div class="section-num">Section 7</div>
+    <h2>YOLO — Evolution from v1 to v4</h2>
+  </div>
+
+  <h3>7.1 YOLO Philosophy — You Only Look Once</h3>
+  <p>The core YOLO insight: object detection as a <strong>single regression problem</strong>. Rather than two stages (propose → classify), YOLO predicts bounding boxes and class probabilities directly from the full image in <strong>one forward pass</strong>. This makes it dramatically faster — enabling real-time detection.</p>
+
+  <div class="ver-grid">
+    <div class="ver-card vc-v1">
+      <div class="ver-badge">YOLOv1</div>
+      <div class="ver-title">Single-Pass Grid Detection</div>
+      <div class="ver-year">Redmon et al., CVPR 2015 — 45 FPS on Titan X</div>
+      <p><strong>Core idea:</strong> Divide image into S×S grid (7×7). Each cell predicts B=2 bounding boxes (x,y,w,h,confidence) and C=20 class probabilities. Output tensor: 7×7×(2×5+20) = 7×7×30.</p>
+      <p><strong>Loss:</strong> Sum of squared errors across all predictions. Penalizes localization, confidence, and classification errors. Weighted to handle class imbalance (λ_coord=5, λ_noobj=0.5).</p>
+      <div class="ver-key">Limitations: struggles with small objects, objects in clusters, unusual aspect ratios. Each cell predicts only 1 class — cannot detect two classes in same cell.</div>
+    </div>
+    <div class="ver-card vc-v2">
+      <div class="ver-badge">YOLOv2 / YOLO9000</div>
+      <div class="ver-title">Better, Faster, Stronger</div>
+      <div class="ver-year">Redmon &amp; Farhadi, CVPR 2017 — 67 FPS</div>
+      <p><strong>Anchor boxes:</strong> Replaces arbitrary box predictions with learned anchor shapes (k-means clustering on training set bounding boxes). 5 anchors per cell. Predicts offsets from anchors, not absolute coordinates. Much better localization.</p>
+      <p><strong>Batch Normalization:</strong> Added to every Conv layer (removed Dropout). Darknet-19 backbone (19 Conv layers). Multi-scale training: randomly resizes input every 10 batches (320 to 608).</p>
+      <div class="ver-key">YOLO9000: trained jointly on ImageNet (9000 classes) + COCO using hierarchical softmax (WordTree). Can detect 9000 object categories.</div>
+    </div>
+    <div class="ver-card vc-v3">
+      <div class="ver-badge">YOLOv3</div>
+      <div class="ver-title">Multi-Scale Detection with Darknet-53</div>
+      <div class="ver-year">Redmon &amp; Farhadi, arXiv 2018 — 30 FPS (608×608)</div>
+      <p><strong>Multi-scale predictions:</strong> Detects at 3 scales (52×52, 26×26, 13×13 feature maps). Large objects on coarse map, small on fine map. 3 anchors per scale = 9 anchors total.</p>
+      <p><strong>Darknet-53 backbone:</strong> 53 Conv layers with residual shortcuts. Combination of ResNet-style connections + DarkNet design. Better feature extraction than Darknet-19.</p>
+      <p><strong>Logistic classifiers:</strong> Replaced Softmax with independent logistic classifiers for multi-label detection (an object can be "person" AND "woman").</p>
+      <div class="ver-key">Most widely deployed YOLO variant in industry. Good balance of speed and accuracy. 51.5% mAP on COCO at 51 FPS.</div>
+    </div>
+    <div class="ver-card vc-v4">
+      <div class="ver-badge">YOLOv4</div>
+      <div class="ver-title">Systematic Bag-of-Freebies</div>
+      <div class="ver-year">Bochkovskiy et al., 2020 — 62 FPS (608×608)</div>
+      <p><strong>Bag of Freebies (BoF):</strong> Training tricks that improve accuracy at no inference cost: CutMix/Mosaic augmentation, DropBlock regularization, CIoU loss, label smoothing, self-adversarial training.</p>
+      <p><strong>Bag of Specials (BoS):</strong> Small inference-time additions: Mish activation, SPP (Spatial Pyramid Pooling), PANet (Path Aggregation Network neck), SAM attention.</p>
+      <p><strong>CSPDarknet53 backbone:</strong> Cross Stage Partial connections — splits feature map and processes only half through the dense block, merging results. Reduces FLOPS while maintaining accuracy.</p>
+      <div class="ver-key">43.5% AP on COCO at 65 FPS on RTX 2080Ti. Comprehensive engineering effort — systematic evaluation of all modern tricks.</div>
+    </div>
+  </div>
+
+  <h3>7.2 YOLO Prediction Format</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">YOLO Box Prediction (per anchor at grid cell i,j)</div>
+    <div class="formula">
+      <span class="hl">Box center (relative to cell):</span><br>
+      bx = σ(tx) + cx      <span class="comment">← σ ensures bx stays within cell</span><br>
+      by = σ(ty) + cy      <span class="comment">← cx, cy = cell top-left coordinates</span><br><br>
+      <span class="var">Box dimensions (relative to anchor):</span><br>
+      bw = pw · e^tw       <span class="comment">← pw = anchor width (from k-means)</span><br>
+      bh = ph · e^th       <span class="comment">← exponential ensures positive size</span><br><br>
+      <span class="gr">Confidence score:</span><br>
+      conf = σ(to)         <span class="comment">← P(object) × IoU(pred, gt)</span><br><br>
+      <span class="rd">Class probabilities (YOLOv3):</span><br>
+      P(class_i) = σ(tc_i) <span class="comment">← independent logistic, not softmax</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-yolo">
+    <div class="section-num">Section 8</div>
+    <h2>YOLOv5 — Architecture in Depth</h2>
+  </div>
+
+  <h3>8.1 Overview and Context</h3>
+  <p>YOLOv5 (Glenn Jocher, Ultralytics — 2020) is not a direct successor to YOLOv4 by the original authors (Redmon). It is an independent re-implementation and extension in PyTorch. Despite controversy about the version naming, YOLOv5 became enormously popular due to its ease of use, extensive documentation, and excellent speed-accuracy tradeoff.</p>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">Why YOLOv5 Became the Industry Standard</div>
+    <p>YOLOv5 was the first YOLO fully implemented in PyTorch (previous versions used Darknet C framework). Ultralytics provided an end-to-end training/evaluation/deployment pipeline, detailed documentation, easy model export (ONNX, TensorRT, CoreML), and active maintenance. This made it the go-to detector for industry and research from 2020 onwards.</p>
+  </div>
+
+  <h3>8.2 YOLOv5 Architecture — Three Parts</h3>
+
+  <div class="diagram">
+    <pre>
+  YOLOv5 Architecture:
+
+  INPUT → [Backbone: CSPDarknet53] → [Neck: PANet with SPP] → [Head: Multi-scale detection]
+
+  ┌──────────────────────────────────────────────────────────────────────────────┐
+  │ BACKBONE: CSPDarknet53                                                       │
+  │  Focus layer (4×1/2 slicing → 1/2 res, 4× channels, no info loss)           │
+  │  → CBL (Conv + BN + LeakyReLU) ×1                                           │
+  │  → CSP1_X blocks (Cross Stage Partial, X residual units)                    │
+  │  Feature maps: P3(80×80), P4(40×40), P5(20×20)                              │
+  └─────────────────────────────┬────────────────────────────────────────────────┘
+                                │
+  ┌─────────────────────────────▼────────────────────────────────────────────────┐
+  │ NECK: SPP + PANet                                                            │
+  │  SPP (Spatial Pyramid Pooling): MaxPool at 5×5, 9×9, 13×13 → concat         │
+  │  → captures context at multiple receptive fields                             │
+  │  PANet: FPN-style top-down path PLUS bottom-up augmented path                │
+  │  → merges features at P3, P4, P5 with both up and downsampling               │
+  └─────────────────────────────┬────────────────────────────────────────────────┘
+                                │
+  ┌─────────────────────────────▼────────────────────────────────────────────────┐
+  │ HEAD: 3 Detection Layers                                                     │
+  │  P3 (80×80) → small objects   → 3 anchors → 80×80×(3×(5+C))                │
+  │  P4 (40×40) → medium objects  → 3 anchors → 40×40×(3×(5+C))                │
+  │  P5 (20×20) → large objects   → 3 anchors → 20×20×(3×(5+C))                │
+  │                                                                               │
+  │  Each prediction: [x, y, w, h, obj_conf, class_1, ..., class_C]             │
+  └──────────────────────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — YOLOv5 three-part architecture: CSPDarknet53 backbone, SPP+PANet neck, multi-scale detection head.</div>
+  </div>
+
+  <h3>8.3 CSP (Cross Stage Partial) Connection</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Split input feature map into two parts along channels. One part goes through the dense block (residual layers). The other bypasses directly. Both are concatenated at the end and projected.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefit:</strong> Reduces computation: the expensive residual block operates on only half the channels. Also reduces gradient duplication — the direct path and the residual path share gradients differently, improving learning efficiency.</div></li>
+    <li><span class="bullet">▸</span><div><strong>vs. ResNet:</strong> ResNet adds x to F(x). CSP concatenates x' (half channels) with F(x'') (other half through residual). Both reduce vanishing gradients but CSP is more compute-efficient.</div></li>
+  </ul>
+
+  <h3>8.4 PANet Neck</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>FPN limitation:</strong> FPN top-down path: information flows from deep to shallow layers. Feature at P2 has traveled a long path from P5 — long-range connections may weaken semantic information.</div></li>
+    <li><span class="bullet">▸</span><div><strong>PANet (Path Aggregation Network):</strong> Adds a second bottom-up path after FPN's top-down path. So information can now travel both: (1) deep (semantic) → shallow (spatial), AND (2) shallow (spatial) → deep (semantic). Maximum feature propagation between all levels in just 2 hops.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Result:</strong> Richer feature maps at all scales — better detection of objects at all sizes. Standard neck in most modern YOLO variants.</div></li>
+  </ul>
+
+  <h3>8.5 YOLOv5 Loss Function</h3>
+  <div class="formula-block">
+    <div class="formula-label">YOLOv5 Total Loss</div>
+    <div class="formula">
+      L = λ_box · L_box  +  λ_obj · L_obj  +  λ_cls · L_cls<br><br>
+      L_box: CIoU loss (Complete IoU)     <span class="comment">← penalizes center distance + aspect ratio</span><br>
+      L_obj: Binary Cross-Entropy         <span class="comment">← objectness per anchor</span><br>
+      L_cls: Binary Cross-Entropy         <span class="comment">← class probabilities (multi-label)</span><br><br>
+      Weights: λ_box=0.05, λ_obj=1.0, λ_cls=0.5
+    </div>
+  </div>
+
+  <h3>8.6 CIoU Loss — Improvement Over Simple IoU</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>IoU Loss:</strong> L = 1 - IoU. Problem: if boxes don't overlap at all, IoU=0 and gradient=0 — the box cannot move toward the ground truth.</div></li>
+    <li><span class="bullet">▸</span><div><strong>GIoU (Generalized IoU):</strong> Adds a term for the smallest enclosing box: L = 1 − IoU + |C \ (A∪B)| / |C|. Provides gradient even when boxes don't overlap.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DIoU (Distance IoU):</strong> Adds distance between box centers: L = 1 − IoU + ρ²(b,b_gt)/c². Also used in NMS (DIoU-NMS) — better than standard NMS for occluded objects.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CIoU (Complete IoU):</strong> Adds aspect ratio consistency: L = 1 − IoU + ρ²/c² + αv, where v = (4/π²)(arctan(w_gt/h_gt) − arctan(w/h))² and α = v/(1−IoU+v). Simultaneously optimizes overlap, center distance, AND aspect ratio.</div></li>
+  </ul>
+
+  <h3>8.7 YOLOv5 Model Sizes</h3>
+
+  <table class="compare-table">
+    <tr><th>Model</th><th>Params</th><th>COCO mAP@0.5</th><th>Speed (ms, V100)</th><th>Use Case</th></tr>
+    <tr><td><strong>YOLOv5n (nano)</strong></td><td>1.9M</td><td>45.7%</td><td>6.3</td><td>Edge / IoT devices</td></tr>
+    <tr><td><strong>YOLOv5s (small)</strong></td><td>7.2M</td><td>56.8%</td><td>6.4</td><td>Mobile deployment</td></tr>
+    <tr><td><strong>YOLOv5m (medium)</strong></td><td>21.2M</td><td>64.1%</td><td>8.2</td><td>Balanced</td></tr>
+    <tr><td><strong>YOLOv5l (large)</strong></td><td>46.5M</td><td>67.3%</td><td>10.1</td><td>Server / GPU</td></tr>
+    <tr><td><strong>YOLOv5x (xlarge)</strong></td><td>86.7M</td><td>68.9%</td><td>12.1</td><td>Max accuracy</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-yolo">
+    <div class="section-num">Section 9</div>
+    <h2>YOLOv7 — State-of-the-Art Real-Time Detection</h2>
+  </div>
+
+  <h3>9.1 Background</h3>
+  <p>YOLOv7 (Wang, Bochkovskiy, Liao — 2022, from the original YOLOv4 team) is the direct successor to YOLOv4. It introduced several architectural innovations under the concept of <strong>"trainable bag-of-freebies"</strong> — optimizations that improve accuracy during training without adding inference cost.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">YOLOv7 Core Claim</div>
+    <p>At the time of publication (July 2022): YOLOv7 surpassed all known real-time object detectors in both speed and accuracy at 5–160 FPS on COCO. YOLOv7-E6 achieved 56.8% AP on COCO — better than previous detectors at the same speed. YOLOv7-tiny runs at 160 FPS on V100 GPU. "State of the art" from 5 FPS to 160 FPS range.</p>
+  </div>
+
+  <h3>9.2 E-ELAN — Efficient Layer Aggregation Network</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with stacking CSP:</strong> As networks get deeper, gradient flow and feature reuse become suboptimal. ELAN (Extended Efficient Layer Aggregation Network) controls the shortest and longest gradient paths by grouping conv layers into blocks with selective skip connections.</div></li>
+    <li><span class="bullet">▸</span><div><strong>E-ELAN (Extended ELAN):</strong> YOLOv7's extension. Uses group convolution for channel expansion, shuffles and merges cardinality (multiple parallel computation paths). Does NOT destroy the original gradient path — the extended network block maintains the ability to learn and converge.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect:</strong> Better feature reuse, stronger gradient flow, higher parameter efficiency. The backbone design is more principled than ad-hoc CSP stacking.</div></li>
+  </ul>
+
+  <h3>9.3 Model Re-parametrization — RepConv</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Concept:</strong> Use a more complex structure (multiple parallel branches) during <em>training</em> to learn richer representations. At <em>inference</em>, mathematically merge all branches into a single Conv — no extra cost at deployment time. "Trainable freebies."</div></li>
+    <li><span class="bullet">▸</span><div><strong>RepConv structure (training):</strong> Three parallel branches: 3×3 Conv + 1×1 Conv + identity shortcut. Each branch has its own BN. Trained with gradients flowing through all three.</div></li>
+    <li><span class="bullet">▸</span><div><strong>RepConv (inference):</strong> Absorb all branches into one 3×3 Conv by fusing BN parameters and adding branch kernels. Single Conv operation = fast inference, no multi-branch overhead. Same accuracy as multi-branch training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it works:</strong> At training time, the 1×1 and identity branches provide additional gradient paths and implicit regularization. At inference, the structure collapses to a compact form with the same expressive power.</div></li>
+  </ul>
+
+  <h3>9.4 Auxiliary Heads and Lead Head</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Lead head:</strong> The final detection output used at inference time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Auxiliary heads:</strong> Additional detection heads attached to intermediate layers. During training only — their losses help train the backbone more effectively (similar to Inception's auxiliary classifiers but more principled).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Lead head guided label assignment:</strong> The auxiliary heads use the lead head's predictions to generate their training labels — not the raw ground truth. This ensures auxiliary heads and lead head are consistent, improving overall training quality.</div></li>
+  </ul>
+
+  <h3>9.5 YOLOv7 Architecture Summary</h3>
+
+  <div class="diagram">
+    <pre>
+  YOLOv7 Architecture Overview:
+
+  INPUT IMAGE
+       │
+  ┌────▼──────────────────────────────────────────────┐
+  │ BACKBONE: E-ELAN + Model Scaling                  │
+  │  CBS blocks (Conv+BN+SiLU) for stem               │
+  │  ELAN blocks for feature extraction               │
+  │  MP (Max-Pool) blocks for downsampling            │
+  │  Outputs: P3(80×80), P4(40×40), P5(20×20)        │
+  └────┬──────────────────────────────────────────────┘
+       │
+  ┌────▼──────────────────────────────────────────────┐
+  │ NECK: SPPCSPC + PAN                               │
+  │  SPPCSPC: CSP + SPP for multi-scale context       │
+  │  PANet: bidirectional feature pyramid             │
+  └────┬──────────────────────────────────────────────┘
+       │
+  ┌────▼──────────────────────────────────────────────┐
+  │ HEAD: Implicit Knowledge + Multi-scale            │
+  │  IDetect: Implicit anchor-based head              │
+  │  Implicit knowledge: learned scalars multiplied   │
+  │  into feature maps (improves detection quality)   │
+  │  Lead head: final predictions (3 scales)          │
+  │  Aux heads: training guidance only                │
+  └───────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 9.1 — YOLOv7 architecture. E-ELAN backbone + SPPCSPC + PANet neck + implicit knowledge head.</div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-yolo">
+    <div class="section-num">Section 10</div>
+    <h2>YOLO Versions — Full Comparison</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr>
+      <th>Version</th><th>Year</th><th>Backbone</th><th>Neck</th><th>Key Innovation</th><th>COCO AP</th><th>FPS (GPU)</th>
+    </tr>
+    <tr>
+      <td><strong>YOLOv1</strong></td><td>2015</td><td>Custom 24-layer</td><td>—</td>
+      <td>Single-pass, S×S grid, unified detection</td><td>63.4 mAP (VOC)</td><td>45</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv2</strong></td><td>2016</td><td>Darknet-19</td><td>—</td>
+      <td>Anchor boxes, BN, multi-scale training</td><td>76.8% (VOC)</td><td>67</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv3</strong></td><td>2018</td><td>Darknet-53</td><td>FPN-style</td>
+      <td>Multi-scale 3 heads, logistic classifiers</td><td>33.0% (COCO)</td><td>30</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv4</strong></td><td>2020</td><td>CSPDarknet53</td><td>SPP + PANet</td>
+      <td>BoF + BoS, Mosaic augmentation, CIoU loss</td><td>43.5% (COCO)</td><td>62</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv5s</strong></td><td>2020</td><td>CSPDarknet</td><td>SPP + PANet</td>
+      <td>PyTorch re-impl, Focus layer, 5 model sizes</td><td>56.8% (0.5)</td><td>156</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv7</strong></td><td>2022</td><td>E-ELAN</td><td>SPPCSPC + PAN</td>
+      <td>RepConv, Aux heads, implicit knowledge</td><td>51.4% (COCO)</td><td>161</td>
+    </tr>
+    <tr>
+      <td><strong>YOLOv8</strong></td><td>2023</td><td>CSPDarknet C2f</td><td>C2f + PANet</td>
+      <td>Anchor-free, decoupled head, task-aligned assign.</td><td>53.9% (COCO)</td><td>~160</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — YOLOv5 vs YOLOv7 Key Differences</div>
+    <p><strong>YOLOv5:</strong> CSPDarknet53 backbone, PANet neck, anchor-based head, 5 size variants (n/s/m/l/x). PyTorch. Extremely popular industrial choice.</p>
+    <p><strong>YOLOv7:</strong> E-ELAN backbone (principled feature aggregation), RepConv (training-time reparameterization → inference time efficiency), Auxiliary training heads (led-guided label assignment), implicit knowledge in detection head. Higher AP and FPS than YOLOv5 on same hardware.</p>
+    <p><strong>Common:</strong> Both use 3-scale detection (P3/P4/P5), anchor boxes, CIoU loss, Mosaic augmentation, BN, and the YOLO unified head format.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 4: TRACKING ████████████ -->
+<div class="part-banner pb-trk">Part 4 — Object Tracking and DeepSORT</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-trk">
+    <div class="section-num">Section 11</div>
+    <h2>Object Tracking — Problem Setup</h2>
+  </div>
+
+  <h3>11.1 Detection vs Tracking</h3>
+  <p><strong>Object detection</strong> answers: "What objects are in this frame, and where?" — applied independently to each frame.</p>
+  <p><strong>Object tracking</strong> answers: "Which detected object in frame t is the same object as which detection in frame t+1?" — it assigns consistent IDs to objects across time.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Multi-Object Tracking (MOT):</strong> Track multiple objects simultaneously. Each track has a unique ID maintained across all frames. Output: trajectory of every object over time.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Online vs Offline tracking:</strong> Online: processes frames sequentially in real-time — must make association decisions immediately. Offline: can look at future frames — can use global optimization (Hungarian algorithm over entire video). DeepSORT is online.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Challenges:</strong> Occlusion (object hidden behind another). ID switch (tracker assigns wrong ID after occlusion). Appearance change (different lighting, viewpoint). Crowded scenes (many similar-looking objects close together).</div></li>
+  </ul>
+
+  <h3>11.2 Tracking-by-Detection Paradigm</h3>
+  <p>The dominant modern approach. Decouple detection and tracking:</p>
+
+  <div class="pipeline">
+    <div class="pipeline-title">Tracking-by-Detection Pipeline</div>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">Frame t input</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Detector (YOLO)</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Detections D_t</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">State Prediction (Kalman)</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Data Association (Hungarian)</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Track Update</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Output Trajectories</div>
+    </div>
+  </div>
+
+  <h3>11.3 SORT — Simple Online and Realtime Tracking</h3>
+  <p>SORT (Bewley et al., 2016) is the foundation of DeepSORT. It uses only two classical algorithms for tracking: Kalman Filter for prediction and Hungarian Algorithm for association.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Kalman Filter:</strong> Estimates the current state of a track (position and velocity) given noisy measurements. Predicts where the object will be in the next frame. Corrects prediction when a new detection is associated. Assumes constant velocity motion model.</div></li>
+    <li><span class="bullet">▸</span><div><strong>State vector:</strong> [u, v, s, r, u̇, v̇, ṡ] where (u,v) = bounding box center, s = scale (area), r = aspect ratio, and the dots represent velocities. Constant aspect ratio assumed (ṙ=0).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hungarian Algorithm:</strong> Optimal assignment algorithm. Given a cost matrix between N detections and M existing tracks, finds the minimum-cost assignment in O(n³) time. Used to solve the bipartite matching problem: which detection should be assigned to which existing track?</div></li>
+    <li><span class="bullet">▸</span><div><strong>Association cost:</strong> In SORT: IoU between predicted track bounding box and detection bounding box. Low IoU = high cost. Tracks with IoU &lt; 0.3 with all detections are left unassigned.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SORT limitation:</strong> Uses only IoU for association — purely geometric. When objects are occluded or move fast, IoU-based association fails. Appearance is completely ignored → many ID switches in crowded scenes.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-trk">
+    <div class="section-num">Section 12</div>
+    <h2>DeepSORT — Deep Appearance Descriptor + SORT</h2>
+  </div>
+
+  <h3>12.1 Core Innovation</h3>
+  <p>DeepSORT (Wojke, Bewley, Paulus — 2017) extends SORT by adding a <strong>deep appearance descriptor</strong> — a small CNN that embeds each detected bounding box into a 128-dimensional feature vector. Association now considers both geometric (IoU) similarity AND visual appearance similarity, dramatically reducing ID switches.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">DeepSORT = SORT + Deep Appearance Features</div>
+    <p>SORT fails when IoU cannot distinguish tracks (occlusion, fast motion, crowded scenes). DeepSORT's appearance descriptor asks: "Does this detection look like the same person/object as that track, regardless of where the boxes are?" This visual memory allows re-identification after long occlusions — something pure geometric tracking cannot do.</p>
+  </div>
+
+  <h3>12.2 DeepSORT Full Pipeline</h3>
+
+  <div class="diagram">
+    <pre>
+  DEEPSORT PIPELINE (per frame):
+
+  Frame t
+     │
+  ┌──▼──────────────────────┐
+  │ DETECTOR (e.g. YOLO)    │ → Detections D_t = {d₁, d₂, ..., dₘ}
+  └──┬──────────────────────┘   each dᵢ = (bbox, confidence)
+     │
+  ┌──▼──────────────────────┐
+  │ APPEARANCE EXTRACTOR    │ → For each dᵢ: extract 128-dim embedding eᵢ via CNN
+  │ (ReID CNN, trained on   │   eᵢ = f(crop(frame, bboxᵢ))
+  │  person re-identification│
+  │  dataset like Market1501)│
+  └──┬──────────────────────┘
+     │
+  ┌──▼──────────────────────────────────────────────────────────────────┐
+  │ KALMAN FILTER PREDICTION                                            │
+  │ For each existing track τₖ: predict state x̂ₖ = (ûₖ, v̂ₖ, ŝₖ, ...)  │
+  │ Also predict covariance Pₖ (uncertainty in prediction)             │
+  └──┬──────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼──────────────────────────────────────────────────────────────────┐
+  │ COST MATRIX COMPUTATION                                             │
+  │ For each (track τₖ, detection dᵢ) pair:                            │
+  │                                                                     │
+  │ Appearance cost (cosine distance):                                  │
+  │   c_app(k,i) = min cosine_dist(eᵢ, gallery_k)    ← vs track hist.  │
+  │                                                                     │
+  │ Motion cost (Mahalanobis distance):                                 │
+  │   c_mot(k,i) = (dᵢ − ŷₖ)ᵀ Sₖ⁻¹ (dᵢ − ŷₖ)       ← Kalman pred.   │
+  │                                                                     │
+  │ Gating: set c_mot(k,i) = ∞ if Mahalanobis dist > χ² threshold     │
+  │         set c_app(k,i) = ∞ if cosine dist > 0.2                   │
+  │                                                                     │
+  │ Combined: C(k,i) = λ · c_app(k,i) + (1−λ) · c_mot(k,i)           │
+  └──┬──────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼──────────────────────────────────────────────────────────────────┐
+  │ HUNGARIAN ALGORITHM                                                 │
+  │ Solve assignment: minimize Σ C(kᵢ, dᵢ) over valid (k,d) pairs      │
+  │ Output: matched pairs, unmatched tracks, unmatched detections       │
+  └──┬──────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼──────────────────────────────────────────────────────────────────┐
+  │ TRACK MANAGEMENT                                                    │
+  │ Matched tracks:     Update Kalman state with new measurement        │
+  │                     Add new embedding to appearance gallery         │
+  │ Unmatched tracks:   Mark as "missed" — count consecutive misses    │
+  │                     Delete if missed > max_age (default 30 frames) │
+  │ Unmatched detects:  Create new tentative track                     │
+  │                     Confirm after 3 consecutive matched frames     │
+  └──┬──────────────────────────────────────────────────────────────────┘
+     │
+  Output: Confirmed tracks with IDs + bounding boxes for frame t
+    </pre>
+    <div class="diagram-caption">Figure 12.1 — Complete DeepSORT pipeline. Detection → Appearance extraction → Kalman prediction → Cost computation → Hungarian assignment → Track management.</div>
+  </div>
+
+  <h3>12.3 Components Explained in Depth</h3>
+
+  <h4>A. Appearance Descriptor CNN</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Small CNN (e.g., 8 Conv layers, Batch Norm, ELU activations). Input: 64×128×3 (cropped and resized bounding box). Output: 128-dimensional L2-normalized feature vector.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training:</strong> Pre-trained on person re-identification datasets (Market-1501, DukeMTMC — ~1000 different pedestrian identities). Uses softmax classification loss + triplet loss to learn discriminative appearance embeddings.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Gallery:</strong> For each active track, maintain a gallery of the last 100 appearance descriptors. When computing appearance cost, compare new detection to ALL gallery embeddings and take the minimum distance (best match).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cosine distance:</strong> dist(a, b) = 1 − (aᵀb)/(‖a‖·‖b‖). Range [0, 2]. Since embeddings are L2-normalized: dist = 1 − aᵀb. Threshold 0.2 — if cosine distance &gt; 0.2, appearance is too different for association.</div></li>
+  </ul>
+
+  <h4>B. Kalman Filter in DeepSORT</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>State space:</strong> x = [u, v, γ, h, u̇, v̇, γ̇, ḣ]ᵀ. u,v = box center. γ = aspect ratio. h = height. Velocities estimated from temporal differences.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Prediction step:</strong> x̂ₜ = F·xₜ₋₁ (state transition). Pₜ = F·Pₜ₋₁·Fᵀ + Q (covariance update). F = state transition matrix (constant velocity). Q = process noise (model uncertainty).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Update step (when matched):</strong> Kalman gain K = Pₜ·Hᵀ·(H·Pₜ·Hᵀ + R)⁻¹. Updated state: xₜ = x̂ₜ + K·(zₜ − H·x̂ₜ). Updated covariance: Pₜ = (I − K·H)·Pₜ. H = observation matrix. R = measurement noise. zₜ = new detection measurement.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Mahalanobis distance:</strong> d²(k,i) = (dᵢ − ŷₖ)ᵀ Sₖ⁻¹ (dᵢ − ŷₖ). Accounts for prediction uncertainty via Sₖ = H·Pₖ·Hᵀ + R. A detection far from the predicted position (in uncertainty-normalized space) gets a high cost — acts as a gate.</div></li>
+  </ul>
+
+  <h4>C. Cascaded Matching</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Two-stage matching:</strong> DeepSORT uses cascaded matching rather than a single Hungarian assignment. First, try to match tracks that disappeared most recently (highest priority). Tracks that have been missing longer have less reliable Kalman predictions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 1:</strong> Match tracks that were updated last frame (age=1). These have the most reliable predictions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stage 2:</strong> Remaining unmatched tracks (age=2, 3, ...) are matched to remaining unmatched detections using IoU only (Kalman prediction degrades for older tracks).</div></li>
+  </ul>
+
+  <h3>12.4 DeepSORT Hyperparameters</h3>
+
+  <table class="compare-table">
+    <tr><th>Parameter</th><th>Default</th><th>Effect</th></tr>
+    <tr><td><strong>max_age</strong></td><td>30 frames</td><td>How long to keep a track without detection before deleting. Longer → more robust to occlusion but more ghost tracks.</td></tr>
+    <tr><td><strong>n_init</strong></td><td>3 frames</td><td>Number of consecutive detections before a tentative track is confirmed. Higher → fewer false tracks; lower → faster ID assignment.</td></tr>
+    <tr><td><strong>max_cosine_dist</strong></td><td>0.2</td><td>Appearance similarity gate. Higher → more lenient appearance matching. Domain-dependent.</td></tr>
+    <tr><td><strong>nn_budget</strong></td><td>100</td><td>Max gallery size per track. Older embeddings discarded when full. Larger → better re-ID but more memory.</td></tr>
+    <tr><td><strong>λ (lambda)</strong></td><td>0 (paper)</td><td>Balance between appearance and motion cost. 0 = appearance only; 1 = motion (IoU) only. Set based on scene speed.</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-trk">
+    <div class="section-num">Section 13</div>
+    <h2>Tracking Metrics, SORT vs DeepSORT, and Applications</h2>
+  </div>
+
+  <h3>13.1 Multi-Object Tracking Metrics</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>MOTA (Multi-Object Tracking Accuracy):</strong> MOTA = 1 − (FP + FN + IDSW) / GT. Combines false positives, false negatives, and ID switches. Main tracking accuracy metric. Higher is better.</div></li>
+    <li><span class="bullet">▸</span><div><strong>MOTP (Multi-Object Tracking Precision):</strong> Average IoU between matched predictions and ground truth. Measures localization precision of matched tracks. Higher is better.</div></li>
+    <li><span class="bullet">▸</span><div><strong>IDF1 (ID F1 Score):</strong> Harmonic mean of ID precision and ID recall. Measures how long trajectories are correctly tracked under the same ID. More sensitive to ID switches than MOTA.</div></li>
+    <li><span class="bullet">▸</span><div><strong>IDSW (ID Switches):</strong> Number of times a tracked object changes its assigned ID. Main failure mode of SORT. DeepSORT significantly reduces IDSW by using appearance features.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Mostly Tracked (MT) / Mostly Lost (ML):</strong> MT = % of ground truth trajectories that are tracked for at least 80% of their lifespan. ML = % tracked for less than 20%. Higher MT and lower ML is better.</div></li>
+  </ul>
+
+  <h3>13.2 SORT vs DeepSORT Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>SORT</th><th>DeepSORT</th></tr>
+    <tr><td><strong>Association metric</strong></td><td>IoU only (geometric)</td><td>Cosine appearance distance + Mahalanobis (motion)</td></tr>
+    <tr><td><strong>Speed</strong></td><td>~260 Hz</td><td>~40 Hz (appearance extraction overhead)</td></tr>
+    <tr><td><strong>ID switches</strong></td><td>High (1987 on MOT16)</td><td>Low (781 on MOT16) — 61% reduction</td></tr>
+    <tr><td><strong>Re-ID after occlusion</strong></td><td>Poor — relies on IoU overlap</td><td>Good — appearance model enables re-identification</td></tr>
+    <tr><td><strong>Requires CNN</strong></td><td>No</td><td>Yes — pre-trained ReID network</td></tr>
+    <tr><td><strong>Cascade matching</strong></td><td>No</td><td>Yes — prioritizes recently visible tracks</td></tr>
+    <tr><td><strong>MOTA on MOT16</strong></td><td>59.8%</td><td>61.4%</td></tr>
+    <tr><td><strong>Best for</strong></td><td>Fast, simple scenes (low density, no occlusion)</td><td>Crowded, occluded scenes (pedestrian tracking, surveillance)</td></tr>
+  </table>
+
+  <h3>13.3 YOLO + DeepSORT Integration</h3>
+  <p>The most common deployment pattern for real-time multi-object tracking combines YOLO (detection) with DeepSORT (tracking):</p>
+
+  <div class="pipeline">
+    <div class="pipeline-title">YOLO + DeepSORT Real-Time Pipeline</div>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">Video frame</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">YOLOv5/v7 detection</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Filter by confidence + class</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Crop + resize bboxes</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">ReID CNN embedding</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Kalman predict + Hungarian assign</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Track IDs output</div><span class="pipeline-arrow">→</span>
+      <div class="pipeline-step">Annotate frame</div>
+    </div>
+  </div>
+
+  <h3>13.4 Applications of YOLO + DeepSORT</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Pedestrian Tracking</div>
+      <p>Surveillance cameras in malls, airports, stations. Count people, detect crowd density, identify suspicious behavior. DeepSORT maintains IDs through occlusions in crowds.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Sports Analytics</div>
+      <p>Track players and ball across video frames. Compute player trajectories, heatmaps, speed, distance covered. Used in football, basketball, tennis analytics.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Autonomous Driving</div>
+      <p>Track vehicles, cyclists, pedestrians around the ego vehicle. Predict their future trajectories for safe path planning. Must handle fast motion and frequent occlusions.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Traffic Monitoring</div>
+      <p>Count vehicles by type and direction at intersections. Measure average speed, detect violations. Persistent IDs prevent double-counting vehicles in/out of frame.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Industrial Inspection</div>
+      <p>Track items on conveyor belts, count defects, monitor worker safety (PPE compliance). Real-time tracking ensures every item is accounted for.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Wildlife Monitoring</div>
+      <p>Track individual animals across camera trap footage. Count populations, study migration. Re-ID helps when animals temporarily leave the frame.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — DeepSORT in 5 Points</div>
+    <p>1. <strong>Extension of SORT:</strong> Adds deep appearance descriptor (128-dim CNN embedding) to geometric IoU matching. 2. <strong>Two-cost association:</strong> Cosine distance (appearance) + Mahalanobis distance (Kalman motion), combined with gating. 3. <strong>Hungarian algorithm</strong> solves bipartite assignment optimally. 4. <strong>Cascaded matching:</strong> Matches recent tracks first (more reliable predictions). 5. <strong>Track lifecycle:</strong> Tentative (3 frames) → Confirmed → Deleted (30 missed frames). Reduces IDSW by 61% vs SORT with only slight speed penalty.</p>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 1 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>VGGNet:</strong> 16 weight layers, only 3×3 Conv + 2×2 MaxPool. Channel pattern: 64→128→256→512. 138M params (89% in 3 FC layers). Two stacked 3×3 = 5×5 receptive field with fewer params. Strong transfer learning backbone despite large size.</div></li>
+      <li><span class="bullet">2.</span><div><strong>ResNet:</strong> Residual block H(x)=F(x)+x. Skip connection creates gradient highway (∂L/∂x includes "+1" term). Basic block (2×3×3) for ResNet-18/34; Bottleneck (1×1→3×3→1×1) for ResNet-50+. GAP replaces FC layers. Enables 152-layer training without degradation.</div></li>
+      <li><span class="bullet">3.</span><div><strong>EfficientNet:</strong> Compound scaling: d=α^φ, w=β^φ, r=γ^φ with α·β²·γ²≈2. MBConv building block: expand (1×1) → depthwise spatial (3×3/5×5) → SE attention → project (1×1). Swish activation. B0 (5.3M) matches ResNet-50 (25.6M). B7 achieves 84.3% top-1.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Mask R-CNN:</strong> Extends Faster R-CNN. Backbone (ResNet+FPN) → RPN proposals → RoIAlign (bilinear, no quantization) → 3 parallel heads: classification, box regression, instance mask (28×28 binary, class-specific). 5-loss training. RoIAlign critical for pixel-precise masks.</div></li>
+      <li><span class="bullet">5.</span><div><strong>YOLO Evolution:</strong> v1 (grid regression), v2 (anchors + BN), v3 (Darknet-53, 3-scale), v4 (CSPDarknet + BoF/BoS). All use: anchor boxes, NMS, multi-scale feature maps, 3-part architecture (backbone → neck → head).</div></li>
+      <li><span class="bullet">6.</span><div><strong>YOLOv5:</strong> PyTorch, CSPDarknet53 backbone, SPP + PANet neck, Focus layer, 5 size variants (n/s/m/l/x), CIoU loss. Industry-standard choice. 156 FPS for small model.</div></li>
+      <li><span class="bullet">7.</span><div><strong>YOLOv7:</strong> E-ELAN backbone (principled feature aggregation), RepConv (multi-branch train → single Conv at inference), auxiliary training heads with lead-guided label assignment, implicit knowledge. 161 FPS, 51.4% COCO AP.</div></li>
+      <li><span class="bullet">8.</span><div><strong>DeepSORT:</strong> SORT (Kalman + Hungarian + IoU) + deep appearance CNN (128-dim ReID embedding). Cost = λ·cosine_appearance + (1-λ)·Mahalanobis_motion + gating. Cascaded matching. Reduces ID switches 61%. Track lifecycle: tentative → confirmed → deleted.</div></li>
+    </ul>
+  </div>
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Deep Learning Techniques — Module 1</span>
+  <span>VGGNet · ResNet · EfficientNet · Mask R-CNN · YOLO v1–v7 · DeepSORT</span>
+</div>
+
+</body>
+</html>

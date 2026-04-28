@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Learning Techniques – Module 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f8f7f2;
+    --surface: #ffffff;
+    --surface2: #f0ede4;
+    --border: #e0d8cc;
+    --border2: #c8bfb0;
+    --text: #18140c;
+    --text2: #44400c;
+    --text2: #3e3c30;
+    --text3: #6e6a58;
+    --accent: #1a4a8c;
+    --accent-bg: #eaf0fc;
+    --accent-border: #a8c0e8;
+    --green: #145c30;
+    --green-bg: #e8f5ec;
+    --green-border: #88d0a4;
+    --amber: #7a4800;
+    --amber-bg: #fef8e8;
+    --amber-border: #e8c060;
+    --red: #8c1818;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #481878;
+    --purple-bg: #f2eefa;
+    --purple-border: #c0a0e0;
+    --teal: #085050;
+    --teal-bg: #e4f4f4;
+    --teal-border: #80c8c8;
+    --orange: #7a3800;
+    --orange-bg: #fdf2e4;
+    --orange-border: #e0b070;
+    --indigo: #1c1860;
+    --indigo-bg: #ecebf8;
+    --indigo-border: #a0a0d8;
+    --code-bg: #eae8e0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #0a1820 0%, #1a3040 60%, #0c2010 100%);
+    color: #f0f4ec;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #60b880; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2; color: #f0f4ec; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle { font-family: 'Inter', sans-serif; font-size: 14px; color: #406050; margin-top: 1rem; }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .pb-rl   { background: #1a3a1a; }
+  .pb-mdp  { background: #1a2a4a; }
+  .pb-vi   { background: #3a1a50; }
+  .pb-ql   { background: #4a1a0a; }
+  .pb-dql  { background: #0a3a3a; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .sh-rl  { border-left: 4px solid #1a3a1a; }
+  .sh-mdp { border-left: 4px solid #1a2a4a; }
+  .sh-vi  { border-left: 4px solid #3a1a50; }
+  .sh-ql  { border-left: 4px solid #4a1a0a; }
+  .sh-dql { border-left: 4px solid #0a3a3a; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout-key     { background: var(--accent-bg);  border-color: var(--accent);  } .callout-key .callout-title     { color: var(--accent);  } .callout-key p { color: #102a5c; }
+  .callout-tip     { background: var(--green-bg);   border-color: var(--green);   } .callout-tip .callout-title     { color: var(--green);   } .callout-tip p { color: #0c3c20; }
+  .callout-warn    { background: var(--amber-bg);   border-color: var(--amber);   } .callout-warn .callout-title    { color: var(--amber);   } .callout-warn p { color: #5a3400; }
+  .callout-exam    { background: var(--red-bg);     border-color: var(--red);     } .callout-exam .callout-title    { color: var(--red);     } .callout-exam p { color: #6a1010; }
+  .callout-formula { background: var(--purple-bg);  border-color: var(--purple);  } .callout-formula .callout-title { color: var(--purple);  } .callout-formula p { color: #300c54; }
+  .callout-teal    { background: var(--teal-bg);    border-color: var(--teal);    } .callout-teal .callout-title    { color: var(--teal);    } .callout-teal p { color: #063434; }
+  .callout-orange  { background: var(--orange-bg);  border-color: var(--orange);  } .callout-orange .callout-title  { color: var(--orange);  } .callout-orange p { color: #4a2000; }
+  .callout-indigo  { background: var(--indigo-bg);  border-color: var(--indigo);  } .callout-indigo .callout-title  { color: var(--indigo);  } .callout-indigo p { color: #101040; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #0a1820; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green);  font-weight: 500; }
+  .formula .rd  { color: var(--red);    font-weight: 500; }
+  .formula .or  { color: var(--orange); font-weight: 500; }
+  .formula .tl  { color: var(--teal);   font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── TABLES ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #0a1820; color: #c0d4b8; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── GRID BOX ── */
+  .env-grid { display: grid; grid-template-columns: repeat(5,1fr); gap:2px; margin: 1rem 0; width: fit-content; }
+  .env-cell { width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; border:1px solid var(--border); border-radius:4px; }
+  .ec-empty { background:var(--surface2); color:var(--text3); }
+  .ec-agent { background:#c8e8ff; color:#102050; }
+  .ec-goal  { background:#c8f0c8; color:#103010; }
+  .ec-wall  { background:#404040; color:#d0d0d0; }
+  .ec-trap  { background:#ffd0c8; color:#500010; }
+  .ec-val   { background:var(--surface); color:var(--accent); font-size:11px; }
+
+  /* ── CONVERGENCE VISUAL ── */
+  .conv-bar { display:flex; align-items:center; gap:0.75rem; margin:0.3rem 0; }
+  .conv-bar .cb-iter { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--text3); min-width:55px; }
+  .conv-bar .cb-fill { height:18px; background:var(--accent); border-radius:3px; transition:width 0.3s; }
+  .conv-bar .cb-val  { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text2); }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Deep Learning Techniques — Module 4</div>
+  <h1><span>Module 4:</span> Reinforcement Learning &amp; Decision Making</h1>
+  <div class="subtitle">Reinforcement Learning · Markov Decision Process · Value Iteration · Q-Learning · Deep Q-Networks</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> What is Reinforcement Learning?</a>
+    <a href="#s2"><span class="num">2.</span> RL Components &amp; Taxonomy</a>
+    <a href="#s3"><span class="num">3.</span> Markov Decision Process (MDP)</a>
+    <a href="#s4"><span class="num">4.</span> Bellman Equations</a>
+    <a href="#s5"><span class="num">5.</span> Value Iteration</a>
+    <a href="#s6"><span class="num">6.</span> Policy Iteration</a>
+    <a href="#s7"><span class="num">7.</span> Value vs Policy Iteration</a>
+    <a href="#s8"><span class="num">8.</span> Q-Learning — Theory</a>
+    <a href="#s9"><span class="num">9.</span> Q-Learning Algorithm</a>
+    <a href="#s10"><span class="num">10.</span> Exploration vs Exploitation</a>
+    <a href="#s11"><span class="num">11.</span> Deep Q-Network (DQN)</a>
+    <a href="#s12"><span class="num">12.</span> DQN Improvements</a>
+    <a href="#s13"><span class="num">13.</span> RL Algorithms Compared</a>
+    <a href="#s14"><span class="num">14.</span> RL Applications</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: RL FOUNDATIONS ████████████ -->
+<div class="part-banner pb-rl">Part 1 — Reinforcement Learning: Foundations</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-rl">
+    <div class="section-num">Section 1</div>
+    <h2>What is Reinforcement Learning?</h2>
+  </div>
+
+  <h3>1.1 The Learning Paradigm</h3>
+  <p>Reinforcement Learning (RL) is a third paradigm of machine learning, distinct from supervised and unsupervised learning. An <strong>agent</strong> learns to make decisions by interacting with an <strong>environment</strong>, receiving feedback in the form of <strong>rewards</strong> or penalties. The goal is to learn a <strong>policy</strong> — a strategy for choosing actions — that maximizes cumulative reward over time.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The RL Problem in One Sentence</div>
+    <p>An agent at each timestep observes the current state, takes an action, receives a reward, transitions to a new state, and updates its behavior to maximize the total future reward — learning entirely from experience, with no labeled examples of correct actions provided.</p>
+  </div>
+
+  <h3>1.2 RL vs Supervised vs Unsupervised Learning</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Supervised Learning</th><th>Unsupervised Learning</th><th>Reinforcement Learning</th></tr>
+    <tr>
+      <td><strong>Training signal</strong></td>
+      <td>Labeled (input, output) pairs</td>
+      <td>No labels — find structure</td>
+      <td>Reward signal after actions</td>
+    </tr>
+    <tr>
+      <td><strong>Feedback type</strong></td>
+      <td>Immediate, complete (correct answer known)</td>
+      <td>None</td>
+      <td>Delayed, sparse, evaluative (good/bad, not correct action)</td>
+    </tr>
+    <tr>
+      <td><strong>Data generation</strong></td>
+      <td>Fixed dataset, i.i.d.</td>
+      <td>Fixed dataset</td>
+      <td>Agent generates its own data through interaction</td>
+    </tr>
+    <tr>
+      <td><strong>Key challenge</strong></td>
+      <td>Generalization</td>
+      <td>Representation</td>
+      <td>Credit assignment, exploration vs exploitation</td>
+    </tr>
+    <tr>
+      <td><strong>Example</strong></td>
+      <td>Image classification</td>
+      <td>Clustering, PCA</td>
+      <td>Playing chess, robot navigation</td>
+    </tr>
+  </table>
+
+  <h3>1.3 The RL Interaction Loop</h3>
+
+  <div class="diagram">
+    <pre>
+  ┌───────────────────────────────────────────────────────────────┐
+  │                                                               │
+  │  ┌──────────┐    action aₜ      ┌──────────────────────┐     │
+  │  │          │──────────────────▶│                      │     │
+  │  │  AGENT   │                   │    ENVIRONMENT       │     │
+  │  │          │◀──────────────────│                      │     │
+  │  └──────────┘  state sₜ₊₁       └──────────────────────┘     │
+  │       ↑         reward rₜ₊₁                                   │
+  │       │                                                       │
+  │  policy π(aₜ | sₜ)                                           │
+  │  (maps states → actions)                                      │
+  │                                                               │
+  └───────────────────────────────────────────────────────────────┘
+
+  At each timestep t:
+  1. Agent observes state sₜ
+  2. Agent selects action aₜ according to policy π
+  3. Environment transitions to new state sₜ₊₁
+  4. Environment emits reward rₜ₊₁
+  5. Agent updates policy based on (sₜ, aₜ, rₜ₊₁, sₜ₊₁)
+  6. Repeat until terminal state or time limit
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — The RL interaction loop. Agent and Environment exchange states, actions, and rewards in a continuous cycle.</div>
+  </div>
+
+  <h3>1.4 Key Characteristics of RL</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Trial and error learning:</strong> No teacher provides correct actions. The agent must discover which actions lead to high reward by trying them. This requires exploration — the agent cannot just exploit what it already knows.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Delayed rewards:</strong> A reward may be received long after the action that caused it. In chess, a bad move in the opening may only reveal its consequences 30 moves later. The agent must solve the <em>credit assignment problem</em> — attributing outcomes to the actions that caused them.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Sequential decision making:</strong> Actions affect not just immediate reward but also future states and future rewards. The agent must consider long-term consequences, not just immediate payoffs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-stationary data:</strong> As the agent's policy changes, the distribution of states it visits changes too. The data generation process is non-stationary — unlike supervised learning where the dataset is fixed.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-rl">
+    <div class="section-num">Section 2</div>
+    <h2>RL Components and Taxonomy</h2>
+  </div>
+
+  <h3>2.1 Core Components</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Agent:</strong> The decision-making entity. Perceives the environment's state, chooses actions, and updates its knowledge from experience. In RL, the agent can be a robot, a game-playing program, a trading system, or any autonomous decision-maker.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Environment:</strong> Everything outside the agent. The agent interacts with it through actions, and it responds by providing new states and rewards. Can be deterministic (same action always leads to same next state) or stochastic (outcomes have randomness).</div></li>
+    <li><span class="bullet">▸</span><div><strong>State (s ∈ S):</strong> A description of the environment at a given time, containing all information relevant to future decisions. Can be fully observable (agent sees everything) or partially observable (agent sees a noisy/partial view).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Action (a ∈ A):</strong> A choice the agent makes. Can be discrete (finite number of choices: up/down/left/right) or continuous (a real-valued vector: steering angle, force). The action space A can be state-dependent.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Reward (r ∈ ℝ):</strong> A scalar feedback signal from the environment. Encodes the objective: what the agent should achieve. Reward design is critical and non-trivial. Sparse rewards (only at the end) are harder to learn from than dense rewards (at every step).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Policy (π):</strong> The agent's strategy — a mapping from states to actions. Deterministic policy: π(s) = a (always takes action a in state s). Stochastic policy: π(a|s) = P(action = a | state = s). The ultimate goal is to find the optimal policy π*.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Value function (V, Q):</strong> Estimates how good a state (V) or state-action pair (Q) is in terms of expected future reward. Used by the agent to evaluate and improve its policy without explicitly knowing the environment's dynamics.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Model (optional):</strong> The agent's internal model of the environment — predicts next state and reward given current state and action. Model-based RL uses this for planning. Model-free RL (Q-Learning, Policy Gradient) learns directly from experience without a model.</div></li>
+  </ul>
+
+  <h3>2.2 RL Taxonomy</h3>
+
+  <div class="diagram">
+    <pre>
+  REINFORCEMENT LEARNING
+  │
+  ├── MODEL-BASED RL (has a model of environment)
+  │   ├── Known model: Value Iteration, Policy Iteration, Dynamic Programming
+  │   └── Learned model: Dyna-Q, World Models, MuZero
+  │
+  └── MODEL-FREE RL (no model needed)
+      │
+      ├── VALUE-BASED (learn value function)
+      │   ├── Tabular: Q-Learning, SARSA
+      │   └── Function Approx: DQN, Double DQN, Dueling DQN, Rainbow
+      │
+      ├── POLICY-BASED (directly learn policy)
+      │   ├── REINFORCE (Monte Carlo Policy Gradient)
+      │   └── Actor-Critic: A2C, A3C, SAC, TD3
+      │
+      └── ACTOR-CRITIC (learn both value AND policy)
+          ├── PPO (Proximal Policy Optimization) ← RLHF uses this
+          ├── TRPO (Trust Region Policy Optimization)
+          └── SAC (Soft Actor-Critic)
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — RL algorithm taxonomy. Model-based vs Model-free; Value-based vs Policy-based vs Actor-Critic.</div>
+  </div>
+
+  <h3>2.3 Return — The Objective</h3>
+  <p>The agent's objective is to maximize the <strong>expected return</strong> — the total accumulated reward over time. Simply summing all future rewards is problematic because distant rewards are less certain. We use <strong>discounted return</strong>:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Discounted Return</div>
+    <div class="formula">
+      Gₜ = rₜ₊₁ + γ·rₜ₊₂ + γ²·rₜ₊₃ + ...  =  Σₖ₌₀^∞  γᵏ · rₜ₊ₖ₊₁<br><br>
+      Gₜ  = return from time step t onwards<br>
+      rₜ₊ₖ = reward received k steps after t<br>
+      <span class="var">γ ∈ [0,1)</span> = discount factor<br><br>
+      γ ≈ 0: <span class="rd">Myopic</span> — only immediate rewards matter. Short-sighted.<br>
+      γ ≈ 1: <span class="gr">Far-sighted</span> — future rewards matter almost as much as immediate.<br>
+      γ = 0.99 is typical in practice.<br><br>
+      Why discount?  1. Mathematical convergence (bounded sum for γ&lt;1)<br>
+                     2. Uncertainty increases further into the future<br>
+                     3. Matches economic intuition (present value)
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Recursive relation:</strong> Gₜ = rₜ₊₁ + γ · Gₜ₊₁. The return at time t equals immediate reward plus discounted return from next step. This recursive structure is the foundation of Bellman equations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Episode vs Continuing tasks:</strong> Episodic tasks have a natural end (chess game ends, maze is solved). Continuing tasks have no end (stock trading). For continuing tasks, discounting ensures Gₜ is finite.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 2: MDP ████████████ -->
+<div class="part-banner pb-mdp">Part 2 — Markov Decision Process (MDP)</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-mdp">
+    <div class="section-num">Section 3</div>
+    <h2>Markov Decision Process — Formal Definition</h2>
+  </div>
+
+  <h3>3.1 The Markov Property</h3>
+  <p>The foundation of all MDP-based RL is the <strong>Markov Property</strong>: the future depends only on the current state, not on the history of how we got there.</p>
+
+  <div class="callout callout-formula">
+    <div class="callout-title">Markov Property (Memoryless Property)</div>
+    <p>P(sₜ₊₁ | sₜ, aₜ, sₜ₋₁, aₜ₋₁, ..., s₀, a₀)  =  P(sₜ₊₁ | sₜ, aₜ)</p>
+    <p>The transition probability to the next state depends only on the current state and action — not on any previous states or actions. The current state contains all relevant history.</p>
+    <p><strong>Intuition:</strong> In chess, knowing the current board position is sufficient to play optimally — you don't need to know how the position was reached. The entire history is encoded in the current state.</p>
+  </div>
+
+  <h3>3.2 Formal MDP Definition</h3>
+  <p>A Markov Decision Process is defined by a 5-tuple: <strong>(S, A, P, R, γ)</strong></p>
+
+  <ul class="point-list">
+    <li><span class="bullet">S</span><div><strong>State space S:</strong> The set of all possible states the environment can be in. Can be finite (discrete grid world), countably infinite (Atari game frames), or continuous (robot joint angles ∈ ℝⁿ).</div></li>
+    <li><span class="bullet">A</span><div><strong>Action space A:</strong> The set of all possible actions the agent can take. Can be discrete (4 directions) or continuous (velocity vector). Sometimes action space is state-dependent: A(s).</div></li>
+    <li><span class="bullet">P</span><div><strong>Transition function P(s'|s,a):</strong> The probability of transitioning to state s' when taking action a in state s. Encodes environment dynamics. In deterministic environments: P(s'|s,a) = 1 for one specific s'. Not known by the agent in model-free RL.</div></li>
+    <li><span class="bullet">R</span><div><strong>Reward function R(s,a,s'):</strong> The expected reward when transitioning from s to s' via action a. Often simplified to R(s,a) or R(s). Designed by the RL engineer to encode the task objective.</div></li>
+    <li><span class="bullet">γ</span><div><strong>Discount factor γ ∈ [0,1):</strong> Controls the trade-off between immediate and future rewards. Defines the planning horizon.</div></li>
+  </ul>
+
+  <h3>3.3 Grid World Example — Concrete MDP</h3>
+
+  <div class="diagram">
+    <pre>
+  5×5 Grid World MDP:
+
+  ┌────┬────┬────┬────┬────┐
+  │ S  │    │    │Wall│    │   S = Start (agent initial position)
+  ├────┼────┼────┼────┼────┤   G = Goal (reward = +10, terminal)
+  │    │    │    │Wall│    │   T = Trap (reward = -10, terminal)
+  ├────┼────┼────┼────┼────┤   Wall = impassable cell
+  │    │    │    │    │    │
+  ├────┼────┼────┼────┼────┤   States: 23 valid cells (25 − 2 walls)
+  │    │ T  │    │    │    │   Actions: {Up, Down, Left, Right}
+  ├────┼────┼────┼────┼────┤   Transitions: Stochastic (80% intended dir,
+  │    │    │    │    │ G  │               10% each perpendicular dir)
+  └────┴────┴────┴────┴────┘
+                               Rewards:  R(s,a) = -0.04 (step cost)
+                                          +10 (reach goal)
+                                          -10 (reach trap)
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — 5×5 Grid World MDP. The step cost (-0.04) incentivizes the agent to reach the goal quickly.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>State:</strong> (row, col) pair of agent's position. S = {(0,0), (0,1), ..., (4,4)} minus wall cells. |S| = 23.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stochastic transitions:</strong> When taking action "Up", the agent moves Up with probability 0.8, Left with 0.1, Right with 0.1 (wind effect). This models real-world uncertainty — actuators are imperfect.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Step cost (-0.04):</strong> Without this, the agent might wander indefinitely. The small negative reward per step ensures the agent prefers shorter paths to the goal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Terminal states:</strong> Goal and Trap are terminal. Once reached, the episode ends. Discounted return from these states is just their reward (no future states).</div></li>
+  </ul>
+
+  <h3>3.4 Policy, Value Functions</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Policy and Value Function Definitions</div>
+    <div class="formula">
+      <span class="hl">Policy π(a|s)</span> = P(action=a | state=s)   ← stochastic<br>
+      <span class="hl">Policy π(s) = a</span>                          ← deterministic<br><br>
+      <span class="var">State-Value Function V^π(s)</span> = E_π[Gₜ | sₜ=s]<br>
+      = Expected return starting from state s, following policy π forever<br><br>
+      <span class="gr">Action-Value Function Q^π(s,a)</span> = E_π[Gₜ | sₜ=s, aₜ=a]<br>
+      = Expected return starting from state s, taking action a first,<br>
+        then following policy π forever<br><br>
+      Relationship:  V^π(s) = Σₐ π(a|s) · Q^π(s,a)
+    </div>
+  </div>
+
+  <h3>3.5 Optimal Policy and Optimal Value Functions</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Optimal policy π*:</strong> The policy that maximizes expected return from every state simultaneously. π* ≥ π for all states s and all policies π — meaning V^{π*}(s) ≥ V^π(s) for all s.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Optimal state-value V*(s):</strong> V*(s) = max_π V^π(s). The maximum expected return achievable from state s under any policy.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Optimal action-value Q*(s,a):</strong> Q*(s,a) = max_π Q^π(s,a). The maximum expected return when taking action a in state s, then acting optimally thereafter.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Extracting π* from Q*:</strong> Given Q*, the optimal policy simply picks the action with the highest Q* value: π*(s) = argmax_a Q*(s,a). This is why solving for Q* (as Q-Learning does) is sufficient — the optimal policy is implicit.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 3: BELLMAN + VALUE ITERATION ████████████ -->
+<div class="part-banner pb-vi">Part 3 — Bellman Equations &amp; Value Iteration</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-vi">
+    <div class="section-num">Section 4</div>
+    <h2>Bellman Equations — The Foundation of Dynamic Programming</h2>
+  </div>
+
+  <h3>4.1 The Bellman Expectation Equations</h3>
+  <p>Richard Bellman (1957) showed that value functions satisfy a fundamental recursive relationship — the current value equals the expected immediate reward plus the discounted value of the next state. This decomposes the problem of finding long-term value into a sequence of one-step-ahead decisions.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Bellman Expectation Equations (for policy π)</div>
+    <div class="formula">
+      <span class="hl">Bellman Equation for V^π(s):</span><br>
+      V^π(s) = Σₐ π(a|s) Σₛ' P(s'|s,a) [R(s,a,s') + γ·V^π(s')]<br><br>
+      = Expected immediate reward + γ × expected value of next state<br>
+      = "What reward do I get on average right now, plus discounted future?"<br><br>
+      <span class="var">Bellman Equation for Q^π(s,a):</span><br>
+      Q^π(s,a) = Σₛ' P(s'|s,a) [R(s,a,s') + γ · Σₐ' π(a'|s') · Q^π(s',a')]<br><br>
+      Relationship:<br>
+      V^π(s) = Σₐ π(a|s) · Q^π(s,a)<br>
+      Q^π(s,a) = Σₛ' P(s'|s,a) [R(s,a,s') + γ·V^π(s')]
+    </div>
+  </div>
+
+  <h3>4.2 Visual Backup Diagrams</h3>
+
+  <div class="diagram">
+    <pre>
+  BELLMAN BACKUP for V(s):                 BELLMAN BACKUP for Q(s,a):
+
+        s                                         s
+        │                                         │
+     π(a|s)  ← policy                           a (action taken)
+    /   |    \                                   │
+   a₁   a₂   a₃                            P(s'|s,a)  ← transition
+   │    │    │                             /     |     \
+  P(s'|s,a)                              s'₁   s'₂   s'₃
+  /  \  / \  / \                          │     │     │
+ s'  s' s' s' s' s'                   π(a'|s') ← policy
+ │               │                   /    \
+ R + γV(s')   R + γV(s')         Q(s',a') Q(s',a')
+
+ V(s) = weighted average over all         Q(s,a) = average over transitions,
+ action-next state combinations            then average over next actions
+    </pre>
+    <div class="diagram-caption">Figure 4.1 — Bellman backup diagrams. Circles = states, squares = state-action pairs. Arrows = transitions weighted by probabilities.</div>
+  </div>
+
+  <h3>4.3 Bellman Optimality Equations</h3>
+  <p>When we restrict to the optimal policy, the Bellman equations become the <strong>Bellman Optimality Equations</strong> — a set of nonlinear equations whose solution gives the optimal value functions:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Bellman Optimality Equations</div>
+    <div class="formula">
+      <span class="hl">Optimal State-Value V*(s):</span><br>
+      V*(s) = max_a  Σₛ' P(s'|s,a) [R(s,a,s') + γ · V*(s')]<br><br>
+      <span class="comment">← take the BEST action, then follow optimal policy</span><br><br>
+      <span class="var">Optimal Action-Value Q*(s,a):</span><br>
+      Q*(s,a) = Σₛ' P(s'|s,a) [R(s,a,s') + γ · max_{a'} Q*(s',a')]<br><br>
+      <span class="comment">← transition to s', then take the BEST action from s'</span><br><br>
+      These are nonlinear (due to max operator) and coupled (V* depends on V*).<br>
+      Cannot be solved analytically → use iterative methods (Value Iteration).
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Key difference from expectation equations:</strong> The expectation equation averages over all actions weighted by the policy. The optimality equation takes the maximum over actions — we no longer follow a fixed policy but always do the best thing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Unique solution:</strong> For finite MDPs with γ &lt; 1, the Bellman optimality equations have a unique solution V*. This is guaranteed by the contraction mapping theorem — the Bellman operator is a contraction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Contraction property:</strong> The Bellman operator T is a γ-contraction: ‖TV − TV'‖_∞ ≤ γ · ‖V − V'‖_∞. Repeated application shrinks the distance to the fixed point V* by factor γ at each step → convergence guaranteed.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-vi">
+    <div class="section-num">Section 5</div>
+    <h2>Value Iteration</h2>
+  </div>
+
+  <h3>5.1 Core Idea</h3>
+  <p>Value Iteration (Bellman, 1957) is a Dynamic Programming algorithm that finds the optimal value function V* by repeatedly applying the Bellman optimality operator to an initial estimate of V. Since the Bellman operator is a contraction, this iteration converges to V*.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Value Iteration Intuition</div>
+    <p>Start with V₀(s) = 0 for all states (optimistic — assume everything has zero value). Repeatedly update: "The value of state s is the best I can do — take the best action and receive its immediate reward plus the discounted value of the next state." Each iteration propagates reward information one step further back from terminal states. After enough iterations, value information has propagated from terminals throughout the entire state space.</p>
+  </div>
+
+  <h3>5.2 Value Iteration Algorithm</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: Value Iteration</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: V(s) = 0  for all s ∈ S       <span class="comment">← arbitrary initialization</span><br>
+        Set convergence threshold: ε (e.g. 0.001)<br><br>
+        repeat:<br>
+        &nbsp;&nbsp;Δ ← 0<br>
+        &nbsp;&nbsp;for each s ∈ S:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;v ← V(s)                         <span class="comment">← save old value</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">V(s) ← max_a Σₛ' P(s'|s,a)[R(s,a,s') + γ·V(s')]</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Δ ← max(Δ, |v − V(s)|)           <span class="comment">← track max change</span><br>
+        until Δ &lt; ε                              <span class="comment">← converged</span><br><br>
+        Extract policy:<br>
+        π*(s) = argmax_a Σₛ' P(s'|s,a)[R(s,a,s') + γ·V(s')]
+      </div>
+    </div>
+  </div>
+
+  <h3>5.3 Step-by-Step Worked Example — Grid World</h3>
+
+  <div class="diagram">
+    <pre>
+  Simple 3×3 Grid (simplified, γ=0.9, R(step)=-0.04):
+  G = Goal (reward +1), T = Trap (reward -1), others = 0
+
+  ITERATION 0:                ITERATION 1 (first update):
+  ┌──────┬──────┬──────┐      ┌──────┬──────┬──────┐
+  │  0   │  0   │  0   │      │  0   │  0   │  0   │
+  ├──────┼──────┼──────┤      ├──────┼──────┼──────┤
+  │  0   │  0   │  0   │  →   │  0   │  0   │ 0.86 │  ← neighbor of G
+  ├──────┼──────┼──────┤      ├──────┼──────┼──────┤
+  │  0   │  0   │  G   │      │  0   │ 0.86 │  G   │  ← neighbors of G
+  └──────┴──────┴──────┘      └──────┴──────┴──────┘
+
+  Calculation for cell (1,2) — right of middle row (neighbor of G):
+  Best action = Right (moves to G)
+  V(1,2) = R(step→G) + γ·V(G) = (-0.04 + 1) + 0.9 · 1.0 = 0.96 − 0.04 ≈ 0.86 ✓
+
+  ITERATION 2:                AFTER MANY ITERATIONS:
+  ┌──────┬──────┬──────┐      ┌──────┬──────┬──────┐
+  │  0   │  0   │ 0.77 │      │ 0.58 │ 0.72 │ 0.85 │
+  ├──────┼──────┼──────┤      ├──────┼──────┼──────┤
+  │  0   │ 0.77 │ 0.86 │      │ 0.70 │ 0.80 │ 0.92 │
+  ├──────┼──────┼──────┤      ├──────┼──────┼──────┤
+  │  0   │ 0.86 │  G   │      │ 0.80 │ 0.90 │  G   │
+  └──────┴──────┴──────┘      └──────┴──────┴──────┘
+  (values propagate outward)   (converged value function)
+
+  POLICY EXTRACTED (arrows = best action from each cell):
+  ┌──────┬──────┬──────┐
+  │  →   │  →   │  ↓   │
+  ├──────┼──────┼──────┤
+  │  →   │  →   │  ↓   │
+  ├──────┼──────┼──────┤
+  │  →   │  →   │  G   │
+  └──────┴──────┴──────┘
+    </pre>
+    <div class="diagram-caption">Figure 5.1 — Value Iteration progression. Values propagate outward from the goal. Policy is extracted by greedy action selection on the converged V.</div>
+  </div>
+
+  <h3>5.4 Convergence Analysis</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Guaranteed convergence:</strong> Value Iteration is guaranteed to converge to V* for any finite MDP with γ &lt; 1. The error after k iterations: ‖Vₖ − V*‖_∞ ≤ γᵏ · ‖V₀ − V*‖_∞. Each iteration reduces the error by factor γ.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Convergence rate:</strong> For γ = 0.9, after 100 iterations: error ≤ 0.9^{100} · initial_error ≈ 2.66 × 10⁻⁵ × initial_error. Very fast convergence for small γ, slow for γ close to 1.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stopping criterion:</strong> Stop when max_s |V_{k+1}(s) − Vₖ(s)| &lt; ε(1−γ)/(2γ). This guarantees the resulting greedy policy is ε-optimal — within ε of the true optimal value.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Complexity per iteration:</strong> O(|S|² · |A|) — must consider every state-action-next-state triple. For large state spaces (e.g., Go: 10^{170} states), exact Value Iteration is computationally infeasible.</div></li>
+  </ul>
+
+  <h3>5.5 Synchronous vs Asynchronous Value Iteration</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Synchronous (batch) updates:</strong> Compute new V(s) for ALL states simultaneously, using old values. Update only after all states processed. Requires storing two copies of V. Guaranteed to converge but may be wasteful.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Asynchronous (in-place) updates:</strong> Update V(s) immediately and use the new value for subsequent state updates in the same sweep. Often converges faster in practice (uses most recent information). Used in practical implementations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Prioritized sweeping:</strong> Update states in order of their Bellman residual — states with the largest |V_{new} − V_{old}| are updated first. Far fewer total updates needed. Key idea behind prioritized experience replay in DQN.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-vi">
+    <div class="section-num">Section 6</div>
+    <h2>Policy Iteration</h2>
+  </div>
+
+  <h3>6.1 Overview</h3>
+  <p>Policy Iteration is an alternative Dynamic Programming method that alternates between two steps: <strong>Policy Evaluation</strong> (compute the exact value function for the current policy) and <strong>Policy Improvement</strong> (make the policy greedy with respect to the computed values). This is guaranteed to converge to the optimal policy in a finite number of iterations.</p>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: Policy Iteration</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: π(s) = any fixed action for all s ∈ S<br><br>
+        repeat:<br>
+        &nbsp;&nbsp;<span class="hl">POLICY EVALUATION: find V^π for current π</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;repeat:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Δ ← 0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for each s ∈ S:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;v ← V(s)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;V(s) ← Σₛ' P(s'|s,π(s))[R(s,π(s),s') + γ·V(s')]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Δ ← max(Δ, |v − V(s)|)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;until Δ &lt; ε<br><br>
+        &nbsp;&nbsp;<span class="var">POLICY IMPROVEMENT: make π greedy w.r.t. V</span><br>
+        &nbsp;&nbsp;policy_stable ← true<br>
+        &nbsp;&nbsp;for each s ∈ S:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;old_action ← π(s)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;π(s) ← argmax_a Σₛ' P(s'|s,a)[R(s,a,s') + γ·V(s')]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if old_action ≠ π(s): policy_stable ← false<br><br>
+        until policy_stable = true            <span class="comment">← converged to π*</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>6.2 Policy Improvement Theorem</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Theorem:</strong> If π' is a greedy policy w.r.t. V^π, then V^{π'}(s) ≥ V^π(s) for all s. The new greedy policy is always at least as good as the old policy. Strict improvement unless already at the optimal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Proof sketch:</strong> V^π(s) ≤ Q^π(s, π'(s)) = Σₛ' P[R + γ·V^π(s')] ≤ ... ≤ V^{π'}(s). The chain of inequalities follows from the greedy improvement and Bellman equation applied recursively.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Convergence:</strong> Since there are finitely many deterministic policies (|A|^|S| for discrete spaces) and each iteration strictly improves (or is already optimal), Policy Iteration must converge in finite iterations. Typically converges in fewer iterations than Value Iteration but each iteration is more expensive (full policy evaluation).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-vi">
+    <div class="section-num">Section 7</div>
+    <h2>Value Iteration vs Policy Iteration</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Value Iteration</th><th>Policy Iteration</th></tr>
+    <tr>
+      <td><strong>Core idea</strong></td>
+      <td>Directly optimize V by repeatedly applying Bellman optimality operator</td>
+      <td>Alternate between exact policy evaluation (V^π) and greedy policy improvement</td>
+    </tr>
+    <tr>
+      <td><strong>Policy representation</strong></td>
+      <td>Implicit — no explicit policy stored during iteration; extracted at end</td>
+      <td>Explicit — policy π is maintained and updated each iteration</td>
+    </tr>
+    <tr>
+      <td><strong>Inner loop</strong></td>
+      <td>One Bellman backup per state per sweep</td>
+      <td>Full convergence of policy evaluation (many sweeps) before improvement</td>
+    </tr>
+    <tr>
+      <td><strong>Updates per sweep</strong></td>
+      <td>One update per state: V(s) ← max_a [...]</td>
+      <td>Policy eval: V(s) ← Σₛ'P[R+γV(s')]. Policy improvement: π(s) ← argmax_a [...]</td>
+    </tr>
+    <tr>
+      <td><strong>Convergence speed</strong></td>
+      <td>More sweeps needed (converges gradually)</td>
+      <td>Fewer policy iterations but each is expensive. Often faster to optimal policy.</td>
+    </tr>
+    <tr>
+      <td><strong>Computationally</strong></td>
+      <td>Lighter per iteration</td>
+      <td>Heavier per iteration (policy eval until convergence)</td>
+    </tr>
+    <tr>
+      <td><strong>Practical preference</strong></td>
+      <td>Preferred when |S| is large; often modified to truncated policy eval (= hybrid)</td>
+      <td>Preferred when accurate V^π is needed; guaranteed to converge in fewer iterations</td>
+    </tr>
+    <tr>
+      <td><strong>When identical?</strong></td>
+      <td colspan="2">With 1-step policy evaluation, Policy Iteration = Value Iteration (they are the same algorithm with different stopping criteria)</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Dynamic Programming for RL</div>
+    <p>Both Value Iteration and Policy Iteration are Dynamic Programming methods — they require <strong>full knowledge of the MDP</strong> (transition probabilities P and reward function R). They are <strong>model-based, planning algorithms</strong>, not learning algorithms. They are only feasible for small, discrete state spaces. For large or unknown state spaces, we need model-free methods — specifically Q-Learning, which does not require knowing P.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 4: Q-LEARNING ████████████ -->
+<div class="part-banner pb-ql">Part 4 — Q-Learning</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-ql">
+    <div class="section-num">Section 8</div>
+    <h2>Q-Learning — Theory and Motivation</h2>
+  </div>
+
+  <h3>8.1 Moving Beyond Dynamic Programming</h3>
+  <p>Value Iteration requires knowing P(s'|s,a) — the transition probabilities — which are often unavailable in real-world problems. Q-Learning (Watkins, 1989) is a <strong>model-free, off-policy</strong> temporal-difference method that learns the optimal action-value function Q* directly from <strong>experience</strong>, without needing a model of the environment.</p>
+
+  <table class="compare-table">
+    <tr><th>Property</th><th>Value Iteration (DP)</th><th>Q-Learning</th></tr>
+    <tr><td><strong>Requires model?</strong></td><td>Yes — P(s'|s,a), R(s,a)</td><td>No — learns from (s,a,r,s') transitions</td></tr>
+    <tr><td><strong>Tabular storage</strong></td><td>V-table: |S| entries</td><td>Q-table: |S|×|A| entries</td></tr>
+    <tr><td><strong>Update timing</strong></td><td>Batch (full sweeps)</td><td>Online (after every transition)</td></tr>
+    <tr><td><strong>Policy requirement</strong></td><td>Requires full MDP</td><td>Off-policy: learns Q* regardless of behavior policy</td></tr>
+    <tr><td><strong>Feasibility</strong></td><td>Small discrete spaces</td><td>Larger spaces; extended by DQN to continuous observation spaces</td></tr>
+  </table>
+
+  <h3>8.2 Temporal Difference Learning</h3>
+  <p>Q-Learning is a form of <strong>Temporal Difference (TD) learning</strong> — it updates estimates based on other estimates (bootstrapping), rather than waiting for the final outcome of an episode (Monte Carlo methods).</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">TD Learning Insight — Learn While Playing</div>
+    <p>Monte Carlo methods wait until the end of an episode to update, using the actual return Gₜ as the target. TD methods update at every step using a bootstrapped target: r + γ·V(s'). They learn online from incomplete episodes. This is much more sample-efficient and allows learning in continuing (non-episodic) tasks.</p>
+    <p><strong>TD Error (δ):</strong> δ = [r + γ·V(s')] − V(s). The difference between the estimated value and the better estimate from one step later. This is the "surprise" — how wrong was our current estimate?</p>
+  </div>
+
+  <h3>8.3 Q-Learning — The Update Rule</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Q-Learning Update Rule (Watkins &amp; Dayan, 1992)</div>
+    <div class="formula">
+      <span class="hl">Q(s,a) ← Q(s,a) + α · δ</span><br><br>
+      where the TD error δ is:<br>
+      <span class="var">δ = [ r + γ · max_{a'} Q(s',a') ]  −  Q(s,a)</span><br><br>
+      Full update:<br>
+      Q(sₜ,aₜ) ← Q(sₜ,aₜ) + α · [ rₜ₊₁ + γ · max_{a'} Q(sₜ₊₁,a')  −  Q(sₜ,aₜ) ]<br><br>
+      <span class="comment">← Target        = rₜ₊₁ + γ·max_{a'} Q(s',a')  (Bellman optimality backup)</span><br>
+      <span class="comment">← Current est.  = Q(sₜ,aₜ)</span><br>
+      <span class="comment">← TD error δ    = Target − Current estimate</span><br>
+      <span class="comment">← α (0&lt;α≤1)     = learning rate (step size)</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The target r + γ·max_a' Q(s',a'):</strong> This is the Bellman optimality backup evaluated using the current (imperfect) Q estimates. As Q improves, the targets become more accurate, pulling Q toward Q*.</div></li>
+    <li><span class="bullet">▸</span><div><strong>max operator — off-policy:</strong> The update uses max_a' Q(s',a') regardless of what action was actually taken next. This is what makes Q-Learning off-policy — it learns about the greedy (optimal) policy even when following an exploratory behavior policy (like ε-greedy).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learning rate α:</strong> Controls how much new information overwrites old estimates. α=1: fully replace old estimate with new target. α→0: barely update. Typically α=0.1 or decayed over time. Must satisfy Σα = ∞, Σα² &lt; ∞ for convergence guarantees.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Bootstrapping:</strong> The target uses the current Q estimate for s' — this is bootstrapping. The target is not ground truth but an estimate from the current Q function. Q-Learning is therefore biased but has low variance (cf. Monte Carlo: unbiased, high variance).</div></li>
+  </ul>
+
+  <h3>8.4 SARSA vs Q-Learning — On-Policy vs Off-Policy</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">SARSA (On-Policy) vs Q-Learning (Off-Policy)</div>
+    <div class="formula">
+      SARSA update:<br>
+      Q(s,a) ← Q(s,a) + α[<span class="gr">r + γ·Q(s',a')</span> − Q(s,a)]<br>
+      <span class="comment">← uses the ACTUAL next action a' that was taken (from behavior policy)</span><br><br>
+      Q-Learning update:<br>
+      Q(s,a) ← Q(s,a) + α[<span class="rd">r + γ·max_{a'} Q(s',a')</span> − Q(s,a)]<br>
+      <span class="comment">← uses the BEST possible next action (regardless of what was taken)</span><br><br>
+      SARSA learns Q^π for the current behavior policy π (on-policy).<br>
+      Q-Learning learns Q* directly, regardless of behavior policy (off-policy).<br><br>
+      Consequence: Q-Learning converges to optimal even with exploratory behavior.
+      SARSA converges to policy-dependent values — if you explore, SARSA accounts
+      for the cost of exploration; Q-Learning assumes you will always act optimally.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-ql">
+    <div class="section-num">Section 9</div>
+    <h2>Q-Learning Algorithm — Complete</h2>
+  </div>
+
+  <h3>9.1 Tabular Q-Learning</h3>
+
+  <div class="algo-block">
+    <div class="algo-header">Algorithm: Tabular Q-Learning (Watkins, 1989)</div>
+    <div class="algo-body">
+      <div class="formula">
+        Initialize: Q(s,a) = 0 for all s ∈ S, a ∈ A  (or small random values)<br>
+                    Hyperparameters: α (learning rate), γ (discount), ε (exploration)<br><br>
+        for each episode:<br>
+        &nbsp;&nbsp;Initialize state s ← s₀ (start state)<br><br>
+        &nbsp;&nbsp;for each step t of episode:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="hl">Choose action a using ε-greedy policy:</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with prob ε:     a ← random action    <span class="comment">← EXPLORE</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with prob (1-ε): a ← argmax_{a'} Q(s,a') <span class="comment">← EXPLOIT</span><br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Take action a, observe reward r and next state s'<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="var">Update Q-table:</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Q(s,a) ← Q(s,a) + α · [r + γ · max_{a'} Q(s',a') − Q(s,a)]<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;s ← s'                              <span class="comment">← transition to next state</span><br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if s is terminal: break<br><br>
+        until Q converges or budget exhausted
+      </div>
+    </div>
+  </div>
+
+  <h3>9.2 Convergence of Q-Learning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Convergence theorem (Watkins &amp; Dayan, 1992):</strong> Tabular Q-Learning converges to Q* with probability 1 given: (1) All state-action pairs are visited infinitely often. (2) Learning rate α satisfies Σₜ αₜ = ∞ and Σₜ αₜ² &lt; ∞ (e.g. αₜ = 1/t). (3) Rewards are bounded. (4) Finite MDP with γ &lt; 1.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why visit all pairs?</strong> If some (s,a) pairs are never sampled, their Q values remain at initialization and may be incorrect. The agent must explore sufficiently to guarantee all pairs are tried — hence the exploration requirement.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Practical α:</strong> In practice, a fixed small α (e.g. 0.1) works well even without the theoretical decay. The learning rate condition is a theoretical requirement for exact convergence proofs, not always necessary in practice.</div></li>
+  </ul>
+
+  <h3>9.3 Q-Learning on Grid World — Trace</h3>
+
+  <div class="diagram">
+    <pre>
+  Q-TABLE EVOLUTION for Grid World (simplified, γ=0.9, α=0.5):
+
+  Q(s,a) = Q-value for state s, action a
+
+  Initial Q-table:  All zeros
+
+  EPISODE 1 (random policy, reaches GOAL at step 5):
+  Step 1: s=(0,0), a=Right, r=-0.04, s'=(0,1)
+    Q((0,0),Right) ← 0 + 0.5·[-0.04 + 0.9·max Q((0,1),·) − 0]
+                  ← 0 + 0.5·[-0.04 + 0] = -0.02
+
+  Step 4: s=(0,3), a=Right, r=+1 (GOAL), s'=terminal
+    Q((0,3),Right) ← 0 + 0.5·[+1 + 0.9·0 − 0] = 0.5
+
+  EPISODE 2 (explores, finds goal again):
+    Same (0,3),Right: Q ← 0.5 + 0.5·[1 + 0 − 0.5] = 0.75
+
+  AFTER MANY EPISODES (Q has converged):
+  Q-table will reflect optimal action-values:
+  High Q values for actions that efficiently reach the goal,
+  low or negative Q values for actions toward the trap.
+
+  OPTIMAL POLICY extracted: π*(s) = argmax_a Q*(s,a)
+  → Same as Value Iteration result, but learned purely from experience!
+    </pre>
+    <div class="diagram-caption">Figure 9.1 — Q-Learning trace showing how Q-values update from experience. Values propagate backwards from the goal through repeated episodes.</div>
+  </div>
+
+  <h3>9.4 Q-Learning Limitations</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Curse of dimensionality:</strong> Tabular Q-Learning stores one Q value per (state, action) pair. For Atari: 84×84×4 frames → ~10^{18,000} states. For a robot: continuous state space with uncountably infinite states. A table cannot store these.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No generalization:</strong> Q-table treats every state independently. Learning Q((0,0), Right) provides zero information about Q((0,1), Right). Yet in many problems, nearby states have similar values. A function approximator (neural network) can generalize across similar states.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Slow convergence for large spaces:</strong> Even if we could store a large Q-table, visiting every state-action pair enough times for convergence would take astronomically many episodes for large state spaces.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Solution:</strong> Replace the Q-table with a neural network Q_θ(s,a) — this is Deep Q-Network (DQN).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-ql">
+    <div class="section-num">Section 10</div>
+    <h2>Exploration vs Exploitation</h2>
+  </div>
+
+  <h3>10.1 The Fundamental Dilemma</h3>
+  <p>The exploration-exploitation trade-off is the central challenge in RL. The agent must balance:</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Exploitation:</strong> Choose the action with the highest known Q-value. Maximize immediate expected reward based on current knowledge. Problem: misses potentially better actions that haven't been tried enough — greedy exploitation gets stuck in local optima.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Exploration:</strong> Try new, uncertain actions to gather more information about the environment. Required for finding the optimal policy. Problem: wastes time on bad actions when the agent could be exploiting known good actions.</div></li>
+  </ul>
+
+  <h3>10.2 Exploration Strategies</h3>
+
+  <h4>A. ε-Greedy (Most Common)</h4>
+  <div class="formula-block">
+    <div class="formula-label">ε-Greedy Policy</div>
+    <div class="formula">
+      π_ε(a|s) = 1 − ε + ε/|A|   if a = argmax_{a'} Q(s,a')  ← greedy action<br>
+               = ε / |A|           otherwise                     ← random action<br><br>
+      Simplified: with prob ε take random action, with prob (1−ε) take greedy action<br><br>
+      ε-decay schedule:  εₜ = max(ε_min, ε₀ · decay^t)<br>
+      e.g. ε₀=1.0, decay=0.995, ε_min=0.01
+      → Start fully random (explore), gradually become more greedy (exploit)
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>ε-decay:</strong> Start with high ε (fully exploratory, know nothing) and decrease over time (mostly exploit learned knowledge). The decaying schedule matches the agent's increasing knowledge — explore when uncertain, exploit when confident.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Problem with ε-greedy:</strong> Treats all non-greedy actions equally. A slightly-suboptimal action is explored as frequently as a clearly terrible action. Does not focus exploration on uncertain or high-potential actions.</div></li>
+  </ul>
+
+  <h4>B. Upper Confidence Bound (UCB)</h4>
+  <div class="formula-block">
+    <div class="formula-label">UCB Action Selection</div>
+    <div class="formula">
+      a* = argmax_a [ Q(s,a) + c · √(ln t / Nₜ(a)) ]<br><br>
+      Nₜ(a) = number of times action a has been taken so far<br>
+      c = exploration constant (higher = more exploration)<br>
+      t = total timesteps so far<br><br>
+      Intuition: Take the action with the highest OPTIMISTIC estimate.
+      √(ln t / Nₜ(a)) is large when a has been tried rarely (high uncertainty)
+      → UCB naturally focuses exploration on rarely-tried, uncertain actions.
+    </div>
+  </div>
+
+  <h4>C. Boltzmann (Softmax) Exploration</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Formula:</strong> π(a|s) = exp(Q(s,a)/τ) / Σ_{a'} exp(Q(s,a')/τ). Temperature τ controls randomness: high τ → uniform (explore), low τ → greedy (exploit).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Advantage:</strong> Actions are selected with probability proportional to their Q-value — better actions are tried more often, worse actions less often. More principled than ε-greedy which samples uniformly among non-greedy actions.</div></li>
+  </ul>
+
+  <h4>D. Intrinsic Motivation (Curiosity)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Idea:</strong> Add an intrinsic reward bonus for visiting novel, surprising states. Curiosity-Driven Exploration: the reward is prediction error of a state dynamics model — novel states the model can't predict well get high intrinsic reward.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Sparse reward environments where external reward is very rare. Encourages the agent to systematically explore the state space rather than staying near familiar states.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 5: DEEP Q-NETWORK ████████████ -->
+<div class="part-banner pb-dql">Part 5 — Deep Q-Network (DQN)</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-dql">
+    <div class="section-num">Section 11</div>
+    <h2>Deep Q-Network (DQN)</h2>
+  </div>
+
+  <h3>11.1 From Tabular to Deep Q-Learning</h3>
+  <p>DQN (Mnih et al., DeepMind — 2013/2015) replaces the Q-table with a deep neural network Q_θ(s,a) that takes a state s as input and outputs Q-values for all actions simultaneously. This extends Q-Learning to high-dimensional, continuous state spaces (e.g., raw pixel images from Atari games).</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">DQN's Historic Achievement</div>
+    <p>DQN was the first algorithm to learn to play Atari games from raw pixels (no hand-crafted features), achieving superhuman performance on 49 games with a single algorithm and architecture. The same network, hyperparameters, and training procedure was used for all games — only the scores changed. This demonstrated that deep RL could learn complex control policies directly from high-dimensional sensory input.</p>
+  </div>
+
+  <h3>11.2 DQN Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  DQN for Atari Games:
+
+  INPUT: 4 consecutive game frames (84×84 pixels, grayscale, stacked)
+  Shape: 84 × 84 × 4  (4-frame stack captures motion)
+       │
+  ┌────▼──────────────────────────────────────────────────────────┐
+  │  CONVOLUTIONAL LAYERS (feature extraction)                   │
+  │  Conv1: 32 filters, 8×8, stride 4  → 20×20×32  + ReLU       │
+  │  Conv2: 64 filters, 4×4, stride 2  → 9×9×64    + ReLU       │
+  │  Conv3: 64 filters, 3×3, stride 1  → 7×7×64    + ReLU       │
+  │  Flatten: 7×7×64 = 3136                                      │
+  └────┬──────────────────────────────────────────────────────────┘
+       │
+  ┌────▼──────────────────────────────────────────────────────────┐
+  │  FULLY CONNECTED LAYERS                                       │
+  │  FC1: Dense(512) + ReLU                                       │
+  │  FC2: Dense(|A|) ← one output per action (no activation)     │
+  └────┬──────────────────────────────────────────────────────────┘
+       │
+  Output: Q_θ(s, a₁), Q_θ(s, a₂), ..., Q_θ(s, a_{|A|})
+  All action values in ONE forward pass!
+  Action selection: a* = argmax_a Q_θ(s,a)
+    </pre>
+    <div class="diagram-caption">Figure 11.1 — DQN architecture for Atari. Convolutional layers extract visual features; FC layers compute Q-values for all actions.</div>
+  </div>
+
+  <h3>11.3 The DQN Loss Function</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">DQN Loss — Mean Squared Bellman Error</div>
+    <div class="formula">
+      L(θ) = E_{(s,a,r,s') ~ D} [ (y − Q_θ(s,a))² ]<br><br>
+      where the TD target y:<br>
+      y = r + γ · max_{a'} Q_{θ⁻}(s', a')    <span class="comment">← θ⁻ = target network params</span><br><br>
+      θ ← θ − α · ∇_θ L(θ)<br><br>
+      Note: gradient is NOT propagated through the target y.
+      The target y is treated as a fixed constant during each update.
+    </div>
+  </div>
+
+  <h3>11.4 Two Key Innovations — Why DQN Works</h3>
+
+  <h4>A. Experience Replay</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The problem without replay:</strong> Consecutive transitions (s₁,a₁,r₁,s₁') and (s₂,a₂,r₂,s₂') are highly correlated (s₂ ≈ s₁'). If we train on consecutive transitions, the network overfits to recent experience and "forgets" earlier transitions — catastrophic interference.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Experience Replay buffer D:</strong> Store all transitions (s,a,r,s') in a replay buffer of capacity N (e.g. 1 million). At each training step, sample a random mini-batch of 32–64 transitions from D. Train on this random sample.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefits:</strong> (1) Breaks temporal correlations between consecutive samples → each mini-batch is approximately i.i.d. (2) Every transition can be learned from many times (high data efficiency). (3) Decouples the frequency of environment interaction from the frequency of learning steps.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Off-policy requirement:</strong> Experience Replay requires the algorithm to be off-policy (Q-Learning qualifies). The stored transitions were generated by older policy versions — an on-policy method cannot use stale data.</div></li>
+  </ul>
+
+  <h4>B. Target Network</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The moving target problem:</strong> In Q-Learning, the target y = r + γ·max_a' Q(s',a'). With a neural network, every weight update changes Q_θ for all states — including s'. This means the target y changes after every update, creating a moving target that can lead to oscillations or divergence.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Target network Q_{θ⁻}:</strong> Maintain a separate copy of the Q-network with frozen parameters θ⁻. Use Q_{θ⁻}(s',a') to compute targets. Update θ⁻ ← θ only every C steps (e.g. C=10,000). This stabilizes targets for thousands of gradient steps between updates.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Effect:</strong> The target y = r + γ·max_a' Q_{θ⁻}(s',a') is now stable for C steps. The online network Q_θ chases this stable target. When C steps pass, θ⁻ is refreshed to the current θ and the process repeats.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Soft update alternative:</strong> θ⁻ ← τ·θ + (1−τ)·θ⁻ at every step (Polyak averaging), τ=0.001. Slower, smoother update of target network. Used in DDPG, TD3, SAC.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  DQN TRAINING LOOP:
+
+  Environment    Replay Buffer D         Online Net Q_θ      Target Net Q_{θ⁻}
+       │                │                     │                    │
+  ─────┼────────────────┼─────────────────────┼────────────────────┼────────
+       │                │                     │                    │
+  observe sₜ            │                     │                    │
+       │                │                     │                    │
+  a = ε-greedy(Q_θ(sₜ)) │                     │                    │
+       │                │                     │                    │
+  execute a, get r,s'   │                     │                    │
+       │                │                     │                    │
+  store (sₜ,a,r,s') ──▶ D                     │                    │
+                        │                     │                    │
+  sample random         │                     │                    │
+  mini-batch ──────────▶│                     │                    │
+  {(sᵢ,aᵢ,rᵢ,s'ᵢ)}     │                     │                    │
+                        │                     │                    │
+  compute targets: yᵢ = rᵢ + γ·max_a Q_{θ⁻}(s'ᵢ,a) ────────────▶ │
+                        │              │      │                    │
+  compute loss: L = (1/B)Σ(yᵢ − Q_θ(sᵢ,aᵢ))²                    │
+                        │              │      │                    │
+  update θ via SGD ─────────────────────────▶ θ                   │
+                        │                     │                    │
+  every C steps: copy θ⁻ ← θ ────────────────────────────────────▶ θ⁻
+    </pre>
+    <div class="diagram-caption">Figure 11.2 — DQN training loop. Experience replay breaks correlations; target network stabilizes training.</div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-dql">
+    <div class="section-num">Section 12</div>
+    <h2>DQN Improvements</h2>
+  </div>
+
+  <h3>12.1 Double DQN (DDQN) — Fixing Overestimation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem — Maximization bias:</strong> DQN uses max_a' Q_{θ⁻}(s',a') for the target. The max operation systematically overestimates Q-values. If any Q-values have random noise (they always do), the max picks the one with the highest noise — consistently overestimating the true maximum.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DDQN fix:</strong> Decouple action selection from action evaluation. Use the ONLINE network to SELECT the best action: a* = argmax_a Q_θ(s',a). Use the TARGET network to EVALUATE it: Q_{θ⁻}(s', a*). The target becomes: y = r + γ · Q_{θ⁻}(s', argmax_a Q_θ(s',a)).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Result:</strong> Significantly reduces overestimation bias. More accurate Q-value estimates. Better performance on most Atari games.</div></li>
+  </ul>
+
+  <h3>12.2 Dueling DQN — Decomposing Q-Values</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Insight:</strong> Q(s,a) = V(s) + A(s,a). State value V(s) measures how good it is to BE in state s (regardless of action). Advantage A(s,a) measures how much BETTER action a is compared to the average action in s. Decomposing helps learning — V can be updated from all actions, not just the one taken.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> After the convolutional layers, split into two streams: a value stream V(s) (outputs scalar) and an advantage stream A(s,a) (outputs |A|-dim vector). Combined: Q(s,a) = V(s) + (A(s,a) − mean_a' A(s,a')). The mean subtraction ensures identifiability (prevents V and A from being ambiguous).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefit:</strong> For states where all actions are equally good (e.g., a racing game going straight), V is updated meaningfully without needing to evaluate each specific action. Faster learning in such states.</div></li>
+  </ul>
+
+  <h3>12.3 Prioritized Experience Replay (PER)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with uniform replay:</strong> Not all transitions are equally informative. Transitions with high TD error δ contain more surprise — the Q estimate was more wrong for these. Sampling them more often would accelerate learning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>PER mechanism:</strong> Sample transition i with probability P(i) ∝ |δᵢ|^α. Higher priority (larger TD error) → sampled more often. α=0 → uniform. α=1 → fully proportional. Typically α=0.6.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Importance sampling correction:</strong> PER introduces bias (over-samples high-error transitions). Correct with importance sampling weights wᵢ = (1/N · 1/P(i))^β. β annealed from 0.4 to 1 over training. Prevents bias from dominating in later training.</div></li>
+  </ul>
+
+  <h3>12.4 Rainbow DQN</h3>
+  <p>Rainbow (Hessel et al., DeepMind — 2017) combines six DQN improvements into one agent and demonstrates that all six components contribute to performance:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">1. Double DQN</div>
+      <p>Reduces overestimation bias by decoupling action selection and evaluation.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">2. Dueling Networks</div>
+      <p>Separate value and advantage streams for more efficient value estimation.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">3. Prioritized Replay</div>
+      <p>Sample high-TD-error transitions more frequently.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">4. Multi-step Returns</div>
+      <p>Use n-step TD targets instead of 1-step. Better credit assignment. n=3 typical.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">5. Distributional RL (C51)</div>
+      <p>Learn full distribution of returns, not just expected value. Predicts 51 atoms of the return distribution.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">6. Noisy Networks</div>
+      <p>Learnable noise in network weights for exploration. Replaces ε-greedy with learned, state-dependent exploration.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-dql">
+    <div class="section-num">Section 13</div>
+    <h2>RL Algorithms — Complete Comparison</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr>
+      <th>Algorithm</th><th>Type</th><th>Model?</th><th>Policy Type</th><th>Key Formula / Update</th><th>Best For</th>
+    </tr>
+    <tr>
+      <td><strong>Value Iteration</strong></td>
+      <td>DP, Planning</td>
+      <td>Yes (full MDP)</td>
+      <td>Implicit (greedy on V)</td>
+      <td>V(s)←max_a Σ P[R+γV(s')]</td>
+      <td>Small tabular MDPs with known model</td>
+    </tr>
+    <tr>
+      <td><strong>Policy Iteration</strong></td>
+      <td>DP, Planning</td>
+      <td>Yes (full MDP)</td>
+      <td>Explicit (updated each iter)</td>
+      <td>Eval V^π; Improve π←greedy(V^π)</td>
+      <td>Small MDPs; fewer iterations than VI</td>
+    </tr>
+    <tr>
+      <td><strong>Q-Learning</strong></td>
+      <td>Model-free, TD</td>
+      <td>No</td>
+      <td>Off-policy (learns Q*)</td>
+      <td>Q(s,a)←Q+α[r+γ max Q(s',·)−Q]</td>
+      <td>Tabular, discrete action spaces</td>
+    </tr>
+    <tr>
+      <td><strong>SARSA</strong></td>
+      <td>Model-free, TD</td>
+      <td>No</td>
+      <td>On-policy (learns Q^π)</td>
+      <td>Q(s,a)←Q+α[r+γQ(s',a')−Q]</td>
+      <td>Safer exploration; online learning</td>
+    </tr>
+    <tr>
+      <td><strong>DQN</strong></td>
+      <td>Deep, Value-based</td>
+      <td>No</td>
+      <td>Off-policy, ε-greedy</td>
+      <td>Q_θ with replay buffer + target net</td>
+      <td>High-dim discrete action spaces (Atari)</td>
+    </tr>
+    <tr>
+      <td><strong>DDQN</strong></td>
+      <td>Deep, Value-based</td>
+      <td>No</td>
+      <td>Off-policy</td>
+      <td>Decouple selection/eval: Q_{θ⁻}(s',argmax_a Q_θ)</td>
+      <td>DQN + less overestimation</td>
+    </tr>
+    <tr>
+      <td><strong>REINFORCE</strong></td>
+      <td>Policy Gradient</td>
+      <td>No</td>
+      <td>On-policy, stochastic</td>
+      <td>θ←θ+α·Gₜ·∇log π(aₜ|sₜ)</td>
+      <td>Continuous action; simple tasks</td>
+    </tr>
+    <tr>
+      <td><strong>PPO</strong></td>
+      <td>Actor-Critic</td>
+      <td>No</td>
+      <td>On-policy</td>
+      <td>Clipped policy ratio objective</td>
+      <td>Continuous control; RLHF for LLMs</td>
+    </tr>
+    <tr>
+      <td><strong>SAC</strong></td>
+      <td>Actor-Critic</td>
+      <td>No</td>
+      <td>Off-policy, maximum entropy</td>
+      <td>Maximize reward + policy entropy</td>
+      <td>Continuous control; robustness</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Off-Policy vs On-Policy</div>
+    <p><strong>On-policy:</strong> Learns about the policy being used to collect data. Must use fresh data — cannot reuse old transitions. SARSA, REINFORCE, PPO. Safe in risky environments because it accounts for the cost of exploration.</p>
+    <p><strong>Off-policy:</strong> Learns about a different (usually optimal/greedy) policy than the one used to collect data. Can reuse old transitions (experience replay). Q-Learning, DQN, SAC. More data-efficient but can be less stable.</p>
+    <p><strong>Key Q-Learning insight:</strong> Q-Learning is off-policy because it uses max_a' Q(s',a') (greedy policy) in the target regardless of what action a' was actually taken. This lets it learn the optimal Q* even while exploring randomly.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header sh-dql">
+    <div class="section-num">Section 14</div>
+    <h2>RL Applications</h2>
+  </div>
+
+  <h3>14.1 Classic Benchmarks</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Atari 2600 Games</div>
+      <p>DQN benchmark. 49 games from raw pixels. Same architecture for all games. DQN surpassed human performance on 29/49. Still used to benchmark new deep RL algorithms.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Board Games (Go, Chess)</div>
+      <p>AlphaGo used MCTS + deep RL. AlphaZero: pure self-play RL from scratch — no human data. Defeated world champions. MCTS provides planning; RL provides value and policy networks.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">OpenAI Gym / MuJoCo</div>
+      <p>Standard RL environments. CartPole, LunarLander (Q-Learning). Ant, HalfCheetah, Humanoid (continuous control with PPO/SAC). Standard benchmarks for continuous action RL.</p>
+    </div>
+  </div>
+
+  <h3>14.2 Real-World Applications</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Robotics</div>
+      <p>Robot arm manipulation, locomotion, grasping novel objects. OpenAI hand solved Rubik's cube via domain randomization + PPO. Boston Dynamics quadrupeds trained with RL.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Recommendation Systems</div>
+      <p>YouTube, TikTok, Spotify model user engagement as RL problem. User = environment. Content shown = action. Click/watch time = reward. Learns long-term engagement, not just click-through rate.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Autonomous Driving</div>
+      <p>Lane following, merging, intersection negotiation. RL policies trained in simulation (CARLA) then transferred to real vehicles. DQN / PPO for discrete/continuous control.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">LLM Alignment (RLHF)</div>
+      <p>PPO used in InstructGPT/ChatGPT/Claude. Human feedback → reward model → RL fine-tuning. RL makes LLMs helpful, harmless, honest. Directly connects to Module 3 Transformers.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Resource Management</div>
+      <p>Google data center cooling: DeepMind RL achieved 40% reduction in cooling energy. Network routing, traffic signal control, job scheduling — all sequential decision problems.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Drug Discovery</div>
+      <p>REINVENT: RNN policy generates molecular SMILES strings. Reward = drug-likeness (QED), synthetic accessibility. RL guides molecular generation toward desired chemical properties.</p>
+    </div>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 4 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Reinforcement Learning:</strong> Agent learns by interacting with environment — observes state, takes action, receives scalar reward, transitions to new state. Goal: find policy π that maximizes discounted return Gₜ = Σ γᵏrₜ₊ₖ. No labeled data — learns from experience via trial and error.</div></li>
+      <li><span class="bullet">2.</span><div><strong>MDP = (S, A, P, R, γ):</strong> Markov Property — future depends only on current state. V^π(s) = expected return from s following π. Q^π(s,a) = expected return taking action a then following π. Optimal: V*(s) = max_π V^π(s). π*(s) = argmax_a Q*(s,a).</div></li>
+      <li><span class="bullet">3.</span><div><strong>Bellman Equations:</strong> V^π(s) = Σ_a π(a|s) Σ_{s'} P(s'|s,a)[R + γV^π(s')]. Optimality: V*(s) = max_a Σ_{s'} P(s'|s,a)[R + γV*(s')]. The max operator makes these nonlinear — solved iteratively.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Value Iteration:</strong> Repeatedly apply Bellman optimality: V_{k+1}(s) ← max_a Σ P[R+γVₖ(s')]. Converges to V* because Bellman operator is γ-contraction. Requires full MDP knowledge. Complexity O(|S|²|A|) per iteration.</div></li>
+      <li><span class="bullet">5.</span><div><strong>Policy Iteration:</strong> Alternates Policy Evaluation (compute V^π fully) and Policy Improvement (π←greedy(V^π)). Converges in finite iterations (Policy Improvement Theorem). Each iteration more expensive but fewer iterations than VI.</div></li>
+      <li><span class="bullet">6.</span><div><strong>Q-Learning:</strong> Model-free, off-policy TD method. Update: Q(s,a) ← Q(s,a) + α[r + γ·max_a' Q(s',a') − Q(s,a)]. Uses max (greedy) regardless of behavior policy → learns Q* directly. Requires all (s,a) pairs visited infinitely often for convergence.</div></li>
+      <li><span class="bullet">7.</span><div><strong>Exploration:</strong> ε-greedy (explore with prob ε, decay over time), UCB (optimistic bonus ∝ 1/√visits), Boltzmann (probability ∝ exp(Q/τ)), Intrinsic motivation (reward novelty). Exploration-exploitation trade-off is fundamental to RL.</div></li>
+      <li><span class="bullet">8.</span><div><strong>DQN:</strong> Replaces Q-table with CNN Q_θ(s,a). Two key innovations: (1) Experience Replay — random mini-batch from replay buffer D breaks correlations. (2) Target Network Q_{θ⁻} — frozen copy updated every C steps stabilizes targets. Achieved superhuman Atari performance from raw pixels.</div></li>
+      <li><span class="bullet">9.</span><div><strong>DQN Improvements:</strong> Double DQN (decouple selection/evaluation, reduce overestimation). Dueling DQN (Q=V+A, two streams). Prioritized Replay (sample by |δ|). Rainbow = all six improvements combined → state-of-art on Atari.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Deep Learning Techniques — Module 4</span>
+  <span>RL · MDP · Bellman · Value Iteration · Policy Iteration · Q-Learning · DQN</span>
+</div>
+
+</body>
+</html>

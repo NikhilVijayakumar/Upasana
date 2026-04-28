@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Learning Techniques – Module 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #faf8f5;
+    --surface: #ffffff;
+    --surface2: #f3f0eb;
+    --border: #e4ddd4;
+    --border2: #cec4b8;
+    --text: #18140e;
+    --text2: #46403a;
+    --text3: #7c7468;
+    --accent: #2a52be;
+    --accent-bg: #edf0fc;
+    --accent-border: #b4c0f0;
+    --green: #176b40;
+    --green-bg: #eaf5f0;
+    --green-border: #9ed4b8;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #4a2d8c;
+    --purple-bg: #f3f0fb;
+    --purple-border: #c4b4e8;
+    --teal: #0a5a5a;
+    --teal-bg: #e8f5f5;
+    --teal-border: #88d0d0;
+    --rose: #7a1a4a;
+    --rose-bg: #fdf0f6;
+    --rose-border: #e8a8cc;
+    --indigo: #1a2a6a;
+    --indigo-bg: #eef0f8;
+    --indigo-border: #a8b4e0;
+    --code-bg: #ede9e2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: #12080a;
+    color: #f5f0ec;
+    padding: 3rem 4rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 400px; height: 100%;
+    background: radial-gradient(ellipse at 80% 50%, #3a1428 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #c87090; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2; color: #f5f0ec; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle { font-family: 'Inter', sans-serif; font-size: 14px; color: #7a5068; margin-top: 1rem; }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .pb-syn  { background: #1a1a5a; }
+  .pb-vae  { background: #1a5a1a; }
+  .pb-gan  { background: #5a1a1a; }
+  .pb-cmp  { background: #3a1a5a; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .sh-syn  { border-left: 4px solid #1a1a5a; }
+  .sh-vae  { border-left: 4px solid #1a5a1a; }
+  .sh-gan  { border-left: 4px solid #5a1a1a; }
+  .sh-cmp  { border-left: 4px solid #3a1a5a; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout-key     { background: var(--accent-bg);  border-color: var(--accent);  } .callout-key .callout-title     { color: var(--accent);  } .callout-key p   { color: #1e3a8a; }
+  .callout-tip     { background: var(--green-bg);   border-color: var(--green);   } .callout-tip .callout-title     { color: var(--green);   } .callout-tip p   { color: #0f4a2c; }
+  .callout-warn    { background: var(--amber-bg);   border-color: var(--amber);   } .callout-warn .callout-title    { color: var(--amber);   } .callout-warn p  { color: #5a3800; }
+  .callout-exam    { background: var(--red-bg);     border-color: var(--red);     } .callout-exam .callout-title    { color: var(--red);     } .callout-exam p  { color: #6a1010; }
+  .callout-formula { background: var(--purple-bg);  border-color: var(--purple);  } .callout-formula .callout-title { color: var(--purple);  } .callout-formula p { color: #38206a; }
+  .callout-teal    { background: var(--teal-bg);    border-color: var(--teal);    } .callout-teal .callout-title    { color: var(--teal);    } .callout-teal p  { color: #0a3a3a; }
+  .callout-rose    { background: var(--rose-bg);    border-color: var(--rose);    } .callout-rose .callout-title    { color: var(--rose);    } .callout-rose p  { color: #5a1038; }
+  .callout-indigo  { background: var(--indigo-bg);  border-color: var(--indigo);  } .callout-indigo .callout-title  { color: var(--indigo);  } .callout-indigo p { color: #0e1a4a; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #12080a; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green);  font-weight: 500; }
+  .formula .rd  { color: var(--red);    font-weight: 500; }
+  .formula .rs  { color: var(--rose);   font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── TABLES ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── GAN VARIANT CARD ── */
+  .gvar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; margin: 1.5rem 0; }
+  .gvar-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.4rem 1.5rem; position: relative; overflow: hidden; }
+  .gvar-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 12px 0 0 12px; }
+  .gc-red::before     { background: #8b1a1a; }
+  .gc-blue::before    { background: #1a2a8c; }
+  .gc-green::before   { background: #176b40; }
+  .gc-purple::before  { background: #4a2d8c; }
+  .gc-teal::before    { background: #0a5a5a; }
+  .gc-amber::before   { background: #7a4d00; }
+  .gc-rose::before    { background: #7a1a4a; }
+  .gc-indigo::before  { background: #1a2a6a; }
+  .gvar-card .gv-tag  { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.4rem; }
+  .gvar-card .gv-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+  .gvar-card .gv-year { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-bottom: 0.75rem; }
+  .gvar-card .gv-prob { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; color: var(--text3); margin: 0.6rem 0 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .gvar-card p { font-size: 14.5px; line-height: 1.65; margin-bottom: 0.5rem; }
+  .gvar-card p:last-child { margin-bottom: 0; }
+  .gvar-card .gv-apps { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.75rem; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #12080a; color: #e8dcd0; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── LATENT SPACE VISUAL ── */
+  .latent-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.25rem 0; }
+  .lc-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
+  .lc-box .lc-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+  .lc-box pre { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text2); line-height: 1.6; white-space: pre; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+    .latent-compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Deep Learning Techniques — Module 2</div>
+  <h1><span>Module 2:</span> Synthetic Data Generation, VAE &amp; Generative Adversarial Networks</h1>
+  <div class="subtitle">Synthetic Data · Variational Autoencoder · GAN Architecture · GAN Variants · GAN vs VAE</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Synthetic Data — Why &amp; What</a>
+    <a href="#s2"><span class="num">2.</span> Approaches to Synthetic Generation</a>
+    <a href="#s3"><span class="num">3.</span> VAE — Architecture Deep Dive</a>
+    <a href="#s4"><span class="num">4.</span> VAE Loss — ELBO Derivation</a>
+    <a href="#s5"><span class="num">5.</span> VAE Latent Space &amp; Generation</a>
+    <a href="#s6"><span class="num">6.</span> VAE for Synthetic Data</a>
+    <a href="#s7"><span class="num">7.</span> GAN — Theory &amp; Minimax</a>
+    <a href="#s8"><span class="num">8.</span> GAN Training Dynamics &amp; Failures</a>
+    <a href="#s9"><span class="num">9.</span> DCGAN</a>
+    <a href="#s10"><span class="num">10.</span> Conditional GAN (cGAN)</a>
+    <a href="#s11"><span class="num">11.</span> WGAN &amp; WGAN-GP</a>
+    <a href="#s12"><span class="num">12.</span> Pix2Pix &amp; CycleGAN</a>
+    <a href="#s13"><span class="num">13.</span> StyleGAN &amp; Progressive GAN</a>
+    <a href="#s14"><span class="num">14.</span> Other Notable GAN Variants</a>
+    <a href="#s15"><span class="num">15.</span> GAN vs VAE — Deep Comparison</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: SYNTHETIC DATA ████████████ -->
+<div class="part-banner pb-syn">Part 1 — Synthetic Data Generation</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-syn">
+    <div class="section-num">Section 1</div>
+    <h2>Synthetic Data — Why, What, and When</h2>
+  </div>
+
+  <h3>1.1 What is Synthetic Data?</h3>
+  <p><strong>Synthetic data</strong> is artificially generated data that mimics the statistical properties, structure, and distribution of real-world data — without being directly collected from reality. It is created by computational models rather than by observing actual events, people, or phenomena.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Core Purpose</div>
+    <p>Deep learning models require enormous amounts of labeled data. Collecting, cleaning, and annotating real data is expensive, slow, privacy-sensitive, and sometimes physically impossible (rare events, dangerous scenarios). Synthetic data addresses all these problems simultaneously — it can be generated at scale, is automatically labeled, is privacy-safe, and can represent any distribution including rare events.</p>
+  </div>
+
+  <h3>1.2 The Data Hunger Problem in Deep Learning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Scale requirements:</strong> ResNet-50 was trained on 1.2M ImageNet images. GPT-3 on 500B tokens. Modern models need more data than any single organization can realistically collect and annotate.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Annotation cost:</strong> Labeling 1000 medical images for tumor segmentation requires board-certified radiologist hours. A self-driving car dataset requires annotating every pixel in millions of frames — costing millions of dollars.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Class imbalance:</strong> Fraudulent transactions: &lt;0.1% of all transactions. Rare diseases: &lt;1% of patients. Aircraft engine failures: extremely rare. Insufficient minority-class data causes models to be biased and fail exactly when they are most needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Privacy and regulation:</strong> Medical records (HIPAA), financial data (GDPR), biometric data (CCPA) cannot be freely shared. Synthetic data that captures the same patterns without real individuals can be shared and used freely.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Edge cases:</strong> You cannot wait for an airplane crash to train a safety system. You cannot collect thousands of images of people being assaulted for a violence detection system. Synthetic generation is the only feasible option.</div></li>
+  </ul>
+
+  <h3>1.3 Properties of High-Quality Synthetic Data</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Fidelity (realism):</strong> The synthetic data should closely match the statistical distribution of real data. Measured by visual quality (images), perceptual metrics (FID, IS), and distributional tests (MMD — Maximum Mean Discrepancy).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Diversity:</strong> Must cover the full diversity of the real data distribution, not just the most common samples. A model that generates only one type of output suffers from mode collapse — catastrophic for downstream training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Privacy preservation:</strong> Synthetic data should not memorize or reproduce specific real training examples. Individual samples should not be re-identifiable. Differential Privacy can provide formal guarantees.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Utility:</strong> The ultimate test — models trained on synthetic data should perform comparably to models trained on real data when evaluated on real test sets. This is measured by <em>Train on Synthetic, Test on Real (TSTR)</em>.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Controllability:</strong> Ability to generate specific types of samples on demand (e.g., generate only rare disease cases, generate a specific demographic, generate a specific weather condition).</div></li>
+  </ul>
+
+  <h3>1.4 Evaluation Metrics for Synthetic Data Quality</h3>
+
+  <table class="compare-table">
+    <tr><th>Metric</th><th>What it Measures</th><th>How Computed</th><th>Used For</th></tr>
+    <tr>
+      <td><strong>FID (Fréchet Inception Distance)</strong></td>
+      <td>Distance between real and generated distributions in feature space</td>
+      <td>Fréchet distance between Gaussian fits of Inception-v3 features of real vs fake images. Lower = better.</td>
+      <td>Image generation (GAN, VAE)</td>
+    </tr>
+    <tr>
+      <td><strong>IS (Inception Score)</strong></td>
+      <td>Quality + diversity of generated images</td>
+      <td>KL(p(y|x) ‖ p(y)) — generated images should be clearly one class (quality) but vary across classes (diversity). Higher = better.</td>
+      <td>Image generation</td>
+    </tr>
+    <tr>
+      <td><strong>TSTR (Train Synthetic Test Real)</strong></td>
+      <td>Downstream model utility</td>
+      <td>Train a classifier on synthetic data only; evaluate on real test set. Compare accuracy to Train on Real, Test on Real (TRTR).</td>
+      <td>Tabular, medical, financial data</td>
+    </tr>
+    <tr>
+      <td><strong>MMD (Maximum Mean Discrepancy)</strong></td>
+      <td>Statistical distance between real and synthetic distributions</td>
+      <td>Kernel two-sample test. MMD=0 means distributions are identical. Sensitive to multivariate statistics.</td>
+      <td>Tabular data, time series</td>
+    </tr>
+    <tr>
+      <td><strong>Precision &amp; Recall</strong></td>
+      <td>Quality vs diversity trade-off</td>
+      <td>Precision: fraction of fake samples near real manifold. Recall: fraction of real manifold covered by fakes.</td>
+      <td>Image generation, medical</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-syn">
+    <div class="section-num">Section 2</div>
+    <h2>Approaches to Synthetic Data Generation</h2>
+  </div>
+
+  <h3>2.1 Taxonomy of Generation Methods</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Rule-Based / Simulation</div>
+      <p>Generate data using physics simulators, 3D engines (Unity, Unreal). Full control over every parameter. Widely used in robotics, autonomous driving (CARLA), and game-AI. Labeled automatically. Limited by the reality gap.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Statistical Methods</div>
+      <p>Fit parametric distributions (Gaussian, Copulas) or non-parametric models to real data; sample from them. SMOTE oversamples minority class by interpolating in feature space. Simple but limited to tabular/structured data.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Variational Autoencoder (VAE)</div>
+      <p>Probabilistic encoder-decoder. Learns a structured, continuous latent space. Generates new data by sampling from the prior N(0,I) and decoding. Stable training, interpretable latent space. Slight blurriness.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Generative Adversarial Network (GAN)</div>
+      <p>Adversarial game between generator and discriminator. Produces photorealistic samples. Sharp, diverse images. Less stable training. State-of-art for visual synthesis but harder to control.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Diffusion Models</div>
+      <p>Iteratively denoise random noise guided by learned score functions. State-of-art quality (DALL-E 3, Stable Diffusion). Slow inference. Excellent diversity and quality for images, audio, molecules.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Flow-Based Models</div>
+      <p>Exact likelihood estimation via invertible transformations. Can compute exact density. GLOW, RealNVP. Memory-intensive. Good for tabular data and audio generation.</p>
+    </div>
+  </div>
+
+  <h3>2.2 Applications of Synthetic Data</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Medical imaging:</strong> Generate synthetic CT/MRI scans, skin lesions, histopathology slides. Augment rare disease datasets. Share synthetic patient data without privacy risk. Models trained on synthetic medical images show comparable diagnostic performance.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Autonomous driving:</strong> Generate synthetic driving scenarios including rare events (pedestrian suddenly stepping out, adverse weather, night driving). CARLA simulator + GAN-based style transfer bridges the sim-to-real domain gap.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Financial fraud detection:</strong> Real fraud cases are extremely rare (&lt;0.1%). Generate synthetic fraudulent transactions with the same statistical patterns. CTGAN, TVAE generate realistic tabular financial data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>NLP data augmentation:</strong> Back-translation (translate EN→FR→EN), paraphrasing via LLM, synonym substitution. Increases training data size and diversity for low-resource languages.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Drug discovery:</strong> Generate novel molecular structures with desired binding properties. GAN/VAE-generated molecules are validated computationally before expensive wet-lab synthesis.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 2: VAE ████████████ -->
+<div class="part-banner pb-vae">Part 2 — Variational Autoencoder (VAE)</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-vae">
+    <div class="section-num">Section 3</div>
+    <h2>VAE — Architecture Deep Dive</h2>
+  </div>
+
+  <h3>3.1 From AE to VAE — The Motivation</h3>
+  <p>A standard Autoencoder (AE) maps each input to a single deterministic point in latent space. Two critical problems make AEs unsuitable for generation:</p>
+
+  <div class="latent-compare">
+    <div class="lc-box">
+      <div class="lc-title">Standard AE — Latent Space</div>
+      <pre>
+  z-space:
+  (discontinuous, unstructured)
+
+   ·  ·         Cluster A (cats)
+   · ·                 · · ·
+                 VOID   (undefined)
+         · ·
+          ·   Cluster B (dogs)
+         ·
+  Sample from VOID → garbage output.
+  No interpolation between clusters.
+      </pre>
+    </div>
+    <div class="lc-box">
+      <div class="lc-title">VAE — Latent Space</div>
+      <pre>
+  z-space:
+  (continuous, organized near N(0,I))
+
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+  ░░░░ cats ░░░░│░░░░ dogs ░░░░░
+  ░░░░░░░░░░░░░░│░░░░░░░░░░░░░░░
+  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+  ░ = filled with valid decodings
+  Sample anywhere → valid output.
+  Smooth interpolation between any points.
+      </pre>
+    </div>
+  </div>
+
+  <h3>3.2 VAE Full Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT x (e.g. 784-dim MNIST image)
+        │
+  ┌─────▼──────────────────────────────────────────────────────────────────┐
+  │ ENCODER  q_φ(z|x)                                                     │
+  │  Dense(784→512) + ReLU                                                 │
+  │  Dense(512→256) + ReLU                                                 │
+  │  ┌──────────────────┐   ┌───────────────────┐                         │
+  │  │ Dense(256→dim_z) │   │ Dense(256→dim_z)  │                         │
+  │  │ → μ(x)           │   │ → log σ²(x)       │                         │
+  │  └────────┬─────────┘   └────────┬──────────┘                         │
+  └───────────┼────────────────────-─┼────────────────────────────────────┘
+              │ μ                    │ log σ²
+              │                      │
+              ▼                      ▼
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ REPARAMETERIZATION TRICK                                               │
+  │  ε ~ N(0, I)         ← sampled externally (not part of graph)         │
+  │  σ = exp(0.5 · log σ²)                                                │
+  │  z = μ  +  σ ⊙ ε    ← differentiable! gradient flows through μ, σ   │
+  └──────────────────────────────┬─────────────────────────────────────────┘
+                                 │ z (latent code, dim_z)
+  ┌──────────────────────────────▼─────────────────────────────────────────┐
+  │ DECODER  p_θ(x|z)                                                     │
+  │  Dense(dim_z→256) + ReLU                                               │
+  │  Dense(256→512)   + ReLU                                               │
+  │  Dense(512→784)   + Sigmoid                                            │
+  │  → x̂  (reconstruction)                                               │
+  └────────────────────────────────────────────────────────────────────────┘
+        │
+  LOSS: L = Reconstruction Loss + KL Divergence
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Complete VAE architecture. Encoder → (μ, log σ²) → reparameterization → z → Decoder → x̂.</div>
+  </div>
+
+  <h3>3.3 VAE Components — Detailed</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Encoder q_φ(z|x):</strong> A neural network parameterized by φ. Takes input x and outputs the parameters of a Gaussian distribution over the latent space: mean μ(x) and log-variance log σ²(x). The subscript φ indicates the encoder has learnable parameters φ (weights and biases).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why log σ² instead of σ?</strong> Log-variance is unconstrained (can be any real number) while σ must be positive. The network predicts log σ² and we compute σ = exp(0.5 · log σ²). This makes optimization easier — no need for positivity constraints.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Latent code z:</strong> Sampled from N(μ(x), σ²(x)). This is the compressed representation. Typical dim_z: 2 (for visualization), 32–512 (practical tasks). Smaller z → more compression → more blurry reconstructions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Decoder p_θ(x|z):</strong> A neural network parameterized by θ. Takes z and reconstructs x̂. For binary/image data: outputs probabilities → sigmoid. For continuous data: outputs mean of Gaussian → linear activation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Prior p(z):</strong> We choose p(z) = N(0, I) — standard normal. This is the assumed distribution of z. The KL term in the loss pushes q_φ(z|x) toward this prior. Choosing N(0,I) makes sampling at generation time trivial: just draw from a standard normal.</div></li>
+  </ul>
+
+  <h3>3.4 The Reparameterization Trick — Step by Step</h3>
+  <ol class="step-list">
+    <li><div><strong>Problem:</strong> Sampling z ~ N(μ, σ²) is a stochastic operation. Backpropagation cannot flow through a random node — gradients are undefined for random sampling.</div></li>
+    <li><div><strong>Solution — externalize the randomness:</strong> Instead of sampling z directly, sample a noise variable ε ~ N(0, I) that is independent of the network parameters.</div></li>
+    <li><div><strong>Deterministic transformation:</strong> Compute z = μ + σ ⊙ ε. Now z is a deterministic function of μ, σ (network outputs) and ε (external noise). Gradients can flow through μ and σ normally.</div></li>
+    <li><div><strong>Why it works:</strong> The randomness is in ε, which is not a parameter. Only μ and σ are parameters, and they are computed deterministically from x. So ∂z/∂μ = 1 and ∂z/∂σ = ε — both well-defined gradients.</div></li>
+    <li><div><strong>Generation:</strong> At test time, to generate new data: sample ε ~ N(0,I) (or directly z ~ N(0,I)), pass through decoder → x̂. No encoder needed.</div></li>
+  </ol>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-vae">
+    <div class="section-num">Section 4</div>
+    <h2>VAE Loss Function — ELBO Derivation</h2>
+  </div>
+
+  <h3>4.1 The Probabilistic Objective</h3>
+  <p>The VAE is a probabilistic generative model. We want to maximize the marginal log-likelihood of the data: log p(x) = log ∫ p(x|z) p(z) dz. This integral is intractable (cannot be computed analytically). The VAE maximizes a tractable lower bound instead.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">ELBO Derivation — Evidence Lower BOund</div>
+    <div class="formula">
+      log p(x)  =  log ∫ p(x|z) p(z) dz<br><br>
+      Introduce approximate posterior q_φ(z|x) via importance sampling:<br>
+      = log E_{q_φ(z|x)} [ p(x|z) p(z) / q_φ(z|x) ]<br><br>
+      Apply Jensen's inequality (log is concave: E[log f] ≤ log E[f]):<br>
+      ≥ E_{q_φ(z|x)} [ log p(x|z) ]  −  KL( q_φ(z|x) ‖ p(z) )<br><br>
+      <span class="hl">ELBO = E_{q_φ} [log p_θ(x|z)]  −  KL( q_φ(z|x) ‖ p(z) )</span><br><br>
+      log p(x)  =  ELBO  +  KL( q_φ(z|x) ‖ p(x|z) )  ≥  ELBO<br>
+      <span class="comment">← since KL ≥ 0, ELBO is always ≤ log p(x) → it's a lower bound</span>
+    </div>
+  </div>
+
+  <h3>4.2 The Two Loss Terms</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">VAE Loss (minimize this = maximize ELBO)</div>
+    <div class="formula">
+      L_VAE(θ, φ; x)  =  <span class="rd">L_reconstruction</span>  +  <span class="var">L_KL</span><br><br>
+      <span class="rd">L_recon</span> = −E_{z~q_φ(z|x)} [ log p_θ(x|z) ]<br>
+      <span class="comment">For binary data:  BCE(x, x̂) = −Σ [xᵢ log x̂ᵢ + (1−xᵢ) log(1−x̂ᵢ)]</span><br>
+      <span class="comment">For continuous:   MSE(x, x̂) = ‖x − x̂‖²</span><br><br>
+      <span class="var">L_KL</span> = KL( q_φ(z|x) ‖ p(z) )<br>
+           = KL( N(μ, σ²) ‖ N(0, I) )<br>
+           = −½ Σⱼ [ 1 + log σⱼ² − μⱼ² − σⱼ² ]     <span class="comment">← closed form!</span><br><br>
+      Total: L = L_recon + L_KL  (averaged over batch)
+    </div>
+  </div>
+
+  <h3>4.3 Interpreting Each Term</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Reconstruction term E[log p_θ(x|z)]:</strong> Measures how well the decoder reproduces the input from the latent code. Minimizing this = making x̂ as close to x as possible. This is the "compression must be lossless" force. Pulls encodings toward informative, specific representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>KL divergence term:</strong> Measures how different the encoder's distribution N(μ,σ²) is from the prior N(0,I). Minimizing this pulls μ toward 0, σ toward 1 for every data point. This is the "regularization" force. Pushes encodings toward a standard normal — creating a structured, dense, continuous latent space.</div></li>
+    <li><span class="bullet">▸</span><div><strong>The creative tension:</strong> Reconstruction wants specific z values per input (diverse μ, small σ). KL wants all z values to look like N(0,I) (μ≈0, σ≈1). The balance between these creates a latent space where: points from the same class are close, different classes are separated, and the entire space is covered (no voids).</div></li>
+    <li><span class="bullet">▸</span><div><strong>β-VAE:</strong> Modify the loss as L = L_recon + β · L_KL. β &gt; 1 forces stronger disentanglement — individual dimensions of z correspond to interpretable factors of variation. β &lt; 1 improves reconstruction quality at the cost of disentanglement. Standard VAE: β = 1.</div></li>
+    <li><span class="bullet">▸</span><div><strong>KL closed form:</strong> The KL between two Gaussians has a closed-form solution (shown above). This is a huge practical advantage — no sampling is needed to estimate the KL term. Only the reconstruction term requires sampling (handled by the reparameterization trick).</div></li>
+  </ul>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — ELBO in One Line</div>
+    <p>ELBO = Reconstruction Quality − KL Penalty. Maximizing ELBO simultaneously pushes the decoder to reconstruct x well AND pushes the encoder to produce distributions close to N(0,I). These two forces create a latent space that is both informative (can reconstruct) and structured (continuous, organized, generatable from).</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-vae">
+    <div class="section-num">Section 5</div>
+    <h2>VAE Latent Space Properties and Generation</h2>
+  </div>
+
+  <h3>5.1 Structured Latent Space</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Continuity:</strong> Because KL pushes all encoder distributions toward N(0,I), nearby z values are forced to overlap. Decoding z and z+ε gives similar outputs. No sharp discontinuities in the latent space.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Completeness:</strong> Because the prior is N(0,I) and all encoder distributions are pulled toward it, every region of the latent space is covered by some training example. Sampling anywhere gives a valid, realistic output — not garbage.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Smooth interpolation:</strong> Linear interpolation between z₁ (encoding of image A) and z₂ (encoding of image B) produces a smooth transition through intermediate valid images. Impossible with a standard AE.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Arithmetic in latent space:</strong> Similar to Word2Vec: z(smiling woman) − z(woman) + z(man) ≈ z(smiling man). Semantic operations in latent space correspond to meaningful image transformations.</div></li>
+  </ul>
+
+  <h3>5.2 Generation Process</h3>
+
+  <div class="diagram">
+    <pre>
+  VAE GENERATION (no encoder needed):
+
+  Step 1: Sample z ~ N(0, I)    ← draw from prior
+          z is a dim_z dimensional vector
+
+  Step 2: x̂ = Decoder(z)       ← pass through learned decoder network
+
+  Step 3: x̂ is a new synthetic sample from the learned data distribution
+
+  INTERPOLATION:
+  z₁ = Encoder_μ(image_A)    z₂ = Encoder_μ(image_B)
+  z_interp(t) = (1−t)·z₁ + t·z₂   for t ∈ [0,1]
+  Decode each z_interp(t) → smooth visual transition A→B
+
+  ATTRIBUTE MANIPULATION:
+  Find direction v in latent space encoding attribute (e.g. "smile"):
+  z_modified = z + α·v   → decoded image has attribute amplified by α
+    </pre>
+    <div class="diagram-caption">Figure 5.1 — VAE generation, interpolation, and attribute manipulation using the learned latent space.</div>
+  </div>
+
+  <h3>5.3 VAE Blurriness Problem</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why blurry?</strong> The reconstruction loss (MSE or BCE) optimizes pixel-wise average. If the model is uncertain whether a pixel should be dark or light, it predicts the average of both — gray. This averaging effect produces blurry outputs especially at fine details.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fundamental cause:</strong> The VAE marginalizes over the distribution of z (averaging over all possible latent codes). This inherent averaging in the generative process produces blurry expectations rather than sharp samples.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fixes:</strong> Perceptual loss (use VGG features instead of pixel MSE). VAE-GAN (add a discriminator). Discrete VAE (VQ-VAE uses discrete latent codes). Flow-based decoder (exact likelihood, no averaging).</div></li>
+    <li><span class="bullet">▸</span><div><strong>VQ-VAE (Vector Quantized VAE):</strong> Replaces continuous Gaussian latent space with a discrete codebook. Encoder output is mapped to the nearest codebook vector. Sharp reconstructions without blurriness. Used in DALL-E v1, MusicVQ.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-vae">
+    <div class="section-num">Section 6</div>
+    <h2>VAE for Synthetic Data Generation</h2>
+  </div>
+
+  <h3>6.1 VAE Advantages for Synthetic Data</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Explicit latent structure:</strong> The latent space is continuous and well-organized. You can generate data that continuously varies along meaningful dimensions — invaluable for controlled synthetic data generation where specific properties are needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stable training:</strong> VAE has a single, well-defined loss function (ELBO). No adversarial instability. Training reliably converges. This is crucial when generating synthetic data for safety-critical applications where generation reliability matters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Probabilistic framework:</strong> Can compute approximate density p(x) via importance sampling. Useful for anomaly detection (low probability = anomaly) and quality filtering of synthetic samples.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Conditional generation:</strong> Conditional VAE (CVAE) conditions both encoder and decoder on label y. Enables class-specific synthetic generation: "generate 1000 diabetic retinopathy scans of severity grade 3."</div></li>
+  </ul>
+
+  <h3>6.2 Conditional VAE (CVAE)</h3>
+
+  <div class="diagram">
+    <pre>
+  Standard VAE:   x → Encoder → (μ, σ²) → z → Decoder → x̂
+                  Loss: Recon(x, x̂) + KL(q(z|x) ‖ p(z))
+
+  CVAE:    [x, y] → Encoder → (μ, σ²) → z → Decoder([z, y]) → x̂
+           y = class label (one-hot or embedding)
+           Loss: Recon(x, x̂) + KL(q(z|x,y) ‖ p(z|y))
+
+  Generation with CVAE:
+  Specify desired class y
+  Sample z ~ p(z|y)  (or simply z ~ N(0,I))
+  Decode([z, y])  → generates a sample of class y
+    </pre>
+    <div class="diagram-caption">Figure 6.1 — Conditional VAE. Conditioning both encoder and decoder on label y enables class-controlled synthesis.</div>
+  </div>
+
+  <h3>6.3 VAE for Tabular Synthetic Data — TVAE</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Tabular challenge:</strong> Real-world tabular data has mixed types: continuous, discrete, categorical columns. Standard VAE assumes Gaussian distribution — inappropriate for discrete or categorical features.</div></li>
+    <li><span class="bullet">▸</span><div><strong>TVAE (Tabular VAE):</strong> Handles mixed types by using different loss functions per column: MSE for continuous, cross-entropy for categorical. Mode-specific normalization handles multi-modal continuous distributions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Synthetic electronic health records (EHR), synthetic financial transaction data, privacy-safe census data. TVAE and CTGAN are the two leading tabular synthesis approaches.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 3: GAN ████████████ -->
+<div class="part-banner pb-gan">Part 3 — Generative Adversarial Networks</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 7</div>
+    <h2>GAN — Theory and the Minimax Game</h2>
+  </div>
+
+  <h3>7.1 GAN Core Concept</h3>
+  <p>A <strong>Generative Adversarial Network</strong> (Goodfellow et al., NeurIPS 2014) is a framework where two neural networks are trained simultaneously in an adversarial manner. Neither network is trained in isolation — each improves by competing against the other.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Generator G:</strong> Takes random noise z ~ p_z(z) (usually N(0,I)) as input and produces a synthetic sample G(z) that should be indistinguishable from real data. Goal: fool D into thinking G(z) is real.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Discriminator D:</strong> Takes either a real sample x or a fake sample G(z) and outputs a scalar D(x) ∈ (0,1) — the probability that the input is real (not generated). Goal: correctly distinguish real from fake.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Adversarial training:</strong> D tries to maximize its classification accuracy. G tries to minimize it. This is a zero-sum game — D's gain is G's loss. They are trained in alternating steps, each improving in response to the other.</div></li>
+  </ul>
+
+  <h3>7.2 GAN Objective — The Minimax Formulation</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">GAN Value Function (Goodfellow et al., 2014)</div>
+    <div class="formula">
+      <span class="hl">min_G  max_D  V(D, G)</span>  =<br>
+        E_{x~p_data(x)} [ log D(x) ]  +  E_{z~p_z(z)} [ log(1 − D(G(z))) ]<br><br>
+      <span class="gr">Discriminator D maximizes V:</span><br>
+        → log D(x): push D(x) → 1 for real x (correctly classify as real)<br>
+        → log(1−D(G(z))): push D(G(z)) → 0 for fakes (correctly reject)<br><br>
+      <span class="rd">Generator G minimizes V:</span><br>
+        → G minimizes log(1−D(G(z))): push D(G(z)) → 1 (fool discriminator)<br>
+        ≡ G maximizes log D(G(z))  [non-saturating version, better gradients]<br><br>
+      <span class="var">Optimal solution (Nash Equilibrium):</span><br>
+        p_g = p_data  (G generates the true data distribution)<br>
+        D(x) = 0.5 everywhere  (D cannot distinguish real from fake)
+    </div>
+  </div>
+
+  <h3>7.3 GAN Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  GENERATOR G:                            DISCRIMINATOR D:
+
+  z (100-dim noise)                       Real image x ──────────┐
+  z ~ N(0, I)                                                    │
+       │                                  Fake image G(z) ───────┤
+  [Dense / ConvTranspose layers]                                 │
+  [BN + ReLU (hidden)]                    [Conv layers + BN]     │
+  [Tanh (output)]                         [LeakyReLU]            ▼
+       │                                  [Flatten → Dense → Sigmoid]
+       ▼                                        │
+  G(z): Fake image                        D(input) ∈ (0, 1)
+  → looks like real data                  P(input is real)
+  → should fool D
+
+  TRAINING FLOW:
+  ┌──────────────────────────────────────────────────────────────────────┐
+  │  Step 1: Train D (freeze G)                                         │
+  │  Feed real batch → D should output ≈1                               │
+  │  Feed fake batch G(z) → D should output ≈0                          │
+  │  Backprop D only                                                     │
+  ├──────────────────────────────────────────────────────────────────────┤
+  │  Step 2: Train G (freeze D)                                         │
+  │  Feed G(z) to D → want D to output ≈1                               │
+  │  Backprop through D to G (D weights frozen, G weights updated)      │
+  └──────────────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 7.1 — GAN architecture and training flow. G and D are trained in alternating steps.</div>
+  </div>
+
+  <h3>7.4 Nash Equilibrium — Theoretical Guarantee</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Theorem (Goodfellow et al.):</strong> The global minimum of V(D,G) is achieved if and only if p_g = p_data. At this point, the optimal discriminator is D*(x) = 1/2 everywhere — random guessing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Proof sketch:</strong> For fixed G, optimal D*(x) = p_data(x) / (p_data(x) + p_g(x)). Substituting D* back and simplifying yields V(D*, G) = −log4 + 2·JSD(p_data ‖ p_g), where JSD is the Jensen-Shannon Divergence. JSD ≥ 0 with equality iff p_data = p_g.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Practice gap:</strong> The theoretical guarantee assumes sufficient capacity, simultaneous convergence, and infinite data. In practice, GAN training often fails to reach this optimum due to mode collapse, vanishing gradients, and oscillation.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 8</div>
+    <h2>GAN Training Dynamics and Failure Modes</h2>
+  </div>
+
+  <h3>8.1 Mode Collapse — The Central Problem</h3>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Mode Collapse — Definition and Impact</div>
+    <p><strong>Mode collapse</strong> occurs when G learns to map many different z values to the same or a very limited set of outputs, ignoring the diversity of the real data distribution. If the real dataset has 10 classes, G may learn to generate only 1–2 classes that fool D. The generator "collapses" to a subset of the true distribution's modes.</p>
+    <p><strong>Impact on synthetic data:</strong> A mode-collapsed generator is catastrophically bad for synthetic data augmentation — the generated data has no diversity, making it nearly useless for training downstream models.</p>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why it happens:</strong> G finds a subset of outputs that reliably fool D. Once found, there is no gradient signal to diversify — D cannot easily distinguish whether G is generating diverse samples. G settles into the local equilibrium of generating only these outputs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dynamic mode hopping:</strong> Sometimes G alternates between a few modes: it generates mode A, D adapts to reject A, G switches to mode B, D adapts, G switches back to A. This cycling never reaches equilibrium.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Detection:</strong> Monitor FID over training — stagnation or worsening FID while loss seems good indicates mode collapse. Inspect generated samples for visual diversity. Check Inception Score's entropy term (diversity component).</div></li>
+  </ul>
+
+  <h3>8.2 Vanishing Gradients for G</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> If D becomes too good early in training, D(G(z)) ≈ 0 for all generated samples. Then log(1 − D(G(z))) ≈ 0 and its gradient ≈ 0 — G receives essentially no gradient signal to improve.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Standard fix:</strong> Instead of minimizing log(1 − D(G(z))), G maximizes log D(G(z)) (non-saturating loss). When D(G(z)) ≈ 0, the gradient of −log D(G(z)) is large — G still gets strong gradients to improve.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training imbalance:</strong> If D is trained too many steps per G step, D dominates → G vanishing gradients. If G is trained too many steps, G dominates → D cannot keep up → meaningless discriminator. Typically: 1 D step per 1 G step.</div></li>
+  </ul>
+
+  <h3>8.3 Training Instability</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Oscillation:</strong> D and G engage in a cyclical chase — G improves, D falls behind, D recovers, G falls behind. The minimax game never settles. Loss curves for both D and G oscillate without converging.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Sensitivity:</strong> GAN training is highly sensitive to learning rate, batch size, architecture, and initialization. Slight changes can cause training to diverge entirely.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Practical stabilization:</strong> Use the same learning rate for G and D (or slightly higher for G). Use Adam with β₁=0.5 (not 0.9). Use Batch Normalization in G and LayerNorm/Spectral Norm in D. Use label smoothing (real labels = 0.9, not 1.0). Add noise to D's inputs.</div></li>
+  </ul>
+
+  <h3>8.4 GAN Evaluation Metrics (Revisited in Context)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>FID (Fréchet Inception Distance):</strong> Lower = better. Computes Fréchet distance between distributions of real and fake images in Inception-v3's feature space. Captures both quality and diversity. The standard GAN evaluation metric.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inception Score (IS):</strong> Higher = better. E[KL(p(y|x) ‖ p(y))]. p(y|x) should be peaked (high quality, clearly one class) while p(y) should be uniform (high diversity across classes). Does not compare to real data — only measures generated distribution properties.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Precision and Recall:</strong> Precision: fraction of generated samples close to the real data manifold (quality). Recall: fraction of real data manifold covered by generated samples (diversity). GAN training often trades recall (diversity) for precision (quality).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 9</div>
+    <h2>DCGAN — Deep Convolutional GAN</h2>
+  </div>
+
+  <h3>9.1 Motivation and Contribution</h3>
+  <p>DCGAN (Radford, Metz, Chintala — 2015) was the first stable architecture for image-generating GANs. It established a set of architectural guidelines that became the default GAN template, replacing the fully-connected networks of the original GAN with deep CNNs.</p>
+
+  <h3>9.2 DCGAN Architectural Rules</h3>
+
+  <table class="compare-table">
+    <tr><th>Component</th><th>Rule</th><th>Reason</th></tr>
+    <tr><td><strong>Pooling layers</strong></td><td>Replace with strided Conv (D) and fractional-strided Conv / ConvTranspose (G)</td><td>Learnable spatial downsampling/upsampling — better gradient flow than fixed pooling</td></tr>
+    <tr><td><strong>Batch Normalization</strong></td><td>Use in both G and D (not on G output layer or D input layer)</td><td>Stabilizes training, prevents saturation, helps gradients</td></tr>
+    <tr><td><strong>Fully Connected layers</strong></td><td>Remove; use Global Average Pooling at top of D</td><td>Better spatial structure preservation; fewer parameters</td></tr>
+    <tr><td><strong>G activations</strong></td><td>ReLU in all hidden layers; Tanh for output</td><td>ReLU fast convergence; Tanh → output in [−1,1] matching normalized real images</td></tr>
+    <tr><td><strong>D activations</strong></td><td>LeakyReLU in all layers (slope = 0.2)</td><td>Allows gradient flow even when neurons are "dead" (negative inputs); helps D learn better</td></tr>
+  </table>
+
+  <h3>9.3 DCGAN Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  GENERATOR G (100-dim z → 64×64×3 image):
+
+  z (100)
+  → Dense(4×4×512) + Reshape(4,4,512) + BN + ReLU
+  → ConvTranspose(256, 4×4, stride=2) → 8×8×256  + BN + ReLU   ← ×2 spatial
+  → ConvTranspose(128, 4×4, stride=2) → 16×16×128 + BN + ReLU
+  → ConvTranspose(64,  4×4, stride=2) → 32×32×64  + BN + ReLU
+  → ConvTranspose(3,   4×4, stride=2) → 64×64×3   + Tanh        ← output
+
+  DISCRIMINATOR D (64×64×3 image → real/fake probability):
+
+  64×64×3 image
+  → Conv(64,  4×4, stride=2) + LeakyReLU(0.2)  → 32×32×64
+  → Conv(128, 4×4, stride=2) + BN + LeakyReLU  → 16×16×128
+  → Conv(256, 4×4, stride=2) + BN + LeakyReLU  → 8×8×256
+  → Conv(512, 4×4, stride=2) + BN + LeakyReLU  → 4×4×512
+  → Flatten → Dense(1) + Sigmoid               → probability
+    </pre>
+    <div class="diagram-caption">Figure 9.1 — DCGAN Generator (ConvTranspose upsampling) and Discriminator (strided Conv downsampling).</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>ConvTranspose (Transposed Convolution):</strong> Also called "deconvolution" (misleadingly). Increases spatial dimensions. For stride=2, approximately doubles H and W. Has learnable weights — not a fixed operation like bilinear upsampling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>DCGAN training results:</strong> Demonstrated that GAN-generated images from Bedrooms, Faces, and CIFAR10 were visually realistic and diverse. Also showed that latent space arithmetic works: z(glasses man) − z(man) + z(woman) ≈ z(glasses woman).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 10</div>
+    <h2>Conditional GAN (cGAN)</h2>
+  </div>
+
+  <h3>10.1 Motivation — Controlled Generation</h3>
+  <p>Standard GAN generates random samples with no control over what class or type is generated. For synthetic data augmentation, we often need to generate specific classes: "give me 500 more examples of class X." Conditional GAN solves this by conditioning both G and D on extra information.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">cGAN Objective — Conditioned on y</div>
+    <div class="formula">
+      min_G  max_D  V(D, G)  =<br>
+        E_{x,y~p_data} [ log D(x | y) ]<br>
+      + E_{z~p_z, y~p_y} [ log(1 − D(G(z|y) | y)) ]<br><br>
+      y = conditioning information (class label, text, image, attributes)
+      Both G and D receive y as additional input
+    </div>
+  </div>
+
+  <div class="diagram">
+    <pre>
+  GENERATOR G:                          DISCRIMINATOR D:
+  [z (noise), y (label)]                [x or G(z|y), y (same label)]
+        │                                       │
+  [Concat or embed y with z]            [Concat or embed y]
+        │                                       │
+  [Conv / Dense layers]                 [Conv / Dense layers]
+        │                                       │
+  G(z|y): class-y image               D(input|y): P(real | class y)
+
+  GENERATION:
+  Specify desired class y
+  Sample z ~ N(0,I)
+  Generate x̂ = G(z | y=desired_class)
+    </pre>
+    <div class="diagram-caption">Figure 10.1 — Conditional GAN. y is concatenated with z (for G) and with the input (for D). Enables class-specific generation.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>How y is incorporated:</strong> For class labels: one-hot encode → embedding → concatenate with z (G) and with input feature maps (D). For images: concatenate spatially along channel dimension. For text: use text encoder output.</div></li>
+    <li><span class="bullet">▸</span><div><strong>AC-GAN (Auxiliary Classifier GAN):</strong> D has two heads: (1) real/fake classification, (2) class prediction. Losses: adversarial loss + classification loss for both real and fake images. Forces G to produce clearly classifiable images.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications for synthetic data:</strong> Generate balanced datasets (equal samples of all classes). Generate specific rare classes. Generate samples with specific attributes (age, severity, condition).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 11</div>
+    <h2>WGAN and WGAN-GP — Stable Training</h2>
+  </div>
+
+  <h3>11.1 The Problem with JS Divergence</h3>
+  <p>The original GAN loss uses Binary Cross-Entropy, which implicitly minimizes the Jensen-Shannon Divergence (JSD) between p_data and p_g. JSD has a critical problem: when p_data and p_g have disjoint supports (no overlap), JSD = log2 (constant) and its gradient = 0. Early in training, real and fake distributions are far apart — the gradient signal is useless.</p>
+
+  <h3>11.2 Wasserstein Distance — Earth Mover Distance</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Intuition:</strong> Imagine p_data and p_g as two piles of earth. The Wasserstein-1 distance is the minimum cost to transport one pile to the shape of the other (the "Earth Mover Distance"). Unlike JSD, it provides a meaningful, continuous distance even when distributions don't overlap.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Property:</strong> W(p_g, p_data) is continuous and differentiable with respect to G's parameters almost everywhere — even when p_data and p_g have disjoint support. This always provides a meaningful gradient signal to G.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">WGAN Objective — Wasserstein Distance</div>
+    <div class="formula">
+      W(p_data, p_g) = sup_{‖f‖_L ≤ 1}  E_{x~p_data}[f(x)] − E_{x~p_g}[f(x)]<br><br>
+      <span class="comment">← sup over all 1-Lipschitz functions f (Kantorovich-Rubinstein duality)</span><br><br>
+      WGAN loss:<br>
+      <span class="hl">max_D</span>: E_{x~p_data}[D(x)] − E_{z~p_z}[D(G(z))]  <span class="comment">← maximize W (critic)</span><br>
+      <span class="rd">min_G</span>: −E_{z~p_z}[D(G(z))]                     <span class="comment">← minimize W (generator)</span><br><br>
+      Key change: D is now a <span class="var">Critic</span> (unbounded output, no sigmoid)<br>
+      Constraint: D must be 1-Lipschitz: ‖∇_x D(x)‖ ≤ 1 for all x<br>
+      Enforcement: Weight clipping (original) OR Gradient Penalty (WGAN-GP)
+    </div>
+  </div>
+
+  <h3>11.3 WGAN-GP — Gradient Penalty</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem with weight clipping:</strong> Clipping D weights to [−c, c] to enforce Lipschitz constraint causes capacity underuse (D acts like a simple function) and gradient vanishing/exploding depending on the clip threshold c.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Gradient Penalty (WGAN-GP) solution:</strong> Directly penalize the gradient norm of D evaluated at interpolated points between real and fake samples. This softly enforces the Lipschitz constraint.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">WGAN-GP Loss with Gradient Penalty</div>
+    <div class="formula">
+      L_D = E_{x̃~p_g}[D(x̃)] − E_{x~p_data}[D(x)]<br>
+          + <span class="var">λ · E_{x̂~p_x̂}[ (‖∇_{x̂} D(x̂)‖₂ − 1)² ]</span><br><br>
+      <span class="comment">← gradient penalty term (λ=10 typical)</span><br>
+      x̂ = ε·x + (1−ε)·x̃   with  ε ~ Uniform(0,1)  ← interpolated sample<br><br>
+      L_G = −E_{z~p_z}[D(G(z))]   (same as WGAN)
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why interpolated points?</strong> The Lipschitz constraint must hold on the entire data manifold. Interpolated points between real and fake samples lie on the "path" the generator is learning — these are the most relevant points to enforce the constraint.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No Batch Normalization in D:</strong> WGAN-GP requires removing BN from the critic D because BN correlates samples within a batch, conflicting with the per-sample gradient penalty computation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Training D more than G:</strong> In WGAN, train D (critic) 5 times per G update. The critic needs to approach its optimum so it provides a meaningful Wasserstein estimate. This is opposite to vanilla GAN wisdom.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Benefits:</strong> Much more stable training. Meaningful loss curve that correlates with visual quality (can use D loss as proxy for convergence monitoring). Significantly reduces mode collapse. Default choice for high-quality GAN training.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 12</div>
+    <h2>Pix2Pix and CycleGAN — Image Translation</h2>
+  </div>
+
+  <h3>12.1 Pix2Pix — Supervised Image-to-Image Translation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Task:</strong> Given a source domain image x, generate a corresponding target domain image y. The relationship between domains is fixed (e.g., edge map → photo, grayscale → color, day → night). Requires paired training data: {(xᵢ, yᵢ)}.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Generator — U-Net:</strong> Encoder-decoder with skip connections. The encoder compresses the input into a bottleneck representation. The decoder generates the output with skip connections directly connecting encoder layer i to decoder layer (n−i) — preserving low-level spatial structure (edges, color, texture).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Discriminator — PatchGAN:</strong> Instead of classifying the entire image as real/fake, PatchGAN classifies each N×N patch. Outputs a grid of real/fake decisions (e.g., 30×30 grid). Advantages: (1) Fewer parameters than full-image D. (2) Can be applied to arbitrarily large images. (3) Enforces local texture realism.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Loss function:</strong> L = L_GAN (adversarial) + λ · L_L1 (pixel-wise L1 between G(x) and y). L1 encourages global structure correspondence; GAN provides sharpness and realism in textures. λ=100 typical.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">Pix2Pix Combined Loss</div>
+    <div class="formula">
+      L_G = L_cGAN(G, D) + λ · L_L1(G)<br><br>
+      L_cGAN(G, D) = E_{x,y}[log D(x,y)] + E_{x,z}[log(1−D(x, G(x,z)))]<br>
+      L_L1(G)      = E_{x,y,z}[‖y − G(x,z)‖₁]         <span class="comment">← enforces global structure</span><br><br>
+      D receives BOTH the input x AND the output (real y or fake G(x,z))
+      as a pair — checks both realism AND input-output correspondence
+    </div>
+  </div>
+
+  <h3>12.2 CycleGAN — Unpaired Image Translation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Problem:</strong> Paired data is often unavailable or impossible to collect. You cannot create perfect pairs of: horse → zebra (same horse in both locations), Monet painting → photo, winter scene → summer scene. CycleGAN requires NO paired training data.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Two generators G: X→Y and F: Y→X. Two discriminators D_X and D_Y. G translates X→Y; F translates Y→X. Trained simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cycle Consistency Loss — The Key Innovation:</strong> x → G(x) → F(G(x)) ≈ x (forward cycle). y → F(y) → G(F(y)) ≈ y (backward cycle). This forces G and F to be approximate inverses of each other — G cannot generate arbitrary Y images, only those that F can map back to the original x.</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">CycleGAN Full Loss</div>
+    <div class="formula">
+      L_total = L_GAN(G, D_Y, X, Y)      <span class="comment">← G fools D_Y (X→Y realistic)</span><br>
+              + L_GAN(F, D_X, Y, X)      <span class="comment">← F fools D_X (Y→X realistic)</span><br>
+              + λ · L_cyc(G, F)          <span class="comment">← λ=10, cycle consistency</span><br><br>
+      L_cyc(G, F) = E_{x~p_X}[‖F(G(x)) − x‖₁]   <span class="comment">← forward cycle</span><br>
+                  + E_{y~p_Y}[‖G(F(y)) − y‖₁]   <span class="comment">← backward cycle</span>
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why cycle consistency works:</strong> Without it, G could map every x to the same y (mode collapse in translation). Cycle consistency forces G to preserve enough information that F can recover x — this constrains G to translate meaningfully, not arbitrarily.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications for synthetic data:</strong> Domain adaptation (convert simulation renders to photorealistic appearance). Medical: MRI→CT synthesis (one modality to another). Satellite: day→night, summer→winter for rare condition training data. Art: photo→painting style for artistic augmentation.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 13</div>
+    <h2>StyleGAN and Progressive GAN — High-Resolution Synthesis</h2>
+  </div>
+
+  <h3>13.1 Progressive GAN (ProGAN)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Core idea:</strong> Start training at low resolution (4×4). Gradually add new layers to both G and D, increasing resolution progressively: 4→8→16→32→64→128→256→512→1024 pixels. New layers are smoothly blended in via a weighted fade-in (α parameter increases 0→1 as training progresses at each resolution).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why it works:</strong> At low resolution, the network learns large-scale structure (face shape, hair color). As resolution increases, progressively finer details are added (pores, wrinkles, strands of hair). This is much more stable than trying to learn all scales simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Result:</strong> First model to generate 1024×1024 photorealistic face images. 2–6× faster training than conventional GAN. Dramatically better quality at high resolutions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Minibatch standard deviation:</strong> ProGAN adds a statistical feature layer to D: computes standard deviation of features across the batch and appends it as a constant channel. D can now detect mode collapse (low variation across batch = signal of mode collapse).</div></li>
+  </ul>
+
+  <h3>13.2 StyleGAN — Style-Based Generator</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Core innovation:</strong> Rather than feeding z directly to G, a <strong>Mapping Network</strong> (8-layer MLP) transforms z → w (intermediate latent space). Style vectors derived from w are injected at each resolution level of G via <strong>AdaIN (Adaptive Instance Normalization)</strong>.</div></li>
+    <li><span class="bullet">▸</span><div><strong>AdaIN mechanism:</strong> AdaIN(x, y) = y_s · (x − μ(x))/σ(x) + y_b. The style vector provides scale y_s and bias y_b to normalize the feature maps at each layer. This injects style without altering the spatial structure.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stochastic variation:</strong> Per-pixel noise is added after each Conv layer. This controls fine stochastic details (individual hair strands, skin pores, freckles) without affecting large-scale structure. Noise at different scales affects different detail levels.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Style separation by scale:</strong> Injecting w at coarse resolutions (4–8px) controls large-scale attributes (pose, face shape). At medium resolutions (16–32px): facial features (eyes, nose shape). At fine resolutions (64–1024px): color, texture, fine details. This provides natural disentanglement of attributes.</div></li>
+  </ul>
+
+  <div class="diagram">
+    <pre>
+  StyleGAN Generator Architecture:
+
+  z ~ N(0,I) [512-dim]
+       │
+  ┌────▼────────────────────┐
+  │  Mapping Network f      │   8-layer MLP: z → w
+  │  z → w                  │   w = "intermediate latent code"
+  └────┬────────────────────┘
+       │ w [512-dim]
+       │ (broadcast to all layers)
+       │
+  ┌────▼────────────────────────────────────────────────────────────────┐
+  │  Synthesis Network (progressive resolution)                        │
+  │                                                                     │
+  │  4×4 const ──▶ AdaIN(w_1) ──▶ Conv ──▶ AdaIN(w_2) ──▶ to_RGB     │
+  │               ↑noise                   ↑noise                      │
+  │  8×8 upsample → same structure                                     │
+  │  16×16 → same                                                      │
+  │  ...                                                                │
+  │  1024×1024 → same ──▶ final RGB image                              │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  Style mixing: use w₁ for coarse layers, w₂ for fine layers
+  → combines attributes from two different identities
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — StyleGAN architecture. Mapping network generates w; AdaIN injects style at each resolution level.</div>
+  </div>
+
+  <h3>13.3 StyleGAN2 Improvements</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Artifact removal:</strong> StyleGAN suffered from "water droplet" artifacts from AdaIN's normalization. StyleGAN2 removes AdaIN and replaces with weight demodulation — modulating Conv weights directly rather than feature maps.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Path length regularization:</strong> Enforces that a fixed-length step in w-space produces a fixed-magnitude change in image space. Makes the w-space more isotropic — easier to navigate for image editing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Result:</strong> FID of 2.84 on FFHQ 1024×1024 (humans cannot tell real from fake). The source of "This Person Does Not Exist" (thispersondoesnotexist.com).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header sh-gan">
+    <div class="section-num">Section 14</div>
+    <h2>Other Notable GAN Variants</h2>
+  </div>
+
+  <div class="gvar-grid">
+
+    <div class="gvar-card gc-red">
+      <div class="gv-tag">Image Synthesis</div>
+      <div class="gv-name">BigGAN</div>
+      <div class="gv-year">Brock et al., 2018 (DeepMind)</div>
+      <p><strong>Core innovation:</strong> Scale GAN training to very large batch sizes (2048), large models, and class-conditional generation on ImageNet (1000 classes). Introduces class-conditional batch normalization (class label modulates BN parameters). Also uses truncation trick: at inference, sample z from truncated normal (|z| &lt; ψ) — higher ψ = more diversity but lower quality.</p>
+      <div class="gv-prob">Problem solved</div>
+      <p>Low quality on complex, high-diversity datasets like ImageNet with 1000 diverse classes.</p>
+      <div class="gv-apps">IS of 166.5, FID 7.4 on ImageNet 128×128 — SOTA at release. Applications: large-scale image synthesis, class-conditional augmentation</div>
+    </div>
+
+    <div class="gvar-card gc-blue">
+      <div class="gv-tag">Medical / Scientific Synthesis</div>
+      <div class="gv-name">MedGAN / CTGAN</div>
+      <div class="gv-year">Armanious 2019 / Xu et al. 2019</div>
+      <p><strong>MedGAN:</strong> Generates synthetic medical images (CT, MRI, PET). Uses CycleGAN + perceptual loss for cross-modality synthesis. Generates anatomically plausible images evaluated by radiologists.</p>
+      <p><strong>CTGAN (Conditional Tabular GAN):</strong> Specifically designed for tabular data synthesis. Uses mode-specific normalization for multi-modal continuous distributions. Conditional vector generation for balanced class-specific synthesis.</p>
+      <div class="gv-apps">Applications: Privacy-preserving EHR generation, rare disease augmentation, cross-modality MRI↔CT</div>
+    </div>
+
+    <div class="gvar-card gc-green">
+      <div class="gv-tag">Video Generation</div>
+      <div class="gv-name">VideoGAN / TGAN</div>
+      <div class="gv-year">Vondrick et al. 2016 / Saito et al. 2017</div>
+      <p><strong>Core idea:</strong> Decouple foreground (moving objects) from background (static scene). Two separate generators: one for background (static), one for foreground motion (temporal). Combined to produce coherent video.</p>
+      <p><strong>TGAN:</strong> Temporal GAN. Uses 1D temporal Conv in a separate temporal generator to create a latent code sequence, then a spatial generator creates each frame from the latent code at that timestep.</p>
+      <div class="gv-apps">Applications: Video augmentation for action recognition, synthetic dashcam footage, sports highlight generation</div>
+    </div>
+
+    <div class="gvar-card gc-purple">
+      <div class="gv-tag">Super Resolution</div>
+      <div class="gv-name">SRGAN / ESRGAN</div>
+      <div class="gv-year">Ledig et al. 2017 / Wang et al. 2018</div>
+      <p><strong>SRGAN:</strong> Upscales low-resolution images 4× using GAN. Generator: ResNet-based. D: VGG-style. Loss = adversarial + perceptual (VGG feature matching) + pixel MSE. Perceptual loss ensures high-frequency texture details, not just PSNR optimization.</p>
+      <p><strong>ESRGAN:</strong> Enhanced SRGAN. Uses Residual-in-Residual Dense Block (RRDB), no BN, Relativistic discriminator (D scores real−fake rather than real vs fake). Significantly sharper textures.</p>
+      <div class="gv-apps">Applications: Medical image enhancement, satellite super-resolution, video upscaling, generating high-res training data from low-res surveillance</div>
+    </div>
+
+    <div class="gvar-card gc-teal">
+      <div class="gv-tag">Text-to-Image</div>
+      <div class="gv-name">StackGAN / AttnGAN</div>
+      <div class="gv-year">Zhang et al. 2017 / Xu et al. 2018</div>
+      <p><strong>StackGAN:</strong> Two-stage GAN. Stage I: generates low-resolution (64×64) rough shape from text description. Stage II: refines to high-resolution (256×256) using original text + Stage I result. Each stage has its own G and D.</p>
+      <p><strong>AttnGAN:</strong> Attention-based text-to-image. At each scale, cross-attention between word embeddings and image features determines which words are relevant for which image regions. Enables fine-grained word-region correspondence.</p>
+      <div class="gv-apps">Precursors to DALL-E. Applications: generating training images from captions, product visualization</div>
+    </div>
+
+    <div class="gvar-card gc-amber">
+      <div class="gv-tag">Data Augmentation</div>
+      <div class="gv-name">AugGAN / ADA-GAN</div>
+      <div class="gv-year">Various, 2019–2021</div>
+      <p><strong>AugGAN:</strong> Generates domain-transferred augmentations for object detection — translates training images to look like they were captured in different weather (fog, rain, night) while preserving bounding box labels.</p>
+      <p><strong>ADA (Adaptive Discriminator Augmentation, StyleGAN2-ADA):</strong> Adaptive augmentation pipeline for limited-data GAN training. Applies augmentations to D's input during training, adapting the augmentation probability to keep D from overfitting to training images.</p>
+      <div class="gv-apps">Key for limited-data regimes: medical (few hundred images), specialized industrial datasets</div>
+    </div>
+
+    <div class="gvar-card gc-rose">
+      <div class="gv-tag">Molecular / Drug Discovery</div>
+      <div class="gv-name">MolGAN / ORGAN</div>
+      <div class="gv-year">De Cao &amp; Kipf 2018 / Guimaraes 2017</div>
+      <p><strong>MolGAN:</strong> Generates molecular graphs directly. G produces adjacency matrix (bond types) and node features (atom types). D uses graph convolutions to assess realism. Reward network encourages desired chemical properties (drug-likeness, solubility).</p>
+      <p><strong>ORGAN (Objective-Reinforced GAN):</strong> Combines GAN with reinforcement learning. G generates molecules as SMILES strings; receives reward for drug-likeness (QED score) via policy gradient in addition to adversarial reward.</p>
+      <div class="gv-apps">Applications: Novel drug candidate generation, materials science, protein design</div>
+    </div>
+
+    <div class="gvar-card gc-indigo">
+      <div class="gv-tag">Anomaly Detection</div>
+      <div class="gv-name">AnoGAN / GANomaly</div>
+      <div class="gv-year">Schlegl et al. 2017 / Akcay et al. 2018</div>
+      <p><strong>AnoGAN:</strong> Train DCGAN on normal data only. At test time: for each test image, find z* such that G(z*) best reconstructs the image. If reconstruction error is high → anomaly (the GAN manifold doesn't contain this image type).</p>
+      <p><strong>GANomaly:</strong> Encoder-Generator-Encoder-Discriminator architecture. Directly learns a mapping from image to latent code. Anomaly score = L2 distance between input encoding and reconstruction encoding.</p>
+      <div class="gv-apps">Applications: Industrial defect detection, medical anomaly detection, cybersecurity intrusion detection — where abnormal data is unavailable for training</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ████████████ PART 4: GAN VS VAE ████████████ -->
+<div class="part-banner pb-cmp">Part 4 — GAN vs Variational AE for Synthetic Data Generation</div>
+
+<!-- ══════════ SECTION 15 ══════════ -->
+<div class="section" id="s15">
+  <div class="section-header sh-cmp">
+    <div class="section-num">Section 15</div>
+    <h2>GAN vs VAE — Comprehensive Comparison</h2>
+  </div>
+
+  <h3>15.1 Fundamental Architectural Differences</h3>
+
+  <table class="compare-table">
+    <tr><th>Dimension</th><th>VAE</th><th>GAN</th></tr>
+    <tr>
+      <td><strong>Core mechanism</strong></td>
+      <td>Probabilistic encoder-decoder. Encodes data to distribution q(z|x) ≈ N(μ,σ²); decodes to reconstruct x̂.</td>
+      <td>Adversarial game. G maps noise z → fake data. D discriminates real vs fake.</td>
+    </tr>
+    <tr>
+      <td><strong>Training objective</strong></td>
+      <td>Maximize ELBO = E[log p(x|z)] − KL(q(z|x)‖p(z)). Single well-defined loss function.</td>
+      <td>Minimax: min_G max_D [E log D(x) + E log(1−D(G(z)))]. Two competing objectives.</td>
+    </tr>
+    <tr>
+      <td><strong>How z is obtained</strong></td>
+      <td>Encoder maps real data x → z (stochastic via reparameterization). Decoder maps z → x̂.</td>
+      <td>z is pure random noise, never encoded from real data. No encoder in basic GAN.</td>
+    </tr>
+    <tr>
+      <td><strong>Requires encoder?</strong></td>
+      <td>Yes — encoder is essential (provides μ, σ for training). Not needed at generation time.</td>
+      <td>No encoder in base GAN. BiGAN/ALI adds an encoder but is not standard.</td>
+    </tr>
+    <tr>
+      <td><strong>Latent space structure</strong></td>
+      <td>Explicitly structured: continuous, organized near N(0,I) by KL term. Traversable, interpretable.</td>
+      <td>Implicit: no explicit constraint on z-space structure. Often entangled; less interpretable.</td>
+    </tr>
+    <tr>
+      <td><strong>Explicit likelihood</strong></td>
+      <td>Yes — ELBO is a lower bound on log p(x). Can estimate data likelihood approximately.</td>
+      <td>No — no explicit probability model. Cannot compute p(x). Implicit generative model.</td>
+    </tr>
+    <tr>
+      <td><strong>Number of networks</strong></td>
+      <td>Two: Encoder + Decoder.</td>
+      <td>Two: Generator + Discriminator. D is discarded after training.</td>
+    </tr>
+  </table>
+
+  <h3>15.2 Generation Quality and Characteristics</h3>
+
+  <table class="compare-table">
+    <tr><th>Quality Aspect</th><th>VAE</th><th>GAN</th></tr>
+    <tr>
+      <td><strong>Visual sharpness</strong></td>
+      <td>Blurry — pixel-wise reconstruction loss (MSE/BCE) averages over uncertainty → smooth, soft textures missing fine details.</td>
+      <td>Sharp — adversarial loss penalizes blurriness directly (D can tell blurry from real). Produces crisp edges, fine textures.</td>
+    </tr>
+    <tr>
+      <td><strong>Diversity / mode coverage</strong></td>
+      <td>Good — KL divergence forces broad coverage of N(0,I). Unlikely to suffer from mode collapse.</td>
+      <td>Risky — mode collapse is the fundamental GAN failure. G may generate limited variety despite high quality of those varieties.</td>
+    </tr>
+    <tr>
+      <td><strong>Global coherence</strong></td>
+      <td>Good for overall structure (the reconstruction loss enforces global consistency).</td>
+      <td>May have global inconsistencies (e.g., extra fingers, asymmetric features) when trained on complex data.</td>
+    </tr>
+    <tr>
+      <td><strong>High-resolution synthesis</strong></td>
+      <td>Difficult — blurriness worsens at high resolution. Requires VQ-VAE, perceptual loss, or hybrid with GAN.</td>
+      <td>Excellent — ProGAN, StyleGAN generate photorealistic 1024×1024 images indistinguishable from real photos.</td>
+    </tr>
+    <tr>
+      <td><strong>FID score (lower = better)</strong></td>
+      <td>Typically higher FID (worse) than GAN for the same architecture. But FID captures diversity too — VAE may score comparably when GAN has mode collapse.</td>
+      <td>Best-in-class FID. StyleGAN2: FID 2.84 on FFHQ. Much better visual quality metrics than VAE on images.</td>
+    </tr>
+  </table>
+
+  <h3>15.3 Training Stability and Practical Use</h3>
+
+  <table class="compare-table">
+    <tr><th>Practical Aspect</th><th>VAE</th><th>GAN</th></tr>
+    <tr>
+      <td><strong>Training stability</strong></td>
+      <td>Very stable. Single loss function, well-defined gradient. Converges reliably with standard hyperparameters.</td>
+      <td>Often unstable. Two competing losses can oscillate, diverge, or collapse. Requires careful tuning.</td>
+    </tr>
+    <tr>
+      <td><strong>Hyperparameter sensitivity</strong></td>
+      <td>Robust. β (KL weight) is the main tunable parameter. Standard settings work across many domains.</td>
+      <td>Highly sensitive. Learning rate, architecture, batch size, BN placement all strongly affect stability.</td>
+    </tr>
+    <tr>
+      <td><strong>Training time</strong></td>
+      <td>Faster — single forward/backward pass per iteration.</td>
+      <td>Slower — two separate backward passes (G and D) per iteration. More total compute.</td>
+    </tr>
+    <tr>
+      <td><strong>Memory</strong></td>
+      <td>Stores encoder + decoder. Moderate memory.</td>
+      <td>Stores G + D during training. D discarded at inference. Similar memory during training.</td>
+    </tr>
+    <tr>
+      <td><strong>Convergence monitoring</strong></td>
+      <td>ELBO is meaningful — directly monitors reconstruction quality and latent space organization. Monotone improvement.</td>
+      <td>Loss values are not directly meaningful (D loss oscillates). Must use FID or visual inspection.</td>
+    </tr>
+  </table>
+
+  <h3>15.4 Latent Space Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Latent Space Property</th><th>VAE</th><th>GAN</th></tr>
+    <tr>
+      <td><strong>Structure</strong></td>
+      <td>Explicitly continuous and organized near N(0,I). Every point decodes to something meaningful. Fully traversable.</td>
+      <td>Implicit structure. Not guaranteed to be smooth or continuous. Sampling outside trained region may give artifacts.</td>
+    </tr>
+    <tr>
+      <td><strong>Interpolation</strong></td>
+      <td>Linear interpolation between two z values gives smooth, semantically meaningful transitions. Guaranteed by latent space structure.</td>
+      <td>Spherical interpolation often works for DCGAN/StyleGAN but not guaranteed to be smooth everywhere.</td>
+    </tr>
+    <tr>
+      <td><strong>Semantic directions</strong></td>
+      <td>β-VAE encourages disentangled dimensions. Individual z dimensions often correspond to interpretable factors (pose, lighting).</td>
+      <td>GAN latent spaces can be disentangled (StyleGAN's w-space) but require additional work (GANSpace, SeFa) to discover semantic directions.</td>
+    </tr>
+    <tr>
+      <td><strong>Inversion</strong></td>
+      <td>Trivial: encoder maps any real image → z. Enables easy editing of real images in latent space.</td>
+      <td>Hard: GAN inversion requires optimization to find z* such that G(z*)≈x. Slow and imperfect.</td>
+    </tr>
+  </table>
+
+  <h3>15.5 Suitability for Synthetic Data Generation</h3>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">When to Choose VAE for Synthetic Data</div>
+    <p><strong>1. Tabular / structured data:</strong> VAE (TVAE) handles mixed-type tabular data well. Continuous, categorical, and discrete columns. GAN is less principled for non-image data.</p>
+    <p><strong>2. Class-controlled generation:</strong> CVAE makes controlled generation straightforward. Conditioning is baked into the probabilistic framework.</p>
+    <p><strong>3. Limited labeled data:</strong> VAE's stable training and latent structure helps with small datasets. Less risk of training collapse.</p>
+    <p><strong>4. Privacy-sensitive applications:</strong> The probabilistic framework supports formal privacy analysis (differentially private VAE). Explicit likelihood allows privacy auditing.</p>
+    <p><strong>5. Interpretability needed:</strong> When you need to understand and control what is being generated. The structured latent space allows targeted attribute manipulation.</p>
+    <p><strong>6. Time-series / sequential data:</strong> VAE naturally extends to sequential data (VRNN, seq-VAE) with interpretable temporal latent variables.</p>
+  </div>
+
+  <div class="callout callout-rose">
+    <div class="callout-title">When to Choose GAN for Synthetic Data</div>
+    <p><strong>1. Image quality is critical:</strong> When downstream tasks require photorealistic images (e.g., training vision models, medical image augmentation where texture matters). GAN's sharpness is unmatched by standard VAE.</p>
+    <p><strong>2. High-resolution images:</strong> ProGAN, StyleGAN generate 1024×1024 photorealistic images. VAE struggles with high resolution without additional techniques.</p>
+    <p><strong>3. Image-to-image translation:</strong> Pix2Pix, CycleGAN have no direct VAE equivalent. Domain transfer for sim-to-real augmentation is GAN's strongest domain.</p>
+    <p><strong>4. Semantic consistency in images:</strong> Conditional GANs (SPADE, Pix2Pix) excel at maintaining semantic layout while generating photorealistic textures.</p>
+    <p><strong>5. Video synthesis:</strong> Temporal GANs (VideoGAN, TGAN) generate temporally consistent video frames. VAE-based video generation is an active research area but GAN leads in visual quality.</p>
+  </div>
+
+  <h3>15.6 Hybrid Approaches — Best of Both Worlds</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>VAE-GAN:</strong> Combines VAE encoder (structured latent space, stable training) with GAN discriminator (sharp output). Encoder provides z; decoder serves as G; D ensures visual realism. Loss = Reconstruction + KL + Adversarial. Gets structured, traversable latent space AND sharp images.</div></li>
+    <li><span class="bullet">▸</span><div><strong>VQ-VAE + GAN (DALL-E):</strong> VQ-VAE encodes images to discrete tokens (sharp, no blurriness). Autoregressive Transformer generates token sequences. Optional GAN discriminator for refinement. Enables text-to-image generation with high quality and diversity.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Diffusion models:</strong> The current state-of-art alternative that often outperforms both VAE and GAN. Iterative denoising process. Better diversity than GAN, sharper than VAE. Stable training like VAE. Slow inference — active research to speed up.</div></li>
+    <li><span class="bullet">▸</span><div><strong>IntroVAE:</strong> Introspective VAE. Adds an adversarial component within the VAE framework — encoder acts as D for "fake" (reconstructed) samples, while also encoding real samples. Achieves GAN-quality sharpness within the VAE training paradigm.</div></li>
+  </ul>
+
+  <h3>15.7 GAN vs VAE — Head-to-Head Summary</h3>
+
+  <table class="compare-table">
+    <tr><th>Criterion</th><th>Winner</th><th>Reason</th></tr>
+    <tr><td>Image sharpness</td><td><strong>GAN</strong></td><td>Adversarial loss directly penalizes blurriness</td></tr>
+    <tr><td>Training stability</td><td><strong>VAE</strong></td><td>Single ELBO loss, no adversarial oscillation</td></tr>
+    <tr><td>Mode coverage / diversity</td><td><strong>VAE</strong></td><td>KL regularization prevents mode collapse</td></tr>
+    <tr><td>Latent space interpretability</td><td><strong>VAE</strong></td><td>Explicit continuous, structured, traversable space</td></tr>
+    <tr><td>Image inversion (real → latent)</td><td><strong>VAE</strong></td><td>Encoder directly maps real data to z</td></tr>
+    <tr><td>Tabular data synthesis</td><td><strong>VAE</strong></td><td>Principled mixed-type handling (TVAE)</td></tr>
+    <tr><td>High-res image synthesis</td><td><strong>GAN</strong></td><td>ProGAN, StyleGAN: 1024×1024 photorealistic</td></tr>
+    <tr><td>Image-to-image translation</td><td><strong>GAN</strong></td><td>Pix2Pix, CycleGAN have no VAE equivalent</td></tr>
+    <tr><td>Controlled/conditional generation</td><td><strong>Tie</strong></td><td>CVAE and cGAN both enable class control</td></tr>
+    <tr><td>Privacy analysis</td><td><strong>VAE</strong></td><td>Explicit likelihood enables formal privacy bounds</td></tr>
+    <tr><td>FID score (images)</td><td><strong>GAN</strong></td><td>StyleGAN2 FID 2.84 vs VAE typically &gt;10</td></tr>
+    <tr><td>Downstream model utility (TSTR)</td><td><strong>Depends</strong></td><td>GAN for images; VAE for tabular; both comparable for classification augmentation</td></tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — GAN vs VAE Core Differences (Must Know)</div>
+    <p><strong>Representation:</strong> VAE encodes data → distribution (probabilistic). GAN maps noise → data (no encoding).</p>
+    <p><strong>Loss:</strong> VAE = Reconstruction + KL (single objective). GAN = Minimax adversarial game (two competing objectives).</p>
+    <p><strong>Quality vs Stability:</strong> GAN produces sharper images but training is unstable and prone to mode collapse. VAE is stable and covers all modes but produces blurry outputs.</p>
+    <p><strong>Latent space:</strong> VAE has explicit, structured, traversable latent space. GAN latent space is implicit and less interpretable.</p>
+    <p><strong>Use case:</strong> VAE for structured data, stable training, privacy, interpolation. GAN for photorealistic images, high-res synthesis, image translation.</p>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 2 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Synthetic Data:</strong> Artificially generated data mimicking real distributions. Needed for data scarcity, class imbalance, privacy, and rare events. Key properties: fidelity, diversity, privacy preservation, utility. Evaluated by FID, IS, TSTR, MMD.</div></li>
+      <li><span class="bullet">2.</span><div><strong>VAE Architecture:</strong> Encoder → (μ, log σ²) → reparameterization trick (z = μ + σ·ε, ε~N(0,I)) → Decoder → x̂. Reparameterization makes sampling differentiable. CVAE conditions on class label y for controlled generation.</div></li>
+      <li><span class="bullet">3.</span><div><strong>VAE ELBO Loss:</strong> ELBO = E[log p(x|z)] − KL(N(μ,σ²) ‖ N(0,I)). KL term in closed form: −½Σ[1+log σ²−μ²−σ²]. Reconstruction forces fidelity; KL forces structured, continuous latent space. β-VAE: β&gt;1 encourages disentanglement.</div></li>
+      <li><span class="bullet">4.</span><div><strong>VAE Latent Space:</strong> Continuous, complete, structured near N(0,I). Enables smooth interpolation, semantic arithmetic, and controlled generation. Blurriness from MSE averaging is the main weakness — solved by VQ-VAE, perceptual loss, or VAE-GAN.</div></li>
+      <li><span class="bullet">5.</span><div><strong>GAN:</strong> G maps z~N(0,I) → fake data. D classifies real/fake. Minimax: min_G max_D [E log D(x) + E log(1−D(G(z)))]. Nash equilibrium: p_g=p_data, D(x)=0.5. Non-saturating G loss: maximize log D(G(z)) for better gradients early in training.</div></li>
+      <li><span class="bullet">6.</span><div><strong>GAN Failures:</strong> Mode collapse (G generates limited variety), vanishing G gradients (D too strong), training oscillation. Solutions: WGAN-GP (Wasserstein + gradient penalty), minibatch discrimination, progressive growing, label smoothing.</div></li>
+      <li><span class="bullet">7.</span><div><strong>GAN Variants:</strong> DCGAN (CNN guidelines, ConvTranspose+LeakyReLU), cGAN (condition on y), WGAN-GP (Wasserstein+GP, most stable), Pix2Pix (paired U-Net+PatchGAN), CycleGAN (unpaired, cycle consistency F(G(x))≈x), StyleGAN (mapping network, AdaIN style injection, scale-specific style control), ProGAN (progressive resolution).</div></li>
+      <li><span class="bullet">8.</span><div><strong>GAN vs VAE for synthetic data:</strong> GAN wins: image sharpness, high-res synthesis, image translation. VAE wins: training stability, mode coverage, interpretable latent space, tabular data, privacy. Hybrids (VAE-GAN, VQ-VAE+GAN) combine both strengths. Diffusion models are the current state-of-art alternative.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Deep Learning Techniques — Module 2</span>
+  <span>Synthetic Data · VAE · ELBO · GAN · DCGAN · WGAN · CycleGAN · StyleGAN · GAN vs VAE</span>
+</div>
+
+</body>
+</html>

@@ -84,7 +84,9 @@ export const TemplateViewerView: FC = () => {
     selectedFile,
     fileContent,
     isLoading,
-    error
+    error,
+    setSelectedFolder,
+    setSelectedFile
   } = useTemplateViewerViewModel()
 
   useEffect(() => {
@@ -134,7 +136,7 @@ export const TemplateViewerView: FC = () => {
               ...styles.listItem,
               ...(selectedFolder?.path === folder.path ? styles.listItemSelected : {})
             }}
-            onClick={() => {}}
+            onClick={() => setSelectedFolder(folder)}
           >
             <strong>{folder.name}</strong>
             <div style={{ fontSize: 12, color: '#666' }}>{folder.subject}</div>
@@ -149,7 +151,7 @@ export const TemplateViewerView: FC = () => {
               ...styles.listItem,
               ...(selectedFile?.path === file.path ? styles.listItemSelected : {})
             }}
-            onClick={() => {}}
+            onClick={() => setSelectedFile(file)}
           >
             <div>{file.name}</div>
             <div style={styles.fileSize}>{(file.size / 1024).toFixed(1)} KB</div>

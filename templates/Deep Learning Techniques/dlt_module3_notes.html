@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deep Learning Techniques – Module 3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f7f8fc;
+    --surface: #ffffff;
+    --surface2: #eef0f8;
+    --border: #d8dcea;
+    --border2: #bec4dc;
+    --text: #10121e;
+    --text2: #3a3e52;
+    --text3: #6a6e88;
+    --accent: #2540b8;
+    --accent-bg: #eceffe;
+    --accent-border: #aab4f0;
+    --green: #136040;
+    --green-bg: #e8f4ee;
+    --green-border: #90d0b0;
+    --amber: #7a4d00;
+    --amber-bg: #fef9ed;
+    --amber-border: #e8c97a;
+    --red: #8b1a1a;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #44288c;
+    --purple-bg: #f1eefb;
+    --purple-border: #c0aee8;
+    --teal: #085858;
+    --teal-bg: #e4f4f4;
+    --teal-border: #84cece;
+    --indigo: #1a245c;
+    --indigo-bg: #eaedf8;
+    --indigo-border: #a4aed8;
+    --gold: #6a4800;
+    --gold-bg: #fdf5e4;
+    --gold-border: #e0c468;
+    --code-bg: #eaecf5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #0a0e28 0%, #1a2070 60%, #0a1848 100%);
+    color: #eef0fc;
+    padding: 3rem 4rem 2.5rem;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #7090e8; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2; color: #eef0fc; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle { font-family: 'Inter', sans-serif; font-size: 14px; color: #4a60c0; margin-top: 1rem; }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .pb-attn { background: #1a245c; }
+  .pb-trfm { background: #1a5040; }
+  .pb-vit  { background: #481878; }
+  .pb-pre  { background: #5c1a20; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .sh-attn { border-left: 4px solid #1a245c; }
+  .sh-trfm { border-left: 4px solid #1a5040; }
+  .sh-vit  { border-left: 4px solid #481878; }
+  .sh-pre  { border-left: 4px solid #5c1a20; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout-key     { background: var(--accent-bg);  border-color: var(--accent);  } .callout-key .callout-title     { color: var(--accent);  } .callout-key p   { color: #142090; }
+  .callout-tip     { background: var(--green-bg);   border-color: var(--green);   } .callout-tip .callout-title     { color: var(--green);   } .callout-tip p   { color: #0c4030; }
+  .callout-warn    { background: var(--amber-bg);   border-color: var(--amber);   } .callout-warn .callout-title    { color: var(--amber);   } .callout-warn p  { color: #5a3800; }
+  .callout-exam    { background: var(--red-bg);     border-color: var(--red);     } .callout-exam .callout-title    { color: var(--red);     } .callout-exam p  { color: #6a1010; }
+  .callout-formula { background: var(--purple-bg);  border-color: var(--purple);  } .callout-formula .callout-title { color: var(--purple);  } .callout-formula p { color: #34186a; }
+  .callout-teal    { background: var(--teal-bg);    border-color: var(--teal);    } .callout-teal .callout-title    { color: var(--teal);    } .callout-teal p  { color: #063838; }
+  .callout-gold    { background: var(--gold-bg);    border-color: var(--gold);    } .callout-gold .callout-title    { color: var(--gold);    } .callout-gold p  { color: #4a3000; }
+  .callout-indigo  { background: var(--indigo-bg);  border-color: var(--indigo);  } .callout-indigo .callout-title  { color: var(--indigo);  } .callout-indigo p { color: #101840; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #0a0e28; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .gr  { color: var(--green);  font-weight: 500; }
+  .formula .rd  { color: var(--red);    font-weight: 500; }
+  .formula .gd  { color: var(--gold);   font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── TABLES ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── MODEL CARDS ── */
+  .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 18px; margin: 1.5rem 0; }
+  .model-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.4rem 1.5rem; position: relative; overflow: hidden; }
+  .model-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 12px 0 0 12px; }
+  .mc-blue::before   { background: #1a2a8c; }
+  .mc-green::before  { background: #136040; }
+  .mc-purple::before { background: #44288c; }
+  .mc-red::before    { background: #8b1a1a; }
+  .mc-teal::before   { background: #085858; }
+  .mc-gold::before   { background: #6a4800; }
+  .mc-indigo::before { background: #1a245c; }
+  .mc-amber::before  { background: #7a4d00; }
+  .model-card .mc-tag  { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.3rem; }
+  .model-card .mc-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+  .model-card .mc-year { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-bottom: 0.7rem; }
+  .model-card p { font-size: 14.5px; line-height: 1.65; margin-bottom: 0.5rem; }
+  .model-card p:last-child { margin-bottom: 0; }
+  .model-card .mc-key  { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.75rem; }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── ALGO BLOCK ── */
+  .algo-block { border: 1.5px solid var(--border2); border-radius: 10px; margin: 1.5rem 0; overflow: hidden; }
+  .algo-block .algo-header { background: #0a0e28; color: #c0c8f0; padding: 0.6rem 1.25rem; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+  .algo-block .algo-body { padding: 1rem 1.25rem; }
+  .algo-block .algo-body .formula { font-size: 13.5px; }
+
+  /* ── ATTENTION HEAT ── */
+  .attn-visual { display: flex; gap: 1.5rem; margin: 1.25rem 0; align-items: flex-start; flex-wrap: wrap; }
+  .attn-matrix { font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Deep Learning Techniques — Module 3</div>
+  <h1><span>Module 3:</span> Attention Mechanisms &amp; Transformer Architectures</h1>
+  <div class="subtitle">Q·K·V Attention · Attention Pooling · Multi-Head Attention · Transformer · Vision Transformer · Large-Scale Pre-training</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Motivation for Attention</a>
+    <a href="#s2"><span class="num">2.</span> Query, Key, Value Framework</a>
+    <a href="#s3"><span class="num">3.</span> Attention Pooling</a>
+    <a href="#s4"><span class="num">4.</span> Scaled Dot-Product Attention</a>
+    <a href="#s5"><span class="num">5.</span> Multi-Head Attention</a>
+    <a href="#s6"><span class="num">6.</span> Positional Encoding</a>
+    <a href="#s7"><span class="num">7.</span> Transformer Encoder Block</a>
+    <a href="#s8"><span class="num">8.</span> Transformer Decoder Block</a>
+    <a href="#s9"><span class="num">9.</span> Full Transformer Architecture</a>
+    <a href="#s10"><span class="num">10.</span> Self-Attention vs Cross-Attention</a>
+    <a href="#s11"><span class="num">11.</span> Vision Transformer (ViT)</a>
+    <a href="#s12"><span class="num">12.</span> ViT Variants &amp; Improvements</a>
+    <a href="#s13"><span class="num">13.</span> BERT — Bidirectional Pre-training</a>
+    <a href="#s14"><span class="num">14.</span> GPT Family — Autoregressive Pre-training</a>
+    <a href="#s15"><span class="num">15.</span> T5, CLIP and Other Foundation Models</a>
+    <a href="#s16"><span class="num">16.</span> Pre-training Paradigms Compared</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: ATTENTION ████████████ -->
+<div class="part-banner pb-attn">Part 1 — Attention Mechanism: Q, K, V and Attention Pooling</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-attn">
+    <div class="section-num">Section 1</div>
+    <h2>Motivation for Attention</h2>
+  </div>
+
+  <h3>1.1 The Bottleneck Problem in Seq2Seq</h3>
+  <p>Before attention, sequence-to-sequence (Seq2Seq) models used an encoder-decoder RNN. The encoder compressed the entire input sequence into a single fixed-size context vector <strong>c</strong> — the encoder's final hidden state. The decoder used only this one vector to generate the entire output sequence.</p>
+
+  <div class="diagram">
+    <pre>
+  TRADITIONAL SEQ2SEQ (without attention):
+
+  Input: "The cat sat on the mat"
+         ↓   ↓   ↓   ↓   ↓   ↓
+        [h₁]→[h₂]→[h₃]→[h₄]→[h₅]→[h₆] → c (single fixed vector)
+                                                 ↓
+                                         [Decoder uses c only]
+                                                 ↓
+                                    Output: "Le chat s'est assis..."
+
+  PROBLEM:
+  • c must encode ALL information from the input sequence
+  • For long sequences, early information is "forgotten"
+  • Decoder has no way to focus on specific input words
+  • Performance degrades sharply with sequence length
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — Seq2Seq bottleneck. A single context vector cannot adequately summarize long sequences.</div>
+  </div>
+
+  <h3>1.2 The Attention Solution</h3>
+  <p>Bahdanau et al. (2015) proposed a revolutionary idea: instead of using only the final hidden state, let the decoder attend to <strong>all encoder hidden states</strong> at each decoding step, assigning a learned attention weight to each. The decoder can "look back" at any relevant part of the input.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Core Attention Intuition</div>
+    <p>When translating "Le chat" (the cat), the decoder should pay most attention to the encoder's representation of "The cat" — not "on the mat." Attention learns which encoder states to focus on for each decoder step. This focus is dynamic — it changes at every output token based on what is being generated.</p>
+    <p>Attention replaces the bottleneck with a dynamic, weighted combination of ALL encoder states. The decoder gets a rich, position-aware context vector tailored to each output step.</p>
+  </div>
+
+  <h3>1.3 The General Attention Principle</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Selective focus:</strong> Not all input positions are equally relevant for every computation. Attention allows the model to focus on what matters, ignoring the rest. This mimics human reading — we don't re-read everything to understand one word; we focus on the relevant context.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dynamic weighting:</strong> Attention weights are computed dynamically at each step based on the current query (what we're looking for) and the available context (what's in memory). Different steps attend to different positions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Parallelization:</strong> Unlike RNNs that must process sequences sequentially, attention operations can be computed for all positions simultaneously — a massive advantage for GPU/TPU training.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Interpretability:</strong> Attention weights provide a window into what the model is "looking at" — a form of built-in interpretability not available in RNNs or CNNs.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-attn">
+    <div class="section-num">Section 2</div>
+    <h2>Query, Key, Value Framework</h2>
+  </div>
+
+  <h3>2.1 The Database Analogy</h3>
+  <p>The Query-Key-Value (QKV) framework is best understood through a database analogy. Imagine a database of information where you search using a query:</p>
+
+  <div class="diagram">
+    <pre>
+  DATABASE ANALOGY                        ATTENTION ANALOGY
+
+  Query: "find me articles about cats"    Q: what information am I looking for?
+                                          (current decoder state, or current token)
+  Keys: titles of all documents           K: what does each memory entry "contain"?
+  [ "Dog care", "Cat genetics",  ]        (summaries / labels of each encoder state)
+    "Fish tanks", "Cat behavior" ]
+
+  Exact lookup:                           Soft (fuzzy) lookup:
+  → returns "Cat genetics" only           → returns a WEIGHTED COMBINATION
+  (hard match, key = query)               (all entries, weights based on similarity)
+
+  Values: full content of each doc        V: actual information in each memory entry
+  → returns full text of "Cat genetics"   → weighted sum of all encoder states
+
+  KEY INSIGHT:
+  Hard database: returns ONE document (binary)
+  Attention: returns weighted COMBINATION of ALL documents (soft / differentiable)
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — QKV database analogy. Attention performs a soft, differentiable lookup rather than a hard match.</div>
+  </div>
+
+  <h3>2.2 Formal Definitions</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Query (Q):</strong> Represents "what am I looking for?" In encoder-decoder attention: the current decoder hidden state (what the decoder needs to produce the next output word). In self-attention: the current token representation (what it wants to learn from context). Dimension: d_q.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Key (K):</strong> Represents "what do I contain / what information does this entry offer?" Each position in the input sequence has a key — a representation of what information that position can provide. Similarity between Q and K determines attention weight. Dimension: d_k (must equal d_q for dot product).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Value (V):</strong> Represents "the actual information at this position." After computing attention weights from Q-K similarity, the output is a weighted sum of values. Values can have a different dimension from keys: d_v.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why separate K and V?</strong> Keys determine HOW MUCH to attend (attention weights). Values determine WHAT to extract (the actual information). Decoupling them allows the model to use different representations for "searching" (K) and "retrieving" (V). More expressive than using the same vector for both.</div></li>
+  </ul>
+
+  <h3>2.3 From Input to Q, K, V — Linear Projections</h3>
+  <p>In transformers, Q, K, and V are not the raw input vectors. They are produced by learnable linear projections of the input:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Linear Projections to Q, K, V</div>
+    <div class="formula">
+      Input: X  (sequence of n token embeddings, each d_model dimensional)<br>
+             X ∈ ℝ^{n × d_model}<br><br>
+      <span class="hl">Q = X · W^Q</span>   where W^Q ∈ ℝ^{d_model × d_k}  <span class="comment">← query projection</span><br>
+      <span class="var">K = X · W^K</span>   where W^K ∈ ℝ^{d_model × d_k}  <span class="comment">← key projection</span><br>
+      <span class="gr">V = X · W^V</span>   where W^V ∈ ℝ^{d_model × d_v}  <span class="comment">← value projection</span><br><br>
+      W^Q, W^K, W^V are LEARNABLE parameters — the model learns the best projections.
+      Different projections = different "views" of the same input for searching (K),
+      querying (Q), and extracting (V).
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Same input, three purposes:</strong> In self-attention, X is used to generate all three: Q, K, and V. The same token projects itself into what it's looking for (Q), what it offers (K), and what it provides (V).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Typically d_k = d_v = d_model / h</strong> where h is the number of attention heads. Standard Transformer: d_model=512, h=8 → d_k=d_v=64 per head.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learned projections = learned feature spaces:</strong> The model learns which aspects of token representations are most useful for computing compatibility (K, Q) vs which aspects carry the most useful information to propagate (V).</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-attn">
+    <div class="section-num">Section 3</div>
+    <h2>Attention Pooling</h2>
+  </div>
+
+  <h3>3.1 What is Attention Pooling?</h3>
+  <p><strong>Attention pooling</strong> is the operation of computing a weighted average (or sum) of values, where the weights are derived from compatibility scores between a query and keys. It is the core computational primitive behind all modern attention mechanisms.</p>
+
+  <h3>3.2 Nadaraya-Watson Kernel Regression — The Origin</h3>
+  <p>Attention pooling has deep roots in classical statistics. The Nadaraya-Watson estimator (1964) predicts an output as a weighted average of training outputs, where weights depend on input similarity:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Nadaraya-Watson Kernel Regression (1964)</div>
+    <div class="formula">
+      f(x) = Σᵢ  α(x, xᵢ) · yᵢ<br><br>
+      α(x, xᵢ) = K(x − xᵢ) / Σⱼ K(x − xⱼ)    <span class="comment">← attention weight (normalized)</span><br>
+      K(u) = kernel function (e.g. Gaussian: exp(−u²/2))<br><br>
+      x   = query  (what we want to predict for)<br>
+      xᵢ  = keys   (training input positions)<br>
+      yᵢ  = values (training output values)<br><br>
+      This is EXACTLY attention:
+      • Compute similarity between query x and each key xᵢ via kernel K
+      • Normalize to get weights α (using softmax-like normalization)
+      • Output = weighted sum of values yᵢ
+    </div>
+  </div>
+
+  <h3>3.3 Additive Attention (Bahdanau, 2015)</h3>
+  <p>The first neural attention mechanism, introduced for machine translation:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Additive Attention (Bahdanau Attention)</div>
+    <div class="formula">
+      score(q, k) = v^T · tanh(W_q · q + W_k · k)   <span class="comment">← compatibility score</span><br><br>
+      α(q, K) = softmax(score(q, k₁), score(q, k₂), ..., score(q, kₙ))<br><br>
+      output = Σᵢ αᵢ · vᵢ                            <span class="comment">← weighted sum of values</span><br><br>
+      Parameters: W_q (d_q × d), W_k (d_k × d), v (d × 1)
+      Called "additive" because q and k are combined by ADDITION (after projection)
+    </div>
+  </div>
+
+  <h3>3.4 General Attention Pooling Formula</h3>
+  <div class="formula-block">
+    <div class="formula-label">General Attention Pooling</div>
+    <div class="formula">
+      <span class="hl">Attention(Q, K, V) = softmax( score(Q, K) ) · V</span><br><br>
+      Step 1: Compute scores:  score(Q, K)  →  shape (n_q × n_k)<br>
+              How compatible is each query with each key?<br><br>
+      Step 2: Normalize:       α = softmax(scores)  →  shape (n_q × n_k)<br>
+              Convert scores to probability distributions (sum to 1 across keys)<br><br>
+      Step 3: Aggregate:       output = α · V  →  shape (n_q × d_v)<br>
+              Each query gets a weighted sum of all values
+    </div>
+  </div>
+
+  <h3>3.5 Different Score Functions</h3>
+
+  <table class="compare-table">
+    <tr><th>Score Function</th><th>Formula</th><th>Parameters</th><th>Properties</th></tr>
+    <tr>
+      <td><strong>Additive (Bahdanau)</strong></td>
+      <td><code>vᵀ tanh(Wq·q + Wk·k)</code></td>
+      <td>Wq, Wk, v</td>
+      <td>Flexible, handles different dims for Q and K. More parameters. Slower.</td>
+    </tr>
+    <tr>
+      <td><strong>Dot Product</strong></td>
+      <td><code>qᵀ · k</code></td>
+      <td>None</td>
+      <td>Fast, no parameters. Requires d_q = d_k. Scales with dimension → saturation.</td>
+    </tr>
+    <tr>
+      <td><strong>Scaled Dot Product</strong></td>
+      <td><code>qᵀ · k / √d_k</code></td>
+      <td>None</td>
+      <td>Dot product with scaling. Prevents softmax saturation. Standard in Transformers.</td>
+    </tr>
+    <tr>
+      <td><strong>Cosine</strong></td>
+      <td><code>qᵀ·k / (‖q‖·‖k‖)</code></td>
+      <td>None</td>
+      <td>Scale-invariant. Used in some retrieval tasks. Bounded to [−1, 1].</td>
+    </tr>
+    <tr>
+      <td><strong>Bilinear (General)</strong></td>
+      <td><code>qᵀ · W · k</code></td>
+      <td>W (d_q × d_k)</td>
+      <td>Learned compatibility matrix. Can handle different Q/K dims. Used in Luong attention.</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why Scale by √d_k?</div>
+    <p>The dot product q·k = Σᵢ qᵢkᵢ. If q and k have components drawn from N(0,1), the dot product has variance = d_k (grows with dimension). For large d_k (e.g. 64), dot products become very large → softmax receives large inputs → its gradient becomes very small (saturation in the flat region) → vanishing gradients. Scaling by √d_k normalizes the variance back to ~1, keeping softmax in its sensitive, high-gradient regime.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-attn">
+    <div class="section-num">Section 4</div>
+    <h2>Scaled Dot-Product Attention — Full Derivation</h2>
+  </div>
+
+  <h3>4.1 The Operation</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Scaled Dot-Product Attention — Complete Formula</div>
+    <div class="formula">
+      <span class="hl">Attention(Q, K, V) = softmax( Q · Kᵀ / √d_k ) · V</span><br><br>
+      Dimensions:<br>
+      Q ∈ ℝ^{n_q × d_k}    <span class="comment">← n_q queries, each d_k dimensional</span><br>
+      K ∈ ℝ^{n_k × d_k}    <span class="comment">← n_k keys, each d_k dimensional</span><br>
+      V ∈ ℝ^{n_k × d_v}    <span class="comment">← n_k values, each d_v dimensional</span><br><br>
+      Q·Kᵀ:   (n_q × d_k) · (d_k × n_k) = (n_q × n_k)   ← attention score matrix<br>
+      /√d_k:  element-wise scaling                         ← prevent saturation<br>
+      softmax: row-wise softmax → each row sums to 1       ← attention weights<br>
+      ·V:     (n_q × n_k) · (n_k × d_v) = (n_q × d_v)   ← output<br><br>
+      Output has n_q rows (one output per query), each d_v dimensional.
+    </div>
+  </div>
+
+  <h3>4.2 Step-by-Step Walkthrough with Concrete Example</h3>
+
+  <div class="diagram">
+    <pre>
+  Sequence: ["I", "love", "deep", "learning"]   (n=4 tokens)
+  d_k = d_v = 3 (simplified for illustration)
+
+  After W^Q, W^K, W^V projections:
+  Q = [[0.2, 0.5, 0.1],    K = [[0.3, 0.4, 0.2],    V = [[v₁₁, v₁₂, v₁₃],
+       [0.8, 0.1, 0.3],         [0.1, 0.9, 0.1],         [v₂₁, v₂₂, v₂₃],
+       [0.4, 0.7, 0.2],         [0.6, 0.3, 0.5],         [v₃₁, v₃₂, v₃₃],
+       [0.1, 0.3, 0.9]]         [0.2, 0.1, 0.8]]          [v₄₁, v₄₂, v₄₃]]
+
+  Step 1: Q·Kᵀ = (4×3)·(3×4) = 4×4 raw score matrix
+  ┌─────────────────────────────────────────────────┐
+  │         "I"    "love"  "deep"  "learn."         │
+  │ "I"    [s₁₁    s₁₂     s₁₃     s₁₄  ]          │
+  │ "love" [s₂₁    s₂₂     s₂₃     s₂₄  ]          │
+  │ "deep" [s₃₁    s₃₂     s₃₃     s₃₄  ]          │
+  │ "learn"[s₄₁    s₄₂     s₄₃     s₄₄  ]          │
+  └─────────────────────────────────────────────────┘
+  sᵢⱼ = how much token i should attend to token j
+
+  Step 2: Divide by √3 ≈ 1.73 (scale)
+
+  Step 3: Row-wise softmax → attention weight matrix α
+  Each row = attention distribution over all positions for that query token
+
+  Step 4: α · V = (4×4)·(4×3) = (4×3) output
+  Each output row = weighted combination of value vectors
+    </pre>
+    <div class="diagram-caption">Figure 4.1 — Scaled dot-product attention step by step with 4-token sequence.</div>
+  </div>
+
+  <h3>4.3 Optional Masking</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Padding mask:</strong> Input sequences are padded to equal length in a batch. Padding tokens should not contribute to attention. Set their scores to −∞ before softmax → exp(−∞) = 0 → zero attention weight on padding positions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Causal (look-ahead) mask:</strong> Used in the decoder's self-attention. Token at position i should not attend to positions j &gt; i (future tokens that haven't been generated yet). Set upper triangle of the score matrix to −∞ before softmax. This makes the Transformer autoregressive (generates left-to-right).</div></li>
+  </ul>
+
+  <div class="formula-block">
+    <div class="formula-label">Masked Scaled Dot-Product Attention</div>
+    <div class="formula">
+      Attention(Q, K, V, mask) = softmax( (Q·Kᵀ/√d_k) + mask ) · V<br><br>
+      Padding mask:  mask[i,j] = 0 if j is valid, −∞ if j is padding<br><br>
+      Causal mask:   mask[i,j] = 0 if j ≤ i (can attend),  −∞ if j > i (future)<br>
+      ┌─────────────────────┐<br>
+      │ 0  −∞  −∞  −∞      │  ← token 1 attends only to itself<br>
+      │ 0   0  −∞  −∞      │  ← token 2 attends to 1,2<br>
+      │ 0   0   0  −∞      │  ← token 3 attends to 1,2,3<br>
+      │ 0   0   0   0      │  ← token 4 attends to all<br>
+      └─────────────────────┘
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-attn">
+    <div class="section-num">Section 5</div>
+    <h2>Multi-Head Attention</h2>
+  </div>
+
+  <h3>5.1 Motivation — Why Multiple Heads?</h3>
+  <p>A single attention function computes ONE weighted combination based on ONE query-key compatibility measure. But relationships in language (and vision) are complex and multi-faceted. A word can relate to others syntactically (subject-verb agreement), semantically (synonymy), and pragmatically (discourse structure) — all simultaneously.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Multi-Head Attention Insight</div>
+    <p>Multi-head attention runs h attention operations in <em>parallel</em>, each with its own learned Q, K, V projections. Each "head" attends to different aspects of the input simultaneously. Head 1 might learn syntactic dependencies. Head 2 might learn semantic similarity. Head 3 might learn coreference. The outputs of all heads are concatenated and linearly projected, giving a rich representation that integrates all these relationship types at once.</p>
+  </div>
+
+  <h3>5.2 Multi-Head Attention — Complete Formula</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Multi-Head Attention</div>
+    <div class="formula">
+      <span class="hl">MultiHead(Q, K, V) = Concat(head₁, head₂, ..., headₕ) · W^O</span><br><br>
+      where each head is:<br>
+      <span class="var">headᵢ = Attention(Q·W^Q_i, K·W^K_i, V·W^V_i)</span><br>
+           = softmax( (Q·W^Q_i)(K·W^K_i)ᵀ / √d_k ) · (V·W^V_i)<br><br>
+      Projection dimensions (standard Transformer, h=8, d_model=512):<br>
+      W^Q_i ∈ ℝ^{d_model × d_k}   d_k = d_model / h = 512/8 = 64<br>
+      W^K_i ∈ ℝ^{d_model × d_k}   d_v = d_model / h = 64<br>
+      W^V_i ∈ ℝ^{d_model × d_v}<br>
+      W^O   ∈ ℝ^{h·d_v × d_model}  = ℝ^{512 × 512}   ← output projection<br><br>
+      Total parameters per MHA layer:<br>
+      4 × d_model² = 4 × 512² = 1,048,576   (for h=8, d_model=512)
+    </div>
+  </div>
+
+  <h3>5.3 Multi-Head Attention Architecture Diagram</h3>
+
+  <div class="diagram">
+    <pre>
+  Input Q, K, V (each n × d_model)
+       │
+  ┌────┴────────────────────────────────────────────────────────────────┐
+  │                 SPLIT INTO h PARALLEL HEADS                        │
+  ├────────────────┬────────────────┬────────────────┬────────────────┤
+  │    Head 1      │    Head 2      │    Head 3      │    Head h      │
+  │ W^Q_1, W^K_1  │ W^Q_2, W^K_2  │ W^Q_3, W^K_3  │ W^Q_h, W^K_h  │
+  │     W^V_1     │     W^V_2     │     W^V_3     │     W^V_h     │
+  │       ↓        │       ↓        │       ↓        │       ↓        │
+  │ ScaledDotAttn  │ ScaledDotAttn  │ ScaledDotAttn  │ ScaledDotAttn  │
+  │   n × d_k      │   n × d_k      │   n × d_k      │   n × d_k      │
+  └────────────────┴────────────────┴────────────────┴────────────────┘
+                                  │
+              ┌─────────── Concat (n × h·d_k = n × d_model)
+              │
+          [W^O projection]    (d_model × d_model)
+              │
+         Output: n × d_model
+    </pre>
+    <div class="diagram-caption">Figure 5.1 — Multi-head attention. h parallel attention heads, each with own projections, outputs concatenated and projected.</div>
+  </div>
+
+  <h3>5.4 What Different Heads Learn</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Empirical findings (Voita et al., 2019):</strong> Analyzing trained BERT heads found interpretable patterns. Some heads focus on syntactic relations (subject→verb). Others on co-reference (pronoun→referent). Others on sequential ordering (attending to the next/previous token). Still others attend broadly to the whole sequence.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Head specialization:</strong> Different layers' heads learn different things. Early layer heads tend to focus on local syntactic structure. Later layer heads capture long-range semantic dependencies.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Head pruning:</strong> Most heads can be pruned (removed) with minimal performance loss — suggesting that a few heads carry most of the useful information. Typically 20–30% of heads can be pruned without significant accuracy drop.</div></li>
+  </ul>
+
+  <h3>5.5 Computational Complexity</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Time complexity:</strong> O(n² · d). The Q·Kᵀ multiplication is (n×d)·(d×n) = n² · d operations. For a sequence of length n, attention scales quadratically in n — the fundamental bottleneck for long sequences.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Space complexity:</strong> O(n²) to store the attention matrix. For n=1000 tokens, the matrix is 1000×1000 = 1M entries. For n=100,000 (long documents), 10B entries — infeasible with standard attention.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Efficient attention variants:</strong> Sparse attention (attend to only local neighbors + global tokens), Linformer (low-rank approximation), Performer (random feature approximation), FlashAttention (IO-aware exact computation). All aim to reduce the n² bottleneck.</div></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════ -->
+<!-- ████████████ PART 2: TRANSFORMER ████████████ -->
+<div class="part-banner pb-trfm">Part 2 — The Transformer Architecture</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-trfm">
+    <div class="section-num">Section 6</div>
+    <h2>Positional Encoding</h2>
+  </div>
+
+  <h3>6.1 Why Positional Encoding is Needed</h3>
+  <p>Attention is <strong>permutation invariant</strong> — swapping the order of tokens in the input doesn't change the attention output (just reorders it). But order is crucial: "The dog bit the man" ≠ "The man bit the dog." Without explicitly encoding position, the Transformer cannot distinguish these.</p>
+
+  <h3>6.2 Sinusoidal Positional Encoding (Vaswani et al., 2017)</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Sinusoidal Positional Encoding</div>
+    <div class="formula">
+      PE(pos, 2i)   = sin( pos / 10000^{2i/d_model} )<br>
+      PE(pos, 2i+1) = cos( pos / 10000^{2i/d_model} )<br><br>
+      pos = position in sequence (0, 1, 2, ..., n-1)<br>
+      i   = dimension index (0, 1, 2, ..., d_model/2 - 1)<br>
+      d_model = embedding dimension (e.g. 512)<br><br>
+      Added to token embeddings:  input = token_embedding + PE<br>
+      → input has same shape as embedding: ℝ^{n × d_model}
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why sinusoidal?</strong> Each position gets a unique encoding (different frequencies per dimension). More importantly, the relative position between two tokens can be expressed as a linear function of the PE — PE(pos+k) can be computed from PE(pos) linearly. This allows the model to attend to relative positions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Different frequencies:</strong> Low dimensions oscillate rapidly (fine-grained position). High dimensions oscillate slowly (coarse-grained position). Together they create a unique "fingerprint" for every position up to sequence length 10,000+.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learned positional encoding:</strong> Alternative approach — learn PE as parameters (like an embedding table). Used in BERT. Better performance on typical sequence lengths but cannot extrapolate to unseen lengths.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Rotary Position Embedding (RoPE):</strong> Modern approach (GPT-NeoX, LLaMA). Encodes absolute position via rotation in complex space. Relative position information is preserved naturally in dot products. Better extrapolation to longer sequences than fixed PE.</div></li>
+    <li><span class="bullet">▸</span><div><strong>ALiBi (Attention with Linear Biases):</strong> Adds a linear bias to attention scores based on distance between tokens. No PE vectors added to embeddings — position is handled entirely in the attention score. Very efficient for long contexts.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-trfm">
+    <div class="section-num">Section 7</div>
+    <h2>Transformer Encoder Block</h2>
+  </div>
+
+  <h3>7.1 Encoder Block Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  TRANSFORMER ENCODER BLOCK (one layer):
+
+  Input: X  (n × d_model)  ← token embeddings + positional encoding
+     │
+  ┌──▼─────────────────────────────────────────────────────────────────┐
+  │  SUBLAYER 1: Multi-Head Self-Attention                             │
+  │                                                                    │
+  │  Q = K = V = X  (self-attention: input attends to itself)         │
+  │  MHA_output = MultiHead(X, X, X)          (n × d_model)           │
+  └──┬─────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼─────────────────────────────────────────────────────────────────┐
+  │  ADD & NORM 1  (Residual Connection + Layer Normalization)         │
+  │  output1 = LayerNorm( X + MHA_output )                            │
+  │  ← residual connection prevents vanishing gradient                │
+  │  ← LayerNorm: normalize each token independently (per-sample)     │
+  └──┬─────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼─────────────────────────────────────────────────────────────────┐
+  │  SUBLAYER 2: Position-wise Feed-Forward Network (FFN)              │
+  │                                                                    │
+  │  FFN(x) = max(0, x·W₁ + b₁)·W₂ + b₂                             │
+  │  W₁ ∈ ℝ^{d_model × d_ff}   d_ff = 2048 (4× d_model)              │
+  │  W₂ ∈ ℝ^{d_ff × d_model}                                          │
+  │  Applied INDEPENDENTLY to each position (hence "position-wise")   │
+  └──┬─────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼─────────────────────────────────────────────────────────────────┐
+  │  ADD & NORM 2                                                      │
+  │  output2 = LayerNorm( output1 + FFN(output1) )                    │
+  └──┬─────────────────────────────────────────────────────────────────┘
+     │
+  Output: (n × d_model)  → fed to next encoder layer
+    </pre>
+    <div class="diagram-caption">Figure 7.1 — Complete Transformer Encoder Block. Two sublayers: Multi-Head Self-Attention and FFN, each wrapped in Add&Norm.</div>
+  </div>
+
+  <h3>7.2 Layer Normalization</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Formula:</strong> LayerNorm(x) = γ · (x − μ) / (σ + ε) + β. μ and σ are computed across the feature dimension (d_model) for each token independently. γ, β are learnable scale and shift parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why LayerNorm not BatchNorm?</strong> Batch Normalization normalizes across the batch dimension — problematic for variable-length sequences (padding disrupts statistics). LayerNorm normalizes each token's feature vector independently — works the same for any batch size and sequence length.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pre-LN vs Post-LN:</strong> Original Transformer: Post-LN (LN applied after residual addition). GPT-2, BERT use Pre-LN (LN before each sublayer). Pre-LN is more stable for training very deep Transformers — gradient norms are better behaved.</div></li>
+  </ul>
+
+  <h3>7.3 Position-wise Feed-Forward Network (FFN)</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>What it does:</strong> After multi-head attention mixes information across tokens, the FFN processes each token independently with the same MLP. It can be seen as a "memory" layer — storing factual associations (knowledge) in its weight matrices.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why 4× expansion?</strong> d_ff = 4 × d_model. Expanding to a larger inner dimension and projecting back creates a bottleneck that forces the FFN to learn compressed, efficient representations. The expansion provides capacity; the compression forces generalization.</div></li>
+    <li><span class="bullet">▸</span><div><strong>FFN as key-value memory:</strong> Research (Geva et al., 2021) shows each row of W₁ acts as a "key" that activates for certain input patterns, and the corresponding row of W₂ acts as the "value" — the information retrieved when that key activates. The FFN is an attention-like memory module.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Modern activation functions:</strong> Original Transformer used ReLU. BERT/GPT-2 use GELU (Gaussian Error Linear Unit): GELU(x) = x·Φ(x) ≈ 0.5x(1 + tanh(√(2/π)(x + 0.044715x³))). Smooth, performs slightly better than ReLU in practice.</div></li>
+  </ul>
+
+  <h3>7.4 Residual Connections — Why Essential</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Gradient flow:</strong> output = LayerNorm(x + Sublayer(x)). The "+x" creates a direct path for gradients to flow: ∂loss/∂x = ∂loss/∂output · (1 + ∂Sublayer/∂x). The "1" term ensures gradients never vanish through depth.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Representation preservation:</strong> Each sublayer only needs to learn the incremental change from the input — like ResNet. The sublayer output is added to the input, not replacing it. Early layers' representations persist through the entire network via the residual stream.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-trfm">
+    <div class="section-num">Section 8</div>
+    <h2>Transformer Decoder Block</h2>
+  </div>
+
+  <h3>8.1 Decoder Block — Three Sublayers</h3>
+  <p>The decoder block has three sublayers instead of the encoder's two. The extra sublayer enables the decoder to attend to the encoder's output (cross-attention).</p>
+
+  <div class="diagram">
+    <pre>
+  TRANSFORMER DECODER BLOCK:
+
+  Inputs:
+  • Y (decoder input, shifted right)  ← previously generated tokens
+  • Encoder_output (from top encoder layer)
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │ SUBLAYER 1: Masked Multi-Head Self-Attention                   │
+  │                                                                 │
+  │ Q = K = V = Y  (decoder attends to itself)                     │
+  │ CAUSAL MASK applied: token i cannot see tokens j > i           │
+  │ Prevents "cheating" — cannot look at future target tokens      │
+  └──────────┬──────────────────────────────────────────────────────┘
+             │
+  ┌──────────▼──────────────────────────────────────────────────────┐
+  │ ADD & NORM 1:  output1 = LayerNorm(Y + MaskedMHA(Y,Y,Y))      │
+  └──────────┬──────────────────────────────────────────────────────┘
+             │
+  ┌──────────▼──────────────────────────────────────────────────────┐
+  │ SUBLAYER 2: Multi-Head Cross-Attention                         │
+  │                                                                 │
+  │ Q = output1                ← FROM DECODER (what do I need?)    │
+  │ K = V = Encoder_output     ← FROM ENCODER (what does source    │
+  │                              offer? what information is there?) │
+  │ No mask — decoder can attend to ALL encoder positions          │
+  └──────────┬──────────────────────────────────────────────────────┘
+             │
+  ┌──────────▼──────────────────────────────────────────────────────┐
+  │ ADD & NORM 2:  output2 = LayerNorm(output1 + CrossAttn)        │
+  └──────────┬──────────────────────────────────────────────────────┘
+             │
+  ┌──────────▼──────────────────────────────────────────────────────┐
+  │ SUBLAYER 3: Position-wise FFN (same as encoder)                │
+  └──────────┬──────────────────────────────────────────────────────┘
+             │
+  ADD & NORM 3 → output
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Transformer Decoder Block. Three sublayers: Masked Self-Attention, Cross-Attention (encoder-decoder), and FFN.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Masked self-attention purpose:</strong> The decoder generates tokens autoregressively — one token at a time. During training, all target tokens are provided simultaneously for efficiency, but the mask ensures each position can only attend to past positions, preserving the autoregressive property.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cross-attention purpose:</strong> Q comes from the decoder (what the decoder needs at this step). K and V come from the encoder (what the source sentence offers). This is where the decoder "reads" the encoded source sentence. Different decoder positions attend to different source positions dynamically.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Information flow:</strong> Masked self-attention lets each output token gather context from previously generated output tokens. Cross-attention then anchors that context to the relevant input information.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-trfm">
+    <div class="section-num">Section 9</div>
+    <h2>Full Transformer Architecture</h2>
+  </div>
+
+  <h3>9.1 Complete Architecture Diagram</h3>
+
+  <div class="diagram">
+    <pre>
+  SOURCE TOKENS                           TARGET TOKENS (shifted right)
+  "The cat sat on the mat"                "&lt;sos&gt; Le chat s'est..."
+       │                                        │
+  [Token Embedding]                       [Token Embedding]
+  [+ Positional Encoding]                 [+ Positional Encoding]
+       │                                        │
+  ┌────▼────────────────────┐            ┌───────▼────────────────────────────────┐
+  │   ENCODER               │            │   DECODER                              │
+  │                         │            │                                        │
+  │ ┌─────────────────────┐ │            │ ┌────────────────────────────────────┐ │
+  │ │ Encoder Block 1     │ │            │ │ Decoder Block 1                    │ │
+  │ │ (MHA + FFN)         │ │            │ │ (Masked MHA + Cross-Attn + FFN)   │ │
+  │ └──────────┬──────────┘ │            │ └────────────────────┬───────────────┘ │
+  │            │ ×N layers  │            │                      │ ×N layers       │
+  │ ┌──────────▼──────────┐ │            │ ┌────────────────────▼───────────────┐ │
+  │ │ Encoder Block N     │ │─────────── │ │ Decoder Block N (K,V from encoder)│ │
+  │ └──────────┬──────────┘ │    K, V    │ └────────────────────┬───────────────┘ │
+  │   Encoder Output        │            │   Decoder Output                       │
+  └─────────────────────────┘            └───────────────────────┬───────────────┘
+                                                                  │
+                                                         [Linear + Softmax]
+                                                          → P(next token)
+                                                          → "Le", "chat", ...
+
+  Standard Hyperparameters (Transformer Base):
+  N = 6 encoder layers, 6 decoder layers
+  d_model = 512 (embedding dimension)
+  d_ff = 2048 (FFN inner dimension)
+  h = 8 attention heads, d_k = d_v = 64
+  Total params: ~65M
+    </pre>
+    <div class="diagram-caption">Figure 9.1 — Complete Transformer encoder-decoder architecture as in "Attention Is All You Need."</div>
+  </div>
+
+  <h3>9.2 Key Design Choices and Hyperparameters</h3>
+
+  <table class="compare-table">
+    <tr><th>Parameter</th><th>Transformer Base</th><th>Transformer Large</th><th>Effect of Increasing</th></tr>
+    <tr><td><strong>N (num layers)</strong></td><td>6</td><td>6</td><td>More representational depth; better generalization; slower training</td></tr>
+    <tr><td><strong>d_model</strong></td><td>512</td><td>1024</td><td>Richer token representations; more parameters; memory intensive</td></tr>
+    <tr><td><strong>d_ff</strong></td><td>2048</td><td>4096</td><td>More FFN capacity; better "memory" for facts</td></tr>
+    <tr><td><strong>h (num heads)</strong></td><td>8</td><td>16</td><td>More relationship types captured; diminishing returns past ~16</td></tr>
+    <tr><td><strong>d_k = d_model/h</strong></td><td>64</td><td>64</td><td>Attention "bandwidth" per head; too small → bottleneck</td></tr>
+    <tr><td><strong>Dropout</strong></td><td>0.1</td><td>0.3</td><td>Regularization; prevents overfitting; critical for limited data</td></tr>
+  </table>
+
+  <h3>9.3 Training and Inference</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Training — teacher forcing:</strong> During training, the decoder receives the ground-truth target sequence (shifted right, starting with &lt;SOS&gt; token) at all positions simultaneously. The causal mask ensures causality. Loss: cross-entropy between predicted and true token at each position.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Inference — autoregressive decoding:</strong> Generate one token at a time. Feed &lt;SOS&gt; → get token 1. Feed [&lt;SOS&gt;, token 1] → get token 2. Repeat until &lt;EOS&gt; or max length. Slower than training (sequential rather than parallel).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Beam search:</strong> Instead of greedy decoding (always pick the most probable next token), maintain the top-k most probable partial sequences. Balances exploration and quality. Beam width k=4 is common.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Label smoothing:</strong> Instead of hard 0/1 targets, use soft targets (1−ε for true class, ε/(V−1) for others). ε=0.1 in original Transformer. Prevents overconfidence, improves BLEU scores.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learning rate schedule:</strong> Warm up for warmup_steps = 4000 steps (linearly increase α), then decay as 1/√step. Formula: α = d_model^{−0.5} · min(step^{−0.5}, step · warmup_steps^{−1.5}). The warm-up prevents large early updates from destabilizing training.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-trfm">
+    <div class="section-num">Section 10</div>
+    <h2>Self-Attention vs Cross-Attention</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Self-Attention</th><th>Cross-Attention</th></tr>
+    <tr>
+      <td><strong>Q, K, V source</strong></td>
+      <td>All three come from the SAME sequence: Q=K=V=X (same input)</td>
+      <td>Q comes from one sequence (decoder); K and V from another (encoder output)</td>
+    </tr>
+    <tr>
+      <td><strong>What it computes</strong></td>
+      <td>How each token relates to all other tokens in the SAME sequence</td>
+      <td>How decoder tokens relate to encoder tokens — bridges two different sequences</td>
+    </tr>
+    <tr>
+      <td><strong>Used in</strong></td>
+      <td>Both encoder (bidirectional) and decoder (causal/masked)</td>
+      <td>Decoder only (the middle sublayer); also in some encoder designs</td>
+    </tr>
+    <tr>
+      <td><strong>Masking</strong></td>
+      <td>Encoder: no mask (full bidirectional). Decoder: causal mask (lower-triangular)</td>
+      <td>No mask — decoder can attend to all encoder positions at all steps</td>
+    </tr>
+    <tr>
+      <td><strong>Purpose</strong></td>
+      <td>Context-sensitive token representations — each token "sees" all others</td>
+      <td>Alignment — learn which source positions are relevant for each target token</td>
+    </tr>
+    <tr>
+      <td><strong>Attention pattern</strong></td>
+      <td>n_tokens × n_tokens matrix (square)</td>
+      <td>n_target × n_source matrix (rectangular if different lengths)</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Three Types of Attention in a Transformer</div>
+    <p>1. <strong>Encoder self-attention:</strong> Q=K=V from encoder input. No mask. Every source token attends to every other. Builds contextual representations of the input.</p>
+    <p>2. <strong>Decoder masked self-attention:</strong> Q=K=V from decoder input (target). Causal mask applied. Each target token attends only to previous target tokens. Maintains autoregressive property.</p>
+    <p>3. <strong>Encoder-decoder cross-attention:</strong> Q from decoder, K=V from encoder output. No mask. Each target token dynamically aligns to relevant source positions. This is the translation/alignment step.</p>
+  </div>
+</div>
+
+<!-- ████████████ PART 3: VISION TRANSFORMER ████████████ -->
+<div class="part-banner pb-vit">Part 3 — Vision Transformer (ViT)</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-vit">
+    <div class="section-num">Section 11</div>
+    <h2>Vision Transformer (ViT) — Full Architecture</h2>
+  </div>
+
+  <h3>11.1 The Key Idea — Images as Sequences of Patches</h3>
+  <p>ViT (Dosovitskiy et al., Google Brain — 2020) applies the standard Transformer encoder <em>directly</em> to images with minimal modifications. The key insight: split an image into a grid of fixed-size patches, flatten each patch into a vector, treat these patch vectors as a sequence of "tokens," and process with a standard Transformer encoder.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">ViT's Radical Simplicity</div>
+    <p>No convolutional layers. No pooling. No inductive bias about local connectivity or translation equivariance. Just patch embeddings + positional encoding + standard Transformer encoder. When trained on large datasets (JFT-300M), ViT matches or exceeds state-of-the-art CNNs with less training compute. The inductive biases of CNNs (locality, translation equivariance) help with small datasets but become less important at large scale.</p>
+  </div>
+
+  <h3>11.2 ViT Architecture — Step by Step</h3>
+
+  <div class="diagram">
+    <pre>
+  INPUT IMAGE: 224 × 224 × 3  (H=224, W=224, C=3)
+  PATCH SIZE: 16 × 16  (P=16)
+  NUMBER OF PATCHES: (224/16) × (224/16) = 14 × 14 = 196 patches
+       │
+  ┌────▼──────────────────────────────────────────────────────────────┐
+  │ STEP 1: PATCH EMBEDDING                                          │
+  │                                                                  │
+  │ Flatten each 16×16×3 patch → 768-dimensional vector             │
+  │ Linear projection: ℝ^{16×16×3} → ℝ^{d_model}  (d_model=768)    │
+  │ Result: 196 patch embeddings, each 768-dim                       │
+  └──┬────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼────────────────────────────────────────────────────────────────┐
+  │ STEP 2: PREPEND [CLS] TOKEN                                      │
+  │                                                                  │
+  │ Add a learnable classification token z₀ = x_class               │
+  │ Sequence becomes: [CLS, patch₁, patch₂, ..., patch₁₉₆]          │
+  │ Length: 197 tokens, each 768-dim                                 │
+  └──┬────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼────────────────────────────────────────────────────────────────┐
+  │ STEP 3: ADD POSITIONAL ENCODING                                  │
+  │                                                                  │
+  │ Add learnable 1D positional embeddings (197 × 768)               │
+  │ Encodes position of each patch in the grid                       │
+  │ ViT uses LEARNED positional embeddings (not sinusoidal)          │
+  └──┬────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼────────────────────────────────────────────────────────────────┐
+  │ STEP 4: TRANSFORMER ENCODER (L blocks)                           │
+  │                                                                  │
+  │ Standard Transformer Encoder (only encoder, no decoder)          │
+  │ Each block: LayerNorm → MHA → Add → LayerNorm → MLP → Add        │
+  │ Note: Pre-LN (LayerNorm BEFORE each sublayer) — better stability │
+  │ L=12 (ViT-B), L=24 (ViT-L), L=32 (ViT-H)                      │
+  └──┬────────────────────────────────────────────────────────────────┘
+     │
+  ┌──▼────────────────────────────────────────────────────────────────┐
+  │ STEP 5: CLASSIFICATION HEAD                                      │
+  │                                                                  │
+  │ Extract [CLS] token output (position 0) from final encoder layer │
+  │ Apply MLP head: LayerNorm → Linear(d_model → n_classes)          │
+  │ Output: class probabilities                                       │
+  └───────────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 11.1 — Complete ViT architecture. Image patches are embedded, prepended with [CLS], position-encoded, then processed by Transformer encoder.</div>
+  </div>
+
+  <h3>11.3 Key Components Explained</h3>
+  <h4>A. Patch Embedding</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Flattening:</strong> Each 16×16×3 patch has P²·C = 256×3 = 768 values. These are flattened into a 1D vector of size P²C = 768.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Linear projection:</strong> A learnable weight matrix E ∈ ℝ^{(P²·C) × d_model} projects each flattened patch to d_model dimensions. Equivalent to a 16×16 Conv with stride 16 and d_model output channels — many implementations use Conv2d for efficiency.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why patches?</strong> Treating individual pixels as tokens would give 224×224 = 50,176 tokens — O(n²) attention cost would be infeasible (50,176² ≈ 2.5 billion). Patches of size 16×16 give 196 tokens — manageable.</div></li>
+  </ul>
+
+  <h4>B. [CLS] Token</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Purpose:</strong> A learnable vector prepended to the patch sequence. After passing through all transformer layers, its output representation aggregates global image information from all patches via self-attention. Used as the image-level representation for classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why not just average?</strong> Average pooling of all patch outputs discards relative position information. The [CLS] token can learn to selectively attend to and aggregate the most task-relevant information from all patches.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Alternative:</strong> Global Average Pooling (GAP) over all patch outputs also works and avoids the CLS token's special role. DeiT and some ViT variants use GAP instead.</div></li>
+  </ul>
+
+  <h4>C. Positional Encoding in ViT</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>1D learnable:</strong> Standard ViT uses 1D learnable positional embeddings — a 197×768 parameter matrix (one 768-dim vector per position). Simpler than 2D encodings; works well in practice.</div></li>
+    <li><span class="bullet">▸</span><div><strong>2D-aware sinusoidal:</strong> Encodes both row and column positions of each patch separately using sin/cos. Better for tasks requiring fine spatial reasoning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Interpolation for different resolutions:</strong> ViT trained at one resolution can be applied to other resolutions by interpolating the positional embeddings (bilinear interpolation in 2D grid). Important for fine-tuning at higher resolution than pre-training.</div></li>
+  </ul>
+
+  <h3>11.4 ViT Variants and Sizes</h3>
+
+  <table class="compare-table">
+    <tr><th>Variant</th><th>Layers (L)</th><th>Hidden dim</th><th>Heads</th><th>Params</th><th>Patch Size</th><th>Notes</th></tr>
+    <tr><td><strong>ViT-Ti (Tiny)</strong></td><td>12</td><td>192</td><td>3</td><td>5.7M</td><td>16</td><td>Lightweight; mobile-friendly</td></tr>
+    <tr><td><strong>ViT-S (Small)</strong></td><td>12</td><td>384</td><td>6</td><td>22M</td><td>16</td><td>Efficient baseline</td></tr>
+    <tr><td><strong>ViT-B (Base)</strong></td><td>12</td><td>768</td><td>12</td><td>86M</td><td>16</td><td>Standard; matches ResNet-50 with large data</td></tr>
+    <tr><td><strong>ViT-L (Large)</strong></td><td>24</td><td>1024</td><td>16</td><td>307M</td><td>16</td><td>High performance; needs large data</td></tr>
+    <tr><td><strong>ViT-H (Huge)</strong></td><td>32</td><td>1280</td><td>16</td><td>632M</td><td>14</td><td>Max capacity; trained on JFT-3B</td></tr>
+    <tr><td><strong>ViT-22B</strong></td><td>48</td><td>6144</td><td>48</td><td>22B</td><td>14</td><td>Google Brain 2023; emergent visual abilities</td></tr>
+  </table>
+
+  <h3>11.5 ViT vs CNN — Key Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>CNN (ResNet, EfficientNet)</th><th>ViT</th></tr>
+    <tr><td><strong>Inductive bias</strong></td><td>Strong: locality, translation equivariance built-in</td><td>Weak: no spatial priors; must learn all structure from data</td></tr>
+    <tr><td><strong>Small data performance</strong></td><td>Better — inductive bias helps generalize from few samples</td><td>Worse — needs large data to overcome lack of priors</td></tr>
+    <tr><td><strong>Large data performance</strong></td><td>Good but plateaus</td><td>Excellent — scales with data better than CNNs</td></tr>
+    <tr><td><strong>Long-range dependencies</strong></td><td>Limited by receptive field growth with depth</td><td>Every patch can attend to every other from layer 1 — global context immediately</td></tr>
+    <tr><td><strong>Computational cost</strong></td><td>O(H·W·d) per layer</td><td>O(n²·d) where n=(H/P)²; expensive for small patches</td></tr>
+    <tr><td><strong>Scalability</strong></td><td>Scales well but plateaus around 1B params</td><td>Continues to improve with scale (ViT-22B)</td></tr>
+    <tr><td><strong>Transfer learning</strong></td><td>Excellent; well-understood which layers to freeze</td><td>Also excellent when pre-trained on large data</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-vit">
+    <div class="section-num">Section 12</div>
+    <h2>ViT Variants and Improvements</h2>
+  </div>
+
+  <div class="model-grid">
+
+    <div class="model-card mc-blue">
+      <div class="mc-tag">Training Efficiency</div>
+      <div class="mc-name">DeiT — Data-efficient Image Transformers</div>
+      <div class="mc-year">Touvron et al., Facebook AI — 2020</div>
+      <p><strong>Problem:</strong> ViT needs JFT-300M images to work well. Impractical for researchers without Google-scale data.</p>
+      <p><strong>Solution:</strong> Knowledge distillation from a strong CNN teacher (RegNet). A distillation token is added alongside [CLS], trained to match the teacher's class prediction. Also: aggressive augmentation (RandAugment, CutMix), Mixup, repeated augmentation.</p>
+      <p><strong>Result:</strong> DeiT-B achieves 81.8% top-1 on ImageNet trained on ImageNet-only in 3 days on 8 GPUs — matching ViT-B trained on JFT-300M.</p>
+      <div class="mc-key">Key innovation: Knowledge distillation + aggressive augmentation enables ViT without massive data</div>
+    </div>
+
+    <div class="model-card mc-green">
+      <div class="mc-tag">Hierarchical Processing</div>
+      <div class="mc-name">Swin Transformer</div>
+      <div class="mc-year">Liu et al., Microsoft — 2021</div>
+      <p><strong>Problem:</strong> ViT processes all patches at the same resolution — expensive for dense prediction tasks (detection, segmentation). Also, fixed-resolution patch tokens can't capture multi-scale features.</p>
+      <p><strong>Solution:</strong> Hierarchical patch merging (like CNN spatial pyramid). Shifted Window Attention — compute attention within local windows (7×7 patches), then shift windows by half to enable cross-window communication.</p>
+      <p><strong>Result:</strong> Linear complexity O(n) instead of O(n²). Multi-scale features available. Swin-L: 87.3% ImageNet top-1. COCO SOTA for both detection and segmentation.</p>
+      <div class="mc-key">Key innovation: Local window attention + hierarchical feature maps = ViT meets CNN design</div>
+    </div>
+
+    <div class="model-card mc-purple">
+      <div class="mc-tag">Self-Supervised ViT</div>
+      <div class="mc-name">DINO — Self-Distillation</div>
+      <div class="mc-year">Caron et al., Facebook AI — 2021</div>
+      <p><strong>Core idea:</strong> Train ViT in a self-supervised manner using self-distillation with no labels. A student network is trained to match the output of a momentum teacher (exponential moving average of student). Applied to multiple augmented views of the same image.</p>
+      <p><strong>Emergent property:</strong> Self-supervised DINO ViT features contain surprisingly rich object-level semantic information. Without any labels or fine-tuning, attention maps clearly segment objects from background — something no CNN achieves spontaneously.</p>
+      <div class="mc-key">Key result: Unsupervised segmentation quality emerges from self-supervised ViT training</div>
+    </div>
+
+    <div class="model-card mc-teal">
+      <div class="mc-tag">Masked Pretraining</div>
+      <div class="mc-name">MAE — Masked Autoencoders</div>
+      <div class="mc-year">He et al., Facebook AI — 2021</div>
+      <p><strong>Core idea:</strong> Mask 75% of image patches randomly. Train encoder-decoder to reconstruct the masked patches from visible 25%. Encoder only processes visible patches — computationally efficient. Decoder is lightweight and discarded after pre-training.</p>
+      <p><strong>Why 75% works:</strong> Unlike BERT (15% masking), images have high spatial redundancy — 15% masking is trivially easy (nearby patches complete the missing ones). 75% forces genuine scene understanding. Reconstruction target: raw pixel values (not tokenized patches).</p>
+      <div class="mc-key">ViT-H fine-tuned from MAE: 87.8% top-1 on ImageNet. Better than supervised pre-training.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ████████████ PART 4: PRE-TRAINING ████████████ -->
+<div class="part-banner pb-pre">Part 4 — Large-Scale Pre-training with Transformers</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-pre">
+    <div class="section-num">Section 13</div>
+    <h2>BERT — Bidirectional Encoder Representations from Transformers</h2>
+  </div>
+
+  <h3>13.1 Overview</h3>
+  <p>BERT (Devlin et al., Google AI — 2018) was the watershed moment for NLP. It demonstrated that pre-training a deep bidirectional Transformer on massive unlabeled text, then fine-tuning on specific tasks with a small task-specific head, achieves state-of-the-art on 11 diverse NLP tasks simultaneously.</p>
+
+  <h3>13.2 BERT Architecture</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Standard Transformer Encoder only (no decoder). BERT-Base: L=12 layers, H=768, A=12 heads, ~110M parameters. BERT-Large: L=24, H=1024, A=16 heads, ~340M parameters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Input representation:</strong> Three embeddings summed: Token embedding + Segment embedding (sentence A or B) + Positional embedding. Tokens use WordPiece tokenization (subword units, ~30,000 vocabulary).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Special tokens:</strong> [CLS] prepended to every sequence. [SEP] separates two sentences. [MASK] replaces masked tokens during pre-training.</div></li>
+  </ul>
+
+  <h3>13.3 BERT Pre-training Tasks</h3>
+
+  <div class="diagram">
+    <pre>
+  TASK 1: MASKED LANGUAGE MODELING (MLM)
+
+  Original: "The cat [MASK] on the mat and [MASK] purring"
+  Goal: Predict the masked tokens ("sat", "was")
+
+  Masking strategy for each selected token (15% of all tokens):
+  • 80%: Replace with [MASK]     "sat" → [MASK]
+  • 10%: Replace with random word "sat" → "walked"   (keeps D robust)
+  • 10%: Keep original           "sat" → "sat"        (keeps R consistent)
+
+  Why this split? If all masked tokens → [MASK], model learns to only
+  predict when it sees [MASK], but at fine-tuning time there are no [MASK]
+  tokens → mismatch. The 10/10 fractions reduce this train-test discrepancy.
+
+  ─────────────────────────────────────────────────────────────────────
+  TASK 2: NEXT SENTENCE PREDICTION (NSP)
+
+  Input: [CLS] Sentence_A [SEP] Sentence_B [SEP]
+
+  50% of the time: Sentence_B is the ACTUAL next sentence → label = IsNext
+  50% of the time: Sentence_B is a RANDOM sentence       → label = NotNext
+
+  [CLS] token output → Binary classifier
+  Teaches model to understand sentence relationships
+  (Used for QA, inference tasks that need cross-sentence reasoning)
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — BERT's two pre-training objectives: Masked LM (predict masked tokens) and Next Sentence Prediction (predict sentence order).</div>
+  </div>
+
+  <h3>13.4 BERT Fine-tuning</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Fine-tuning philosophy:</strong> Take the pre-trained BERT. Add a minimal task-specific head (one or two extra layers). Fine-tune ALL weights on the labeled task data. The same BERT parameters serve as initialization for all downstream tasks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Classification tasks:</strong> Use [CLS] output → Dense(num_classes) + Softmax. Fine-tune on sentiment, NLI, spam detection.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Token-level tasks (NER, POS):</strong> Use each token's output → Dense(num_tags) + Softmax. Fine-tune on NER, POS tagging, word-level classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Question Answering (SQuAD):</strong> Input: [CLS] question [SEP] passage [SEP]. Add two vectors S and E (learned). Score each token as answer start: S·hᵢ. Score each token as answer end: E·hᵢ. Fine-tune to find the span (start_i, end_j) in the passage that answers the question.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Fine-tuning efficiency:</strong> With only ~3 epochs of fine-tuning (hours, not days), BERT surpassed previous SOTA on 11 NLP benchmarks — many by wide margins. This established fine-tuning as the dominant NLP paradigm.</div></li>
+  </ul>
+
+  <h3>13.5 BERT Successors</h3>
+
+  <table class="compare-table">
+    <tr><th>Model</th><th>Key Change from BERT</th><th>Improvement</th></tr>
+    <tr><td><strong>RoBERTa</strong></td><td>Remove NSP; train longer (160GB text); larger batches; dynamic masking; byte-level BPE</td><td>Better performance on most tasks; NSP shown to hurt rather than help</td></tr>
+    <tr><td><strong>ALBERT</strong></td><td>Factorize embedding matrix; parameter sharing across layers; Sentence Order Prediction replaces NSP</td><td>18× fewer params with comparable performance; more efficient</td></tr>
+    <tr><td><strong>DistilBERT</strong></td><td>Knowledge distillation from BERT: 6 layers instead of 12</td><td>40% smaller, 60% faster, retains 97% of BERT performance</td></tr>
+    <tr><td><strong>DeBERTa</strong></td><td>Disentangled attention (separate position and content encodings); enhanced mask decoder</td><td>Surpasses human performance on SuperGLUE benchmark</td></tr>
+    <tr><td><strong>ELECTRA</strong></td><td>Replaced Token Detection: small generator masks tokens, discriminator detects if each token is original or replaced</td><td>More efficient training signal — every token supervised, not just 15%</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header sh-pre">
+    <div class="section-num">Section 14</div>
+    <h2>GPT Family — Autoregressive Language Modeling</h2>
+  </div>
+
+  <h3>14.1 GPT Architecture and Pre-training Objective</h3>
+  <p>GPT (Generative Pre-trained Transformer, Radford et al., OpenAI — 2018) uses the Transformer <em>decoder</em> architecture (without cross-attention) and trains with a standard autoregressive language modeling objective: predict the next token given all previous tokens.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">GPT Pre-training Objective</div>
+    <div class="formula">
+      L(U) = Σᵢ log P(uᵢ | uᵢ₋k, ..., uᵢ₋₁; Θ)<br><br>
+      Predict each token uᵢ from the previous k tokens (context window)<br>
+      Maximize the conditional log-likelihood of each token given its left context<br>
+      Θ = Transformer parameters trained by stochastic gradient descent<br><br>
+      Key: CAUSAL (left-to-right) attention — each token attends only to
+      previous tokens (future tokens masked). This makes the model
+      naturally autoregressive.
+    </div>
+  </div>
+
+  <h3>14.2 GPT Evolution — GPT-1 to GPT-4</h3>
+
+  <div class="model-grid">
+
+    <div class="model-card mc-indigo">
+      <div class="mc-tag">Generative Pre-training</div>
+      <div class="mc-name">GPT-1</div>
+      <div class="mc-year">Radford et al., OpenAI — 2018</div>
+      <p><strong>Architecture:</strong> 12 Transformer decoder layers, d_model=768, 12 heads. 117M parameters. Trained on BooksCorpus (800M words, ~7,000 books).</p>
+      <p><strong>Key insight:</strong> Unsupervised pre-training on large text corpus + supervised fine-tuning on task-specific labeled data outperforms task-specific models trained from scratch. Demonstrated generative pre-training for the first time.</p>
+      <div class="mc-key">First model to show: pre-train a Transformer decoder → fine-tune → strong NLP performance</div>
+    </div>
+
+    <div class="model-card mc-amber">
+      <div class="mc-tag">Zero-Shot Transfer</div>
+      <div class="mc-name">GPT-2</div>
+      <div class="mc-year">Radford et al., OpenAI — 2019</div>
+      <p><strong>Scale:</strong> 1.5B parameters (vs GPT-1's 117M). Trained on WebText: 40GB of high-quality Reddit links. 48 Transformer decoder layers for XL variant.</p>
+      <p><strong>Key finding:</strong> When scaled up, zero-shot performance (no fine-tuning) on downstream tasks becomes competitive. The model begins to generalize from the pre-training distribution to task descriptions given in text. Initially withheld from public due to misuse concerns.</p>
+      <div class="mc-key">First demonstration of zero-shot task generalization from language model pre-training</div>
+    </div>
+
+    <div class="model-card mc-red">
+      <div class="mc-tag">Few-Shot In-Context Learning</div>
+      <div class="mc-name">GPT-3</div>
+      <div class="mc-year">Brown et al., OpenAI — 2020</div>
+      <p><strong>Scale:</strong> 175B parameters. Trained on ~500B tokens (Common Crawl, BooksCorpus, Wikipedia, Books1/2, WebText). 96 layers, d_model=12,288, 96 heads.</p>
+      <p><strong>Emergent ability:</strong> In-context learning (ICL) — provide a few examples in the prompt (few-shot), the model performs the task without any gradient updates. Few-shot GPT-3 matches or exceeds fine-tuned models on many benchmarks. Demonstrated emergent capabilities that simply weren't present at smaller scale.</p>
+      <div class="mc-key">Few-shot and zero-shot learning at scale. In-context learning as a new paradigm.</div>
+    </div>
+
+    <div class="model-card mc-teal">
+      <div class="mc-tag">Instruction Following</div>
+      <div class="mc-name">InstructGPT / ChatGPT</div>
+      <div class="mc-year">Ouyang et al., OpenAI — 2022</div>
+      <p><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> 3-step process: (1) Supervised fine-tuning on demonstrations. (2) Train a reward model on human preference rankings. (3) Fine-tune GPT with PPO (Proximal Policy Optimization) to maximize reward.</p>
+      <p><strong>Key result:</strong> InstructGPT with 1.3B params is preferred by humans over raw GPT-3 (175B) on most tasks — alignment matters more than raw scale. RLHF dramatically improves helpfulness, harmlessness, and honesty.</p>
+      <div class="mc-key">RLHF aligns LLMs with human preferences. Foundation of all modern assistant models.</div>
+    </div>
+
+    <div class="model-card mc-purple">
+      <div class="mc-tag">Multimodal Reasoning</div>
+      <div class="mc-name">GPT-4</div>
+      <div class="mc-year">OpenAI — 2023</div>
+      <p><strong>Multimodal:</strong> Accepts both text and image inputs. Achieves human-level performance on many professional exams (bar exam, GRE, AMC). Significantly improved over GPT-3.5 on complex reasoning, instruction following, and truthfulness.</p>
+      <p><strong>Architecture:</strong> Undisclosed by OpenAI. Estimated 1T parameters (MoE). 128K context window (GPT-4-Turbo). Trained with improved RLHF and constitutional AI-like techniques.</p>
+      <div class="mc-key">State-of-the-art multimodal reasoning. Benchmark: 90th percentile on bar exam vs 10th for GPT-3.5</div>
+    </div>
+
+    <div class="model-card mc-gold">
+      <div class="mc-tag">Open-Weight LLM</div>
+      <div class="mc-name">LLaMA / LLaMA 2 / LLaMA 3</div>
+      <div class="mc-year">Meta AI — 2023–2024</div>
+      <p><strong>LLaMA 1:</strong> 7B–65B parameters. Trained on 1.4T tokens of public data. LLaMA-13B outperforms GPT-3 (175B) on most benchmarks — efficiency through data quality and model design (RMSNorm, RoPE, SwiGLU activation).</p>
+      <p><strong>LLaMA 3:</strong> 8B–70B parameters. Trained on 15T tokens. Instruction-tuned variants match or beat GPT-4 on several benchmarks. Fully open-weight — spawned thousands of specialized fine-tuned models (Vicuna, Alpaca, Mistral).</p>
+      <div class="mc-key">Demonstrated: compute-optimal training with high-quality data > brute force scale</div>
+    </div>
+
+  </div>
+
+  <h3>14.3 Emergent Abilities of Large Language Models</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Emergent abilities are capabilities that are NOT present or meaningful in smaller models but appear suddenly and sharply when model scale exceeds a certain threshold. They cannot be predicted by simply extrapolating from smaller model behavior.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Chain-of-thought reasoning:</strong> Below ~100B parameters, chain-of-thought (CoT) prompting ("think step by step") does not help. Above ~100B, CoT dramatically improves multi-step arithmetic and logical reasoning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>In-context learning:</strong> Few-shot examples in the prompt become effective guides for task performance at scale. Smaller models cannot effectively leverage this.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Instruction following:</strong> Larger models can follow complex, nuanced natural language instructions without fine-tuning. Smaller models often ignore or misinterpret instructions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Calibration:</strong> Large models become better calibrated — their expressed confidence better matches their actual accuracy. Critical for trustworthy AI deployment.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 15 ══════════ -->
+<div class="section" id="s15">
+  <div class="section-header sh-pre">
+    <div class="section-num">Section 15</div>
+    <h2>T5, CLIP and Other Foundation Models</h2>
+  </div>
+
+  <h3>15.1 T5 — Text-to-Text Transfer Transformer</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Core idea:</strong> Reframe EVERY NLP task as text-to-text. Classification, translation, summarization, QA — all formulated as: input a text string, output a text string. One single model with one single objective (maximum likelihood on text) for all tasks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Examples of task formulation:</strong> Translation: "translate English to German: The cat sat" → "Die Katze saß". Sentiment: "sst2 sentence: This movie is great" → "positive". QA: "question: What is the capital of France? context: Paris is..." → "Paris".</div></li>
+    <li><span class="bullet">▸</span><div><strong>Architecture:</strong> Full Transformer encoder-decoder. T5-Small (60M) to T5-11B. Pre-trained on C4 (Colossal Clean Crawled Corpus — 750GB of cleaned Common Crawl). Span corruption pre-training objective: mask spans of consecutive tokens; predict them.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Impact:</strong> T5's text-to-text framing influenced all subsequent encoder-decoder models (FLAN-T5, UL2, mT5). Showed that a unified text generation objective is sufficient for diverse NLP tasks.</div></li>
+  </ul>
+
+  <h3>15.2 CLIP — Contrastive Language-Image Pre-training</h3>
+
+  <div class="diagram">
+    <pre>
+  CLIP Architecture (Radford et al., OpenAI — 2021):
+
+  Training data: 400 million (image, text) pairs from the internet
+  (e.g., image of a dog + caption "a fluffy golden retriever playing fetch")
+
+  ┌──────────────────┐          ┌──────────────────────┐
+  │  Image Encoder   │          │   Text Encoder       │
+  │  (ViT or ResNet) │          │   (Transformer)      │
+  └────────┬─────────┘          └──────────┬───────────┘
+           │ image_embedding (512-dim)      │ text_embedding (512-dim)
+           └──────────────┬─────────────────┘
+                          │
+              Contrastive Loss (InfoNCE):
+              • Same (image,text) pair → embeddings should be CLOSE
+              • Different pairs → embeddings should be FAR apart
+
+  For N (image, text) pairs in a batch:
+  • N positive pairs (diagonal of similarity matrix) → maximize similarity
+  • N×(N-1) negative pairs (off-diagonal) → minimize similarity
+    </pre>
+    <div class="diagram-caption">Figure 15.1 — CLIP training. Image and text encoders jointly trained to align matching pairs via contrastive loss.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Zero-shot classification:</strong> To classify an image into classes ["cat", "dog", "car"]: compute image embedding. Compute text embeddings of "a photo of a cat", "a photo of a dog", "a photo of a car". Predict the class whose text embedding is most similar to the image embedding. No task-specific training needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why CLIP works:</strong> Internet image-text pairs encode a vast amount of visual concepts, relationships, and attributes. The contrastive objective forces the encoders to align visual and linguistic representations of the same concept.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Zero-shot classification, image-text retrieval, visual question answering backbone, text-to-image generation (DALL-E uses CLIP embeddings to guide generation). CLIP embeddings are widely used as visual features in downstream models.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CLIP limitations:</strong> Weak at fine-grained classification (distinguishing dog breeds). Struggles with counting, spatial reasoning, and abstract concepts. Performance degrades on distributions far from internet image-text pairs.</div></li>
+  </ul>
+
+  <h3>15.3 Other Key Foundation Models</h3>
+
+  <div class="model-grid">
+
+    <div class="model-card mc-blue">
+      <div class="mc-tag">Multimodal Generation</div>
+      <div class="mc-name">DALL-E / DALL-E 3</div>
+      <div class="mc-year">OpenAI — 2021 / 2023</div>
+      <p><strong>DALL-E 1:</strong> VQ-VAE tokenizes images into discrete tokens (8192 vocab, 32×32 grid = 1024 tokens). GPT-style autoregressive Transformer generates image tokens conditioned on text (CLIP embeddings). 12B parameters.</p>
+      <p><strong>DALL-E 3:</strong> Diffusion model. Uses CLIP text encoder + improved text conditioning. Dramatically better prompt adherence. Integrated into ChatGPT. Generates photorealistic 1024×1024 images from detailed text prompts.</p>
+      <div class="mc-key">First model to demonstrate high-quality text-to-image generation from arbitrary prompts</div>
+    </div>
+
+    <div class="model-card mc-green">
+      <div class="mc-tag">Encoder-Decoder NLP</div>
+      <div class="mc-name">FLAN-T5 / mT5</div>
+      <div class="mc-year">Google — 2022 / 2021</div>
+      <p><strong>FLAN-T5:</strong> T5 fine-tuned with instruction tuning (FLAN = Finetuned Language Models). Thousands of NLP tasks formatted as instructions. FLAN-T5-Large (780M) outperforms GPT-3 (175B) on many zero-shot benchmarks.</p>
+      <p><strong>mT5:</strong> Multilingual T5 trained on mC4 covering 101 languages. Cross-lingual transfer: fine-tune in English, test in 100 other languages.</p>
+      <div class="mc-key">Instruction tuning + encoder-decoder = highly capable efficient models</div>
+    </div>
+
+    <div class="model-card mc-purple">
+      <div class="mc-tag">Scientific AI</div>
+      <div class="mc-name">AlphaFold2 / ESM-2</div>
+      <div class="mc-year">DeepMind 2021 / Meta 2022</div>
+      <p><strong>AlphaFold2:</strong> Transformer-based model that predicts protein 3D structure from amino acid sequence. Solved the 50-year protein folding grand challenge. Uses attention over multiple sequence alignments (MSA Transformer). Structure accuracy matches experimental methods.</p>
+      <p><strong>ESM-2:</strong> Protein language model (15B parameters). Pre-trained on 250M protein sequences with masked language modeling. The representations encode structural and functional information — fine-tune for any protein prediction task.</p>
+      <div class="mc-key">Foundation models for biology — transformers encode the "language of life"</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 16 ══════════ -->
+<div class="section" id="s16">
+  <div class="section-header sh-pre">
+    <div class="section-num">Section 16</div>
+    <h2>Pre-training Paradigms — Comparison</h2>
+  </div>
+
+  <h3>16.1 Three Pre-training Paradigms</h3>
+
+  <table class="compare-table">
+    <tr>
+      <th>Paradigm</th><th>Architecture</th><th>Objective</th><th>Strength</th><th>Examples</th>
+    </tr>
+    <tr>
+      <td><strong>Masked LM (MLM)</strong></td>
+      <td>Encoder only</td>
+      <td>Predict masked tokens (15%) using full bidirectional context</td>
+      <td>Rich bidirectional representations. Best for understanding, classification, extraction tasks.</td>
+      <td>BERT, RoBERTa, ALBERT, DeBERTa</td>
+    </tr>
+    <tr>
+      <td><strong>Causal LM (CLM)</strong></td>
+      <td>Decoder only</td>
+      <td>Predict next token from left context only (autoregressive)</td>
+      <td>Natural text generation. Scales well (more tokens = more supervised signal). In-context learning.</td>
+      <td>GPT-1/2/3/4, LLaMA, PaLM, Falcon</td>
+    </tr>
+    <tr>
+      <td><strong>Seq2Seq LM</strong></td>
+      <td>Encoder-Decoder</td>
+      <td>Reconstruct corrupted/masked spans in target (span corruption), or other generative tasks</td>
+      <td>Best at conditional generation (translation, summarization). Unified text-to-text framework.</td>
+      <td>T5, BART, mT5, FLAN-T5</td>
+    </tr>
+    <tr>
+      <td><strong>Contrastive</strong></td>
+      <td>Dual encoder</td>
+      <td>Align positive pairs, repel negative pairs in embedding space</td>
+      <td>Cross-modal alignment (image-text). Efficient retrieval. Zero-shot transfer.</td>
+      <td>CLIP, ALIGN, Florence, FLAVA</td>
+    </tr>
+  </table>
+
+  <h3>16.2 The Scaling Laws</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Kaplan et al. scaling laws (OpenAI, 2020):</strong> Model performance scales as a power law with (1) model parameters N, (2) training tokens D, and (3) compute budget C. Each of these independently and predictably improves performance — no saturation observed at current scales.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Chinchilla scaling laws (Hoffmann et al., DeepMind, 2022):</strong> For a given compute budget, you should scale model size and training tokens equally. GPT-3 (175B, 300B tokens) was undertrained. Optimal: Chinchilla (70B parameters, 1.4T tokens) outperforms GPT-3 on most benchmarks with 2.5× fewer parameters. Data quality × quantity matters as much as model size.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Compute-optimal training:</strong> N_optimal ≈ C^{0.5} (parameters scale as square root of compute). D_optimal ≈ C^{0.5} (data scales similarly). Doubling compute should double both parameters and tokens, not double just one.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Implication:</strong> LLaMA-13B trained on 1T tokens outperforms GPT-3 (175B) trained on 300B tokens. Training smaller models on more tokens is more efficient than training large models for less time.</div></li>
+  </ul>
+
+  <h3>16.3 Fine-tuning Paradigms for Pre-trained Transformers</h3>
+
+  <table class="compare-table">
+    <tr><th>Method</th><th>What Changes</th><th>Data Needed</th><th>Cost</th><th>Use Case</th></tr>
+    <tr>
+      <td><strong>Full Fine-tuning</strong></td>
+      <td>All parameters updated</td>
+      <td>Moderate (thousands)</td>
+      <td>High (full backward pass)</td>
+      <td>Maximum performance when data available</td>
+    </tr>
+    <tr>
+      <td><strong>Feature Extraction</strong></td>
+      <td>Only task head trained (backbone frozen)</td>
+      <td>Small (hundreds)</td>
+      <td>Very low</td>
+      <td>Limited data; quick prototyping</td>
+    </tr>
+    <tr>
+      <td><strong>Prompt Tuning</strong></td>
+      <td>Only soft prompt vectors (prepended to input)</td>
+      <td>Small-moderate</td>
+      <td>Very low (~0.01% of params)</td>
+      <td>Large models where full FT is expensive</td>
+    </tr>
+    <tr>
+      <td><strong>Prefix Tuning</strong></td>
+      <td>Prefix vectors prepended to K, V at each layer</td>
+      <td>Small</td>
+      <td>Low (~0.1% of params)</td>
+      <td>Generation tasks; preserves backbone</td>
+    </tr>
+    <tr>
+      <td><strong>LoRA (Low-Rank Adaptation)</strong></td>
+      <td>Low-rank matrices added to Q, K, V weight matrices: ΔW = A·B (r≪d)</td>
+      <td>Small</td>
+      <td>Low (only A, B matrices trained)</td>
+      <td>State-of-art for efficient fine-tuning; widely used for LLM customization</td>
+    </tr>
+    <tr>
+      <td><strong>In-Context Learning</strong></td>
+      <td>No parameters change — examples in prompt</td>
+      <td>Very few (0–16 examples)</td>
+      <td>None (inference only)</td>
+      <td>Rapid prototyping; no training data available</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — LoRA (Low-Rank Adaptation) Explained</div>
+    <p>LoRA freezes all pre-trained weights and injects low-rank decomposition matrices into the attention weight matrices. For weight matrix W ∈ ℝ^{d×d}: instead of fine-tuning W directly, learn ΔW = A·B where A ∈ ℝ^{d×r} and B ∈ ℝ^{r×d} with r ≪ d (typically r=4 to 64). At inference: W_new = W + A·B. Training only updates A and B — typically 0.01–1% of total parameters. Achieves comparable performance to full fine-tuning with 10,000× fewer trainable parameters. Standard approach for fine-tuning LLaMA, GPT, BERT on custom domains.</p>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 3 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">QKV</span><div><strong>Q, K, V:</strong> Q = what am I looking for? K = what do I offer? V = actual information I carry. All three produced by learned linear projections of the input. Decoupling K and V allows separate "search" and "retrieve" representations.</div></li>
+      <li><span class="bullet">AP</span><div><strong>Attention Pooling:</strong> Output = softmax(score(Q,K)) · V. Soft, differentiable lookup over all values weighted by Q-K compatibility. Scores: additive (Bahdanau), dot-product, scaled dot-product (÷√d_k), bilinear. Scale prevents softmax saturation for large d_k.</div></li>
+      <li><span class="bullet">SDA</span><div><strong>Scaled Dot-Product Attention:</strong> Attention(Q,K,V) = softmax(QKᵀ/√d_k)·V. Shapes: Q(n_q×d_k), K(n_k×d_k), V(n_k×d_v) → output (n_q×d_v). Causal masking sets upper triangle to −∞ for autoregressive generation.</div></li>
+      <li><span class="bullet">MHA</span><div><strong>Multi-Head Attention:</strong> h parallel attention heads, each with own W^Q_i, W^K_i, W^V_i (d_model/h dims). Outputs concatenated and projected by W^O. Each head learns different relationship types. O(n²·d) complexity — bottleneck for long sequences.</div></li>
+      <li><span class="bullet">PE</span><div><strong>Positional Encoding:</strong> PE(pos, 2i) = sin(pos/10000^{2i/d}). Added to token embeddings. Enables relative position computation. ViT uses learned 1D PE; modern LLMs use RoPE or ALiBi.</div></li>
+      <li><span class="bullet">ENC</span><div><strong>Encoder Block:</strong> MH Self-Attention → Add&Norm → FFN (expand d_ff=4×d_model, ReLU/GELU) → Add&Norm. Pre-LN placement (before sublayer) preferred in modern models for stability.</div></li>
+      <li><span class="bullet">DEC</span><div><strong>Decoder Block:</strong> Masked Self-Attention → Add&Norm → Cross-Attention (Q from decoder, K,V from encoder) → Add&Norm → FFN → Add&Norm. 3 sublayers vs encoder's 2.</div></li>
+      <li><span class="bullet">ViT</span><div><strong>Vision Transformer:</strong> Image → 16×16 patches → flatten → linear project → [CLS]+position encode → Transformer encoder → [CLS] output → classify. 196 patches for 224×224 image. No Conv inductive bias. Requires large data but scales better than CNNs.</div></li>
+      <li><span class="bullet">VV</span><div><strong>ViT Variants:</strong> DeiT (knowledge distillation enables ImageNet-only training), Swin (local windows + hierarchical, linear complexity), DINO (self-supervised, emergent segmentation), MAE (mask 75% patches, reconstruct).</div></li>
+      <li><span class="bullet">BRT</span><div><strong>BERT:</strong> Encoder-only. MLM (predict 15% masked tokens, 80/10/10 strategy) + NSP pre-training. [CLS] for classification; token outputs for sequence labeling; span prediction for QA. Same weights fine-tuned for all tasks.</div></li>
+      <li><span class="bullet">GPT</span><div><strong>GPT Family:</strong> Decoder-only, causal LM (next token prediction). GPT-2: zero-shot generalization. GPT-3 (175B): few-shot in-context learning. InstructGPT: RLHF aligns with human preferences. LLaMA: compute-optimal open-weight models.</div></li>
+      <li><span class="bullet">FND</span><div><strong>Foundation Models:</strong> T5 (text-to-text, all NLP as generation), CLIP (contrastive image-text alignment, zero-shot classification), DALL-E (text-to-image). Scaling laws: model and data should scale together (Chinchilla). LoRA enables efficient fine-tuning of frozen large models.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Deep Learning Techniques — Module 3</span>
+  <span>Q·K·V · Attention Pooling · Multi-Head Attention · Transformer · ViT · BERT · GPT · CLIP</span>
+</div>
+
+</body>
+</html>

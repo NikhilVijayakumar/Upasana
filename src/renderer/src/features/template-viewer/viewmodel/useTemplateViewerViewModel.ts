@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface TemplateFolder {
   path: string
@@ -28,7 +28,7 @@ export const useTemplateViewerViewModel = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const loadFolders = async () => {
+  const loadFolders = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
@@ -43,32 +43,32 @@ export const useTemplateViewerViewModel = () => {
       
       console.log('[TemplateViewer] Calling listFolders...')
       const result = await api.listFolders()
-      console.log('[TemplateViewer] Result:', result)
+      console.log('[TemplateViewer] Result:', JSON.stringify(result))
       
-      const safeFolders = Array.isArray(result) ? result : []
+      const safeFolders = Array.isArray(result) ? result.filter(f => f && f.path && f.name) : []
       setFolders(safeFolders)
       
       if (safeFolders.length > 0) {
         setSelectedFolder(safeFolders[0])
       }
+      setIsLoading(false)
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : err ? String(err) : 'Failed to load'
       console.error('[TemplateViewer] Load folders error:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load')
-    } finally {
+      setError(errorMessage)
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  const loadFiles = async (folder: TemplateFolder) => {
+  const loadFiles = useCallback(async (folder: TemplateFolder) => {
     try {
       const api = (window as any).api?.templates
       if (!api) return
       
       const result = await api.listFiles(folder.path)
-      const safeFiles = Array.isArray(result) ? result : []
+      const safeFiles = Array.isArray(result) ? result.filter(f => f && f.path && f.name) : []
       
       setFiles(safeFiles)
-      setSelectedFolder(folder)
       
       if (safeFiles.length > 0) {
         setSelectedFile(safeFiles[0])
@@ -76,9 +76,9 @@ export const useTemplateViewerViewModel = () => {
     } catch (err) {
       console.error('[TemplateViewer] Load files error:', err)
     }
-  }
+  }, [])
 
-  const loadContent = async (folder: TemplateFolder, file: TemplateFile) => {
+  const loadContent = useCallback(async (folder: TemplateFolder, file: TemplateFile) => {
     try {
       const api = (window as any).api?.templates
       if (!api) return
@@ -90,7 +90,7 @@ export const useTemplateViewerViewModel = () => {
     } catch (err) {
       console.error('[TemplateViewer] Load content error:', err)
     }
-  }
+  }, [])
 
   useEffect(() => {
     loadFolders()
@@ -100,13 +100,13 @@ export const useTemplateViewerViewModel = () => {
     if (selectedFolder) {
       loadFiles(selectedFolder)
     }
-  }, [selectedFolder])
+  }, [selectedFolder, loadFiles])
 
   useEffect(() => {
     if (selectedFolder && selectedFile) {
       loadContent(selectedFolder, selectedFile)
     }
-  }, [selectedFolder, selectedFile])
+  }, [selectedFolder, selectedFile, loadContent])
 
   return {
     folders,
@@ -115,6 +115,8 @@ export const useTemplateViewerViewModel = () => {
     selectedFile,
     fileContent,
     isLoading,
-    error
+    error,
+    setSelectedFolder,
+    setSelectedFile
   }
 }
