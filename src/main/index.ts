@@ -16,6 +16,14 @@ const getBasePath = (): string => {
 }
 
 const createWindow = (): void => {
+  console.log('[Upasana] Creating window...')
+  
+  const appRoot = app.isPackaged ? process.resourcesPath : join(__dirname, '..', '..')
+  const preloadPath = join(appRoot, 'out', 'preload', 'index.js')
+  
+  console.log('[Upasana] Preload path:', preloadPath)
+  console.log('[Upasana] Preload exists:', existsSync(preloadPath))
+  
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -24,15 +32,31 @@ const createWindow = (): void => {
     webPreferences: {
       sandbox: false,
       contextIsolation: true,
-      preload: join(__dirname, 'preload.js')
+      preload: preloadPath
     }
+  })
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('[Upasana] Renderer finished loading')
+  })
+
+  mainWindow.webContents.on('crashed', (event, killed) => {
+    console.error('[Upasana] Renderer crashed:', killed)
+  })
+
+  mainWindow.on('ready-to-show', () => {
+    console.log('[Upasana] Window ready to show')
+    mainWindow?.show()
   })
 
   const rendererUrl = process.env['ELECTRON_RENDERER_URL']
   if (rendererUrl) {
+    console.log('[Upasana] Loading URL:', rendererUrl)
     mainWindow.loadURL(rendererUrl)
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    const htmlPath = join(__dirname, '../renderer/index.html')
+    console.log('[Upasana] Loading file:', htmlPath)
+    mainWindow.loadFile(htmlPath)
   }
 }
 

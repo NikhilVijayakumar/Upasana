@@ -1,25 +1,20 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron'
+
+console.log('[Preload] Script loaded, contextIsolation:', true)
 
 const api = {
   templates: {
-    listFolders: () => electronAPI.ipcRenderer.invoke('templates:list-folders'),
-    listFiles: (folderPath: string) => electronAPI.ipcRenderer.invoke('templates:list-files', { folderPath }),
+    listFolders: () => ipcRenderer.invoke('templates:list-folders'),
+    listFiles: (folderPath: string) => ipcRenderer.invoke('templates:list-files', { folderPath }),
     readFile: (folderPath: string, fileName: string) =>
-      electronAPI.ipcRenderer.invoke('templates:read-file', { folderPath, fileName })
+      ipcRenderer.invoke('templates:read-file', { folderPath, fileName })
   }
 }
 
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
-  }
-} else {
-  // @ts-ignore
-  window.electron = electronAPI
-  // @ts-ignore
-  window.api = api
+try {
+  contextBridge.exposeInMainWorld('electron', { ipcRenderer })
+  contextBridge.exposeInMainWorld('api', api)
+  console.log('[Preload] API exposed successfully')
+} catch (error) {
+  console.error('[Preload] Failed to expose API:', error)
 }

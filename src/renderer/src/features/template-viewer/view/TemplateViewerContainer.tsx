@@ -1,6 +1,8 @@
 import React from 'react'
 import { TemplateViewerView } from './TemplateViewerView'
 
-export const TemplateViewerContainer: React.FC = () => {
+const TemplateViewerContainer: React.FC = () => {
   return <TemplateViewerView />
 }
+
+export default TemplateViewerContainer
