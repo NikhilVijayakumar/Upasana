@@ -4,6 +4,13 @@ import { join } from 'node:path'
 
 let mainWindow: BrowserWindow | null = null
 
+const getBasePath = (): string => {
+  if (app.isPackaged) {
+    return process.resourcesPath
+  }
+  return join(__dirname, '..', '..')
+}
+
 const createWindow = (): void => {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -28,22 +35,34 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
   const { ipcMain } = require('electron')
 
-  // Template folder handlers
   ipcMain.handle('templates:list-folders', async () => {
-    const configPath = join(process.cwd(), 'config', 'upasana.json')
+    const basePath = getBasePath()
+    const configPath = join(basePath, 'config', 'upasana.json')
+    console.log('[Upasana] Config path:', configPath)
+    
     if (!existsSync(configPath)) {
+      console.log('[Upasana] Config not found')
       return []
     }
+    
     const config = JSON.parse(readFileSync(configPath, 'utf-8'))
+    console.log('[Upasana] Folders:', config.template_folders)
     return config.template_folders || []
   })
 
   ipcMain.handle('templates:list-files', async (_event: unknown, payload: { folderPath: string }) => {
-    const fullPath = join(process.cwd(), payload.folderPath)
+    const basePath = getBasePath()
+    const fullPath = join(basePath, payload.folderPath)
+    console.log('[Upasana] Files path:', fullPath)
+    
     if (!existsSync(fullPath)) {
+      console.log('[Upasana] Folder not found')
       return []
     }
+    
     const files = readdirSync(fullPath).filter(f => f.endsWith('.html'))
+    console.log('[Upasana] Files:', files)
+    
     return files.map(name => {
       const filePath = join(fullPath, name)
       const stats = statSync(filePath)
@@ -57,10 +76,14 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('templates:read-file', async (_event: unknown, payload: { folderPath: string; fileName: string }) => {
-    const fullPath = join(process.cwd(), payload.folderPath, payload.fileName)
+    const basePath = getBasePath()
+    const fullPath = join(basePath, payload.folderPath, payload.fileName)
+    console.log('[Upasana] Reading:', fullPath)
+    
     if (!existsSync(fullPath)) {
       return { content: '', name: payload.fileName, path: '' }
     }
+    
     const content = readFileSync(fullPath, 'utf-8')
     return {
       content,
@@ -69,8 +92,7 @@ app.whenReady().then(() => {
     }
   })
 
-  console.info('[Upasana] Template handlers registered')
-
+  console.log('[Upasana] Template handlers registered')
   createWindow()
 
   app.on('activate', () => {

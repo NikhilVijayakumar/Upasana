@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from 'react'
-import type { TemplateFolder, TemplateFile, TemplateFileContent } from '../repo/TemplateViewerRepo'
+import { FC, useEffect } from 'react'
+import { useTemplateViewerViewModel } from '../viewmodel/useTemplateViewerViewModel'
 
 const styles = {
   container: {
@@ -76,91 +76,47 @@ const styles = {
   } as const
 }
 
-interface State {
-  folders: TemplateFolder[]
-  files: TemplateFile[]
-  selectedFolder: TemplateFolder | null
-  selectedFile: TemplateFile | null
-  fileContent: TemplateFileContent | null
-  isLoading: boolean
-  error: string | null
-}
-
 export const TemplateViewerView: FC = () => {
-  const [state, setState] = useState<State>({
-    folders: [],
-    files: [],
-    selectedFolder: null,
-    selectedFile: null,
-    fileContent: null,
-    isLoading: true,
-    error: null
-  })
+  const {
+    folders,
+    files,
+    selectedFolder,
+    selectedFile,
+    fileContent,
+    isLoading,
+    error
+  } = useTemplateViewerViewModel()
 
   useEffect(() => {
-    loadFolders()
-  }, [])
+    if (selectedFolder) {
+      console.log('[View] Selected folder changed:', selectedFolder.path)
+    }
+  }, [selectedFolder])
 
   useEffect(() => {
-    if (state.selectedFolder) {
-      loadFiles(state.selectedFolder)
+    if (selectedFile) {
+      console.log('[View] Selected file changed:', selectedFile.name)
     }
-  }, [state.selectedFolder])
+  }, [selectedFile])
 
-  const loadFolders = async () => {
-    try {
-      setState(s => ({ ...s, isLoading: true }))
-      const folders = await window.api.templates.listFolders()
-      setState(s => ({
-        ...s,
-        folders,
-        selectedFolder: folders.length > 0 ? folders[0] : null,
-        isLoading: false
-      }))
-    } catch (err) {
-      setState(s => ({ ...s, isLoading: false, error: 'Failed to load folders' }))
-    }
-  }
-
-  const loadFiles = async (folder: TemplateFolder) => {
-    try {
-      setState(s => ({ ...s, isLoading: true }))
-      const files = await window.api.templates.listFiles(folder.path)
-      setState(s => ({
-        ...s,
-        files,
-        selectedFile: files.length > 0 ? files[0] : null,
-        isLoading: false
-      }))
-      if (files.length > 0) {
-        const content = await window.api.templates.readFile(folder.path, files[0].name)
-        setState(s => ({ ...s, fileContent: content }))
-      }
-    } catch (err) {
-      setState(s => ({ ...s, isLoading: false, error: 'Failed to load files' }))
-    }
-  }
-
-  const selectFile = async (file: TemplateFile) => {
-    if (!state.selectedFolder) return
-    try {
-      setState(s => ({ ...s, isLoading: true }))
-      const content = await window.api.templates.readFile(state.selectedFolder.path, file.name)
-      setState(s => ({ ...s, selectedFile: file, fileContent: content, isLoading: false }))
-    } catch (err) {
-      setState(s => ({ ...s, isLoading: false, error: 'Failed to load file' }))
-    }
-  }
-
-  if (state.isLoading) {
+  if (isLoading) {
     return <div style={styles.loading}>Loading...</div>
   }
 
-  if (state.folders.length === 0) {
+  if (error) {
+    return (
+      <div style={{ padding: 24 }}>
+        <h2>Error</h2>
+        <p style={{ color: 'red' }}>{error}</p>
+      </div>
+    )
+  }
+
+  if (folders.length === 0) {
     return (
       <div style={{ padding: 24 }}>
         <h2>No template folders configured</h2>
-        <p style={{ color: '#666' }}>Configure template_folders in upasana.json</p>
+        <p style={{ color: '#666' }}>Configure template_folders in config/upasana.json</p>
       </div>
     )
   }
@@ -171,14 +127,14 @@ export const TemplateViewerView: FC = () => {
         <h2 style={styles.title}>Templates</h2>
         
         <div style={styles.sectionTitle}>Subjects</div>
-        {state.folders.map(folder => (
+        {folders.map((folder) => (
           <button
             key={folder.path}
             style={{
               ...styles.listItem,
-              ...(state.selectedFolder?.path === folder.path ? styles.listItemSelected : {})
+              ...(selectedFolder?.path === folder.path ? styles.listItemSelected : {})
             }}
-            onClick={() => setState(s => ({ ...s, selectedFolder: folder }))}
+            onClick={() => {}}
           >
             <strong>{folder.name}</strong>
             <div style={{ fontSize: 12, color: '#666' }}>{folder.subject}</div>
@@ -186,14 +142,14 @@ export const TemplateViewerView: FC = () => {
         ))}
 
         <div style={styles.sectionTitle}>Files</div>
-        {state.files.map(file => (
+        {files.map((file) => (
           <button
             key={file.path}
             style={{
               ...styles.listItem,
-              ...(state.selectedFile?.path === file.path ? styles.listItemSelected : {})
+              ...(selectedFile?.path === file.path ? styles.listItemSelected : {})
             }}
-            onClick={() => selectFile(file)}
+            onClick={() => {}}
           >
             <div>{file.name}</div>
             <div style={styles.fileSize}>{(file.size / 1024).toFixed(1)} KB</div>
@@ -202,13 +158,13 @@ export const TemplateViewerView: FC = () => {
       </div>
 
       <div style={styles.main}>
-        {state.fileContent ? (
+        {fileContent?.content ? (
           <div style={styles.paper}>
-            <h2 style={{ marginBottom: 16, color: '#333' }}>{state.fileContent.name}</h2>
+            <h2 style={{ marginBottom: 16, color: '#333' }}>{fileContent.name}</h2>
             <hr style={{ marginBottom: 16, border: 'none', borderTop: '1px solid #e0e0e0' }} />
             <div
               style={styles.htmlContent}
-              dangerouslySetInnerHTML={{ __html: state.fileContent.content }}
+              dangerouslySetInnerHTML={{ __html: fileContent.content }}
             />
           </div>
         ) : (

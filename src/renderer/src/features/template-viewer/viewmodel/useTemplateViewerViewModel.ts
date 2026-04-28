@@ -1,110 +1,120 @@
-import { useState, useEffect, useCallback } from 'react'
-import { templateViewerRepo, type TemplateFolder, type TemplateFile, type TemplateFileContent } from '../repo/TemplateViewerRepo'
+import { useState, useEffect } from 'react'
 
-export interface TemplateViewerState {
-  folders: TemplateFolder[]
-  files: TemplateFile[]
-  selectedFolder: TemplateFolder | null
-  selectedFile: TemplateFile | null
-  fileContent: TemplateFileContent | null
-  isLoadingFolders: boolean
-  isLoadingFiles: boolean
-  isLoadingContent: boolean
-  error: string | null
+interface TemplateFolder {
+  path: string
+  subject: string
+  name: string
+}
+
+interface TemplateFile {
+  name: string
+  path: string
+  size: number
+  modifiedAt: string
+}
+
+interface TemplateFileContent {
+  content: string
+  name: string
+  path: string
 }
 
 export const useTemplateViewerViewModel = () => {
-  const [state, setState] = useState<TemplateViewerState>({
-    folders: [],
-    files: [],
-    selectedFolder: null,
-    selectedFile: null,
-    fileContent: null,
-    isLoadingFolders: true,
-    isLoadingFiles: false,
-    isLoadingContent: false,
-    error: null
-  })
+  const [folders, setFolders] = useState<TemplateFolder[]>([])
+  const [files, setFiles] = useState<TemplateFile[]>([])
+  const [selectedFolder, setSelectedFolder] = useState<TemplateFolder | null>(null)
+  const [selectedFile, setSelectedFile] = useState<TemplateFile | null>(null)
+  const [fileContent, setFileContent] = useState<TemplateFileContent | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const loadFolders = useCallback(async () => {
+  const loadFolders = async () => {
     try {
-      setState(prev => ({ ...prev, isLoadingFolders: true, error: null }))
-      const folders = await templateViewerRepo.getTemplateFolders()
-      setState(prev => ({
-        ...prev,
-        folders,
-        isLoadingFolders: false,
-        selectedFolder: folders.length > 0 ? folders[0] : null
-      }))
-      if (folders.length > 0) {
-        const files = await templateViewerRepo.getTemplateFiles(folders[0].path)
-        setState(prev => ({
-          ...prev,
-          files,
-          selectedFile: files.length > 0 ? files[0] : null
-        }))
+      setIsLoading(true)
+      setError(null)
+      
+      const api = (window as any).api?.templates
+      
+      if (!api) {
+        console.log('[TemplateViewer] API not ready, trying again...')
+        setTimeout(loadFolders, 500)
+        return
+      }
+      
+      console.log('[TemplateViewer] Calling listFolders...')
+      const result = await api.listFolders()
+      console.log('[TemplateViewer] Result:', result)
+      
+      const safeFolders = Array.isArray(result) ? result : []
+      setFolders(safeFolders)
+      
+      if (safeFolders.length > 0) {
+        setSelectedFolder(safeFolders[0])
       }
     } catch (err) {
-      setState(prev => ({
-        ...prev,
-        isLoadingFolders: false,
-        error: err instanceof Error ? err.message : 'Failed to load folders'
-      }))
+      console.error('[TemplateViewer] Load folders error:', err)
+      setError(err instanceof Error ? err.message : 'Failed to load')
+    } finally {
+      setIsLoading(false)
     }
-  }, [])
+  }
 
-  const loadFiles = useCallback(async (folder: TemplateFolder) => {
+  const loadFiles = async (folder: TemplateFolder) => {
     try {
-      setState(prev => ({ ...prev, isLoadingFiles: true, error: null }))
-      const files = await templateViewerRepo.getTemplateFiles(folder.path)
-      setState(prev => ({
-        ...prev,
-        files,
-        selectedFolder: folder,
-        selectedFile: files.length > 0 ? files[0] : null,
-        isLoadingFiles: false
-      }))
-      if (files.length > 0) {
-        const fileContent = await templateViewerRepo.getTemplateContent(folder.path, files[0].name)
-        setState(prev => ({ ...prev, fileContent }))
+      const api = (window as any).api?.templates
+      if (!api) return
+      
+      const result = await api.listFiles(folder.path)
+      const safeFiles = Array.isArray(result) ? result : []
+      
+      setFiles(safeFiles)
+      setSelectedFolder(folder)
+      
+      if (safeFiles.length > 0) {
+        setSelectedFile(safeFiles[0])
       }
     } catch (err) {
-      setState(prev => ({
-        ...prev,
-        isLoadingFiles: false,
-        error: err instanceof Error ? err.message : 'Failed to load files'
-      }))
+      console.error('[TemplateViewer] Load files error:', err)
     }
-  }, [])
+  }
 
-  const selectFile = useCallback(async (file: TemplateFile) => {
-    if (!state.selectedFolder) return
+  const loadContent = async (folder: TemplateFolder, file: TemplateFile) => {
     try {
-      setState(prev => ({ ...prev, isLoadingContent: true, error: null }))
-      const fileContent = await templateViewerRepo.getTemplateContent(state.selectedFolder.path, file.name)
-      setState(prev => ({
-        ...prev,
-        selectedFile: file,
-        fileContent,
-        isLoadingContent: false
-      }))
+      const api = (window as any).api?.templates
+      if (!api) return
+      
+      const result = await api.readFile(folder.path, file.name)
+      if (result?.content) {
+        setFileContent(result)
+      }
     } catch (err) {
-      setState(prev => ({
-        ...prev,
-        isLoadingContent: false,
-        error: err instanceof Error ? err.message : 'Failed to load file'
-      }))
+      console.error('[TemplateViewer] Load content error:', err)
     }
-  }, [state.selectedFolder])
+  }
 
   useEffect(() => {
     loadFolders()
-  }, [loadFolders])
+  }, [])
+
+  useEffect(() => {
+    if (selectedFolder) {
+      loadFiles(selectedFolder)
+    }
+  }, [selectedFolder])
+
+  useEffect(() => {
+    if (selectedFolder && selectedFile) {
+      loadContent(selectedFolder, selectedFile)
+    }
+  }, [selectedFolder, selectedFile])
 
   return {
-    state,
-    loadFolders,
-    loadFiles,
-    selectFile
+    folders,
+    files,
+    selectedFolder,
+    selectedFile,
+    fileContent,
+    isLoading,
+    error
   }
 }
