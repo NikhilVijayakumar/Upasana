@@ -216,15 +216,23 @@ Score + Feedback
 
 ```text
 src/
-├── domain/           # Core logic (Syllabus, Session)
-├── data/             # HTML loader, mappings
-├── main/             # Electron main (TTS, STT bridge)
+├── main/             # Electron main process (TTS, STT bridge)
+│   ├── index.ts      # Main entry point
+│   └── services/     # Core services
 ├── renderer/         # React UI
-│   ├── viewmodels/   # Session + playback logic
-│   ├── components/   # UI elements
-│   └── hooks/        # useSession, useInference
-└── assets/           # Themes, icons
+│   ├── index.html    # Entry HTML
+│   └── src/
+│       ├── features/ # Feature modules
+│       ├── common/   # Shared components
+│       ├── shared/   # Utilities and compat
+│       └── assets/   # Themes, icons
+└── preload/          # Preload scripts for IPC
 ```
+
+### 📚 Documentation Library
+
+HTML content is stored in `docs/NueralNetwork/`:
+- `nn_module1_notes.html` through `nn_module5_notes.html`
 
 ---
 
@@ -233,7 +241,7 @@ src/
 All configuration is stored locally:
 
 ```text
-vidhan.json
+upasana.json
 ```
 
 Example:
@@ -260,14 +268,22 @@ npm install
 
 ### 2. Add Content
 
-* Place HTML files in `/library`
-* Define syllabus JSON
-* Define topic mappings
+* Place HTML files in `docs/NueralNetwork/`
+* Define syllabus JSON in project root
+* Define topic mappings as needed
 
-### 3. Run
+### 3. Run Development
 
 ```bash
-npm run start:upasana
+npm run dev
+```
+
+### 4. Build for Production
+
+```bash
+npm run build:win    # Windows
+npm run build:mac    # macOS
+npm run build:linux  # Linux
 ```
 
 ---
@@ -314,6 +330,22 @@ Upasana V1 is successful if the user can:
 * Adaptive difficulty
 * Auto content structuring
 * Podcast generation (Vani Pipeline)
+
+---
+
+## 📖 Feature Documentation
+
+Detailed feature documentation is available in [`docs/feature/`](docs/feature/):
+
+- [Syllabus-Driven Classroom](docs/feature/syllabus-classroom.md) - Load and structure syllabus
+- [HTML Content Ingestion](docs/feature/html-content-ingestion.md) - Parse HTML content
+- [TTS Narration](docs/feature/tts-narration.md) - Sentence-by-sentence playback
+- [Sentence Highlighting](docs/feature/sentence-highlighting.md) - Visual sync during narration
+- [Explain This](docs/feature/explain-this.md) - Interactive LLM explanations
+- [Question Generation](docs/feature/question-generation.md) - Exam question creation
+- [Viva Mode](docs/feature/viva-mode.md) - Speech-to-evaluation flow
+- [Local LLM Integration](docs/feature/local-llm-integration.md) - LM Studio/Ollama setup
+- [Speech-to-Text](docs/feature/speech-to-text.md) - Whisper STT engine
 
 ---
 

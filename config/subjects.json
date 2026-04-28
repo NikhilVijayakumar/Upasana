@@ -1,0 +1,76 @@
+{
+  "subjects": [
+    {
+      "id": "neural-networks",
+      "name": "Neural Networks",
+      "description": "Comprehensive study of neural networks from basics to advanced concepts",
+      "createdAt": "2026-04-27",
+      "syllabus": {
+        "units": [
+          {
+            "id": "unit-module1",
+            "name": "Module 1: Foundations of Neural Networks",
+            "topics": [
+              {"id": "topic-1-1", "title": "What is a Neural Network?", "duration": "1 hour"},
+              {"id": "topic-1-2", "title": "Biological Inspiration", "duration": "45 min"},
+              {"id": "topic-1-3", "title": "The Artificial Neuron (Perceptron)", "duration": "1 hour"},
+              {"id": "topic-1-4", "title": "Activation Functions", "duration": "1 hour"},
+              {"id": "topic-1-5", "title": "Network Architecture - Layers", "duration": "1 hour"}
+            ]
+          },
+          {
+            "id": "unit-module2",
+            "name": "Module 2: Forward Propagation",
+            "topics": [
+              {"id": "topic-2-1", "title": "How a Neural Network Works", "duration": "1 hour"},
+              {"id": "topic-2-2", "title": "Forward Propagation Step by Step", "duration": "1.5 hours"},
+              {"id": "topic-2-3", "title": "Loss Functions", "duration": "1 hour"}
+            ]
+          }
+        ]
+      },
+      "docs": [
+        {
+          "id": "doc-mod1",
+          "path": "docs/NueralNetwork/nn_module1_notes.html",
+          "title": "Module 1: Foundations",
+          "module": "module1",
+          "autoDetected": true,
+          "topicMappings": ["topic-1-1", "topic-1-2", "topic-1-3", "topic-1-4", "topic-1-5"]
+        },
+        {
+          "id": "doc-mod2",
+          "path": "docs/NueralNetwork/nn_module2_notes.html",
+          "title": "Module 2: Forward Propagation",
+          "module": "module2",
+          "autoDetected": true,
+          "topicMappings": ["topic-2-1", "topic-2-2", "topic-2-3"]
+        },
+        {
+          "id": "doc-mod3",
+          "path": "docs/NueralNetwork/nn_module3_notes.html",
+          "title": "Module 3: Training",
+          "module": "module3",
+          "autoDetected": false,
+          "topicMappings": []
+        },
+        {
+          "id": "doc-mod4",
+          "path": "docs/NueralNetwork/nn_module4_notes.html",
+          "title": "Module 4: Advanced Architectures",
+          "module": "module4",
+          "autoDetected": false,
+          "topicMappings": []
+        },
+        {
+          "id": "doc-mod5",
+          "path": "docs/NueralNetwork/nn_module5_notes.html",
+          "title": "Module 5: Applications",
+          "module": "module5",
+          "autoDetected": false,
+          "topicMappings": []
+        }
+      ]
+    }
+  ]
+}

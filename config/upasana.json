@@ -1,0 +1,27 @@
+{
+  "llm_endpoint": "http://localhost:1234/v1",
+  "llm_model": "default",
+  "temperature": 0.7,
+  "max_tokens": 1024,
+  "stt_engine": "whisper-local",
+  "whisper_model": "base",
+  "language": "en",
+  "theme": {
+    "primary": "#1A202C",
+    "accent": "#D69E2E"
+  },
+  "question_config": {
+    "5_mark_count": 2,
+    "10_mark_count": 1,
+    "include_key_points": true
+  },
+  "min_score_to_pass": 5,
+"template_folders": [
+    {
+      "path": "templates/NeuralNetworks",
+      "subject": "neural-networks",
+      "name": "Neural Networks"
+    }
+  ],
+  "templates_index": "templates/index.html"
+}

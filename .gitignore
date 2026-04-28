@@ -147,3 +147,5 @@ vite.config.ts.timestamp-*
 /.idea/modules.xml
 /.idea/Upasana.iml
 /.idea/vcs.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/package-lock.json

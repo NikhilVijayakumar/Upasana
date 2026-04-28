@@ -1,0 +1,72 @@
+{
+  "name": "rita",
+  "summaryLines": 3,
+  "maxDepth": 3,
+  "sections": [
+    "navigation",
+    "global",
+    "vision",
+    "dependencies",
+    "systemMap",
+    "featureDetails",
+    "conceptMap",
+    "editMap",
+    "flows",
+    "docsManifest",
+    "rules",
+    "api",
+    "maintenance"
+  ],
+  "conceptMap": [
+    { "name": "Attendance Grid", "impl": "googleSheetsService", "path": "src/main/services/" },
+    { "name": "Employee Store", "impl": "employeeStoreService", "path": "src/main/services/" },
+    { "name": "Sheets Sync", "impl": "sheetsSyncService", "path": "src/main/services/" },
+    { "name": "Service Account Auth", "impl": "googleServiceAccountService", "path": "src/main/services/" },
+    { "name": "SQLite Cache", "impl": "sqliteConfigStoreService", "path": "src/main/services/" },
+    { "name": "UI Components", "impl": "Astra", "path": "src/renderer/common/components/" }
+  ],
+  "editMap": [
+    { "task": "Add runtime service", "path": "src/main/services/" },
+    { "task": "Add UI component", "path": "src/renderer/common/components/" },
+    { "task": "Add feature doc", "path": "docs/feature/" },
+    { "task": "Add architecture doc", "path": "docs/architecture/" },
+    { "task": "Add screen", "path": "src/renderer/[screen-family]/" }
+  ],
+  "flows": [
+    { "name": "Add runtime service", "steps": ["Create docs/feature/[feature].md", "Define service contract", "Implement in src/main/services/", "Add IPC handler in preload.ts", "Run npm run generate:index"] },
+    { "name": "Add architecture doc", "steps": ["Create docs/architecture/[pattern].md", "Add to wiki-steps.json featureDetails", "Run npm run generate:index"] },
+    { "name": "Add UI screen", "steps": ["Create Container → ViewModel → View", "Export in components/index.ts", "Run npm run generate:index"] }
+  ],
+  "rules": [
+    "Attendance edits saved to local SQLite immediately",
+    "Manual sync to Google Sheets on demand",
+    "Service account authentication (JWT, no OAuth)",
+    "Master Sheet for configuration, yearly sheets for attendance",
+    "Offline-first: works without network during day",
+    "Use Astra MVVM pattern: Container → ViewModel → View",
+    "Always use useDataState for async operations",
+    "Never hardcode colors - use theme tokens",
+    "Never hardcode strings - use localization",
+    "Use Prana IPC for internal, ApiService for external"
+  ],
+  "featureDetails": {
+    "architecture": [
+      { "area": "MVVM Pattern", "doc": "docs/architecture/mvvm-pattern.md", "services": ["useDataState", "Container → ViewModel → View"] },
+      { "area": "State Management", "doc": "docs/architecture/state-management.md", "services": ["StateType", "AppState"] },
+      { "area": "Theming", "doc": "docs/architecture/theming.md", "services": ["ThemeProvider", "ThemeTokens"] },
+      { "area": "Localization", "doc": "docs/architecture/localization.md", "services": ["LanguageProvider", "useLanguage"] },
+      { "area": "Repository", "doc": "docs/architecture/repository.md", "services": ["ApiService", "ServerResponse"] }
+    ],
+    "core": [
+      { "area": "Attendance Management", "doc": "docs/feature/attendance-management.md", "services": ["googleSheetsService", "employeeStoreService"] },
+      { "area": "Year Initialization", "doc": "docs/feature/year-initialization.md", "services": ["googleSheetsManagementService", "yearInitializationService"] },
+      { "area": "Offline Sync", "doc": "docs/feature/offline-sync.md", "services": ["sheetsSyncService", "sqliteConfigStoreService"] },
+      { "area": "Google Sheets Integration", "doc": "docs/feature/google-sheets-integration.md", "services": ["googleSheetsService", "googleSheetsCacheService"] },
+      { "area": "Service Account Auth", "doc": "docs/feature/service-account-auth.md", "services": ["googleServiceAccountService"] }
+    ],
+    "attendance": [
+      { "area": "Key Processing", "doc": "docs/feature/key-processing.md", "services": ["attendanceKeyService", "leaveBalanceService"] },
+      { "area": "Holiday Calendar", "doc": "docs/feature/holiday-calendar.md", "services": ["holidayService", "attendanceCalendarService"] }
+    ]
+  }
+}
