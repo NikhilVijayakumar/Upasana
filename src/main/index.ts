@@ -1,11 +1,14 @@
-import { app, BrowserWindow } from 'electron'
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
+import { app, BrowserWindow, dialog } from 'electron'
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync, unlinkSync } from 'node:fs'
 import { join } from 'node:path'
 
 app.disableHardwareAcceleration()
 app.commandLine.appendSwitch('disable-gpu')
 app.commandLine.appendSwitch('disable-software-rasterizer')
 app.commandLine.appendSwitch('disable-gpu-compositing')
+app.commandLine.appendSwitch('disable-gpu-sandbox')
+app.commandLine.appendSwitch('no-sandbox')
+app.commandLine.appendSwitch('disable-dev-shm-usage')
 let mainWindow: BrowserWindow | null = null
 
 const getBasePath = (): string => {
@@ -34,7 +37,9 @@ const createWindow = (): void => {
     webPreferences: {
       sandbox: false,
       contextIsolation: true,
-      preload: preloadPath
+      preload: preloadPath,
+      webgl: false,
+      experimentalFeatures: false
     }
   })
 

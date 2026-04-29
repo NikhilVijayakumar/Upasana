@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Language Processing – Module 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f7f9f8;
+    --surface: #ffffff;
+    --surface2: #eef2f0;
+    --border: #d8e2dc;
+    --border2: #b8ccc0;
+    --text: #0e1a14;
+    --text2: #344840;
+    --text3: #607068;
+    --accent: #166040;
+    --accent-bg: #e8f5ee;
+    --accent-border: #90d0a8;
+    --blue: #1a3a8c;
+    --blue-bg: #eaeffc;
+    --blue-border: #a0b8e8;
+    --amber: #7a4800;
+    --amber-bg: #fef8e8;
+    --amber-border: #e8c060;
+    --red: #8c1818;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #48188c;
+    --purple-bg: #f2eefa;
+    --purple-border: #c0a0e0;
+    --teal: #085450;
+    --teal-bg: #e4f4f2;
+    --teal-border: #80c8c0;
+    --rose: #7c1a40;
+    --rose-bg: #fdf0f5;
+    --rose-border: #e8a8c4;
+    --indigo: #1c186c;
+    --indigo-bg: #ececfa;
+    --indigo-border: #a0a0d8;
+    --code-bg: #e8eeea;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.75;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #061a10 0%, #0e3824 50%, #061a10 100%);
+    color: #e8f4ec;
+    padding: 3rem 4rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 350px; height: 100%;
+    background: radial-gradient(ellipse at 90% 50%, #103828 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .doc-header .subject-tag {
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: #58b87c; margin-bottom: 0.75rem;
+  }
+  .doc-header h1 {
+    font-size: 2.4rem; font-weight: 300;
+    letter-spacing: -0.01em; line-height: 1.2;
+    color: #e8f4ec; margin-bottom: 0.5rem;
+  }
+  .doc-header h1 span { font-weight: 600; }
+  .doc-header .subtitle {
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: #3a8058; margin-top: 1rem;
+  }
+
+  /* ── PART BANNER ── */
+  .part-banner {
+    padding: 0.7rem 4rem; font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #fff;
+  }
+  .pb-intro  { background: #0e3824; }
+  .pb-inc    { background: #1a3a6a; }
+  .pb-app    { background: #3a1060; }
+  .pb-chal   { background: #5c1a10; }
+  .pb-best   { background: #0a4040; }
+
+  /* ── TOC ── */
+  .toc { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 1.5rem 4rem; }
+  .toc h2 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.75rem; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 4px 2rem; }
+  .toc a { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+  .toc a:hover { text-decoration: underline; }
+  .toc a .num { font-weight: 600; color: var(--text3); min-width: 22px; }
+
+  /* ── CONTENT ── */
+  .content { padding: 3rem 4rem; max-width: 980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 4rem; }
+  .section-header { padding-left: 1.25rem; margin-bottom: 2rem; }
+  .sh-intro { border-left: 4px solid #0e3824; }
+  .sh-inc   { border-left: 4px solid #1a3a6a; }
+  .sh-app   { border-left: 4px solid #3a1060; }
+  .sh-chal  { border-left: 4px solid #5c1a10; }
+  .sh-best  { border-left: 4px solid #0a4040; }
+  .section-header .section-num { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.25rem; }
+  .section-header h2 { font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+
+  h3 { font-size: 1.15rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+  h4 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); margin: 1.5rem 0 0.5rem; }
+
+  p { margin-bottom: 1rem; color: var(--text2); }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius: 8px; padding: 1rem 1.25rem; margin: 1.25rem 0; border-left: 3px solid; }
+  .callout-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .callout p { margin-bottom: 0.4rem; font-size: 15.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout-key     { background: var(--accent-bg); border-color: var(--accent); } .callout-key .callout-title { color: var(--accent); } .callout-key p { color: #0a3828; }
+  .callout-tip     { background: var(--blue-bg);   border-color: var(--blue);   } .callout-tip .callout-title { color: var(--blue);   } .callout-tip p { color: #102060; }
+  .callout-warn    { background: var(--amber-bg);  border-color: var(--amber);  } .callout-warn .callout-title { color: var(--amber); } .callout-warn p { color: #5a3400; }
+  .callout-exam    { background: var(--red-bg);    border-color: var(--red);    } .callout-exam .callout-title { color: var(--red);   } .callout-exam p { color: #6a1010; }
+  .callout-formula { background: var(--purple-bg); border-color: var(--purple); } .callout-formula .callout-title { color: var(--purple); } .callout-formula p { color: #340c60; }
+  .callout-teal    { background: var(--teal-bg);   border-color: var(--teal);   } .callout-teal .callout-title { color: var(--teal);  } .callout-teal p { color: #063434; }
+  .callout-rose    { background: var(--rose-bg);   border-color: var(--rose);   } .callout-rose .callout-title { color: var(--rose);  } .callout-rose p { color: #5c1030; }
+  .callout-indigo  { background: var(--indigo-bg); border-color: var(--indigo); } .callout-indigo .callout-title { color: var(--indigo);} .callout-indigo p { color: #101050; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .point-list li { display: flex; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 16px; line-height: 1.65; align-items: flex-start; }
+  .point-list li:last-child { border-bottom: none; }
+  .point-list li .bullet { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 12px; color: var(--text3); min-width: 22px; padding-top: 3px; }
+  .point-list li strong { color: var(--text); font-weight: 600; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset: steps; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+  .step-list li { counter-increment: steps; display: flex; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); align-items: flex-start; font-size: 16px; color: var(--text2); line-height: 1.65; }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before { content: counter(steps); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: var(--surface); background: #061a10; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-list li strong { color: var(--text); }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background: var(--code-bg); border: 1px solid var(--border2); border-radius: 8px; padding: 1rem 1.5rem; margin: 1rem 0; overflow-x: auto; }
+  .formula-block .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+  .formula { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); line-height: 2; }
+  .formula .comment { font-size: 12.5px; color: var(--text3); margin-left: 0.75rem; }
+  .formula .var { color: var(--purple); font-weight: 500; }
+  .formula .hl  { color: var(--accent); font-weight: 500; }
+  .formula .bl  { color: var(--blue);   font-weight: 500; }
+  .formula .rd  { color: var(--red);    font-weight: 500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; overflow-x: auto; }
+  .diagram pre { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text2); line-height: 1.7; white-space: pre; }
+  .diagram-caption { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); margin-top: 0.5rem; font-style: italic; }
+
+  /* ── TABLES ── */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 15px; }
+  .compare-table th { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; background: var(--surface2); padding: 0.75rem 1rem; text-align: left; border: 1px solid var(--border); color: var(--text2); }
+  .compare-table td { padding: 0.7rem 1rem; border: 1px solid var(--border); vertical-align: top; color: var(--text2); line-height: 1.6; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .compare-table td strong { color: var(--text); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 1.25rem 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+  .card .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .card p { font-size: 14px; line-height: 1.6; }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 2rem; margin: 1.5rem 0; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--border2); }
+  .timeline-item { position: relative; margin-bottom: 1.75rem; }
+  .timeline-item:last-child { margin-bottom: 0; }
+  .timeline-item::before { content: ''; position: absolute; left: -27px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); }
+  .timeline-item .ti-year { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--accent); margin-bottom: 0.2rem; }
+  .timeline-item .ti-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+  .timeline-item .ti-desc { font-size: 15px; color: var(--text2); line-height: 1.6; }
+
+  /* ── CHALLENGE CARD ── */
+  .chal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 1.5rem 0; }
+  .chal-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .chal-card::before { display: none; }
+  .chal-card .cc-num { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 500; color: var(--border2); line-height: 1; margin-bottom: 0.5rem; }
+  .chal-card .cc-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+  .chal-card p { font-size: 14.5px; line-height: 1.65; color: var(--text2); margin-bottom: 0.5rem; }
+  .chal-card p:last-child { margin-bottom: 0; }
+  .chal-card .cc-example { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: var(--surface2); border-radius: 6px; padding: 0.4rem 0.75rem; margin-top: 0.5rem; color: var(--text3); display: block; }
+
+  /* ── BEST PRACTICE CARD ── */
+  .bp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 1.5rem 0; }
+  .bp-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; }
+  .bp-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; border-radius: 12px 0 0 12px; }
+  .bp-green::before  { background: #0e5830; }
+  .bp-blue::before   { background: #1a3a8c; }
+  .bp-purple::before { background: #48188c; }
+  .bp-teal::before   { background: #085450; }
+  .bp-amber::before  { background: #7a4800; }
+  .bp-rose::before   { background: #7c1a40; }
+  .bp-card .bp-tag   { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.3rem; }
+  .bp-card .bp-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+  .bp-card p { font-size: 14.5px; line-height: 1.65; color: var(--text2); margin-bottom: 0.5rem; }
+  .bp-card p:last-child { margin-bottom: 0; }
+  .bp-card .bp-note  { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.75rem; }
+
+  /* ── NLPU PIPELINE ── */
+  .pipeline-h { display: flex; flex-wrap: wrap; gap: 0; margin: 1.25rem 0; align-items: stretch; }
+  .pipe-stage { background: var(--surface); border: 1px solid var(--border); padding: 0.75rem 1rem; flex: 1; min-width: 100px; text-align: center; position: relative; }
+  .pipe-stage:first-child { border-radius: 8px 0 0 8px; }
+  .pipe-stage:last-child  { border-radius: 0 8px 8px 0; }
+  .pipe-stage + .pipe-stage { border-left: none; }
+  .pipe-stage .ps-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); }
+  .pipe-stage .ps-name { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); margin: 0.2rem 0; }
+  .pipe-stage .ps-ex { font-size: 12px; color: var(--text3); font-style: italic; }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background: var(--surface); border: 1.5px solid var(--border2); border-radius: 10px; padding: 1.5rem 2rem; margin: 2rem 0; }
+  .summary-box h4 { margin-top: 0; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text3); margin-bottom: 1rem; }
+
+  code { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--code-bg); border-radius: 3px; padding: 1px 5px; color: var(--purple); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  .doc-footer { background: var(--surface2); border-top: 1px solid var(--border); padding: 1.5rem 4rem; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text3); display: flex; justify-content: space-between; align-items: center; }
+
+  @media (max-width: 700px) {
+    .doc-header, .toc, .content { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .doc-header h1 { font-size: 1.8rem; }
+    .part-banner { padding-left: 1.5rem; }
+    .pipeline-h { flex-direction: column; }
+    .pipe-stage { border-radius: 0 !important; border-left: 1px solid var(--border) !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Natural Language Processing — Module 1</div>
+  <h1><span>Module 1:</span> Natural Language Understanding</h1>
+  <div class="subtitle">Introduction · Inception &amp; History · Applications · Challenges · Best Practices</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> What is Natural Language?</a>
+    <a href="#s2"><span class="num">2.</span> NLU vs NLP vs NLG</a>
+    <a href="#s3"><span class="num">3.</span> Levels of Language Analysis</a>
+    <a href="#s4"><span class="num">4.</span> NLU Pipeline</a>
+    <a href="#s5"><span class="num">5.</span> Inception — History of NLP</a>
+    <a href="#s6"><span class="num">6.</span> Rise of Deep Learning in NLP</a>
+    <a href="#s7"><span class="num">7.</span> Applications of NLU</a>
+    <a href="#s8"><span class="num">8.</span> Application Deep Dives</a>
+    <a href="#s9"><span class="num">9.</span> Challenges — Linguistic</a>
+    <a href="#s10"><span class="num">10.</span> Challenges — Computational</a>
+    <a href="#s11"><span class="num">11.</span> Challenges — Knowledge &amp; Ethics</a>
+    <a href="#s12"><span class="num">12.</span> Best Practices — Data</a>
+    <a href="#s13"><span class="num">13.</span> Best Practices — Modelling</a>
+    <a href="#s14"><span class="num">14.</span> Best Practices — Evaluation &amp; Deployment</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████████ PART 1: INTRODUCTION ████████████ -->
+<div class="part-banner pb-intro">Part 1 — Introduction to Natural Language Understanding</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-intro">
+    <div class="section-num">Section 1</div>
+    <h2>What is Natural Language?</h2>
+  </div>
+
+  <h3>1.1 Defining Natural Language</h3>
+  <p><strong>Natural language</strong> refers to any language that has evolved naturally in humans through use and repetition without conscious planning or premeditation — as opposed to formal languages (programming languages, mathematics) which are explicitly designed with precise rules. Examples: English, Hindi, Tamil, Mandarin, Arabic — all are natural languages.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">What Makes Language "Natural"?</div>
+    <p>Natural languages are: <strong>Ambiguous</strong> — the same sentence can mean different things in different contexts. <strong>Context-dependent</strong> — meaning shifts based on who is speaking, when, and where. <strong>Evolutionary</strong> — constantly changing, acquiring new words, losing old ones, grammar shifting over decades. <strong>Infinite generative</strong> — a finite set of words and rules can produce infinitely many sentences. These properties make natural language both rich and computationally challenging.</p>
+  </div>
+
+  <h3>1.2 Properties of Natural Language</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Productivity (Creativity):</strong> Humans can understand and produce sentences they have never heard before. "The purple octopus philosophized about breakfast" is a perfectly understandable sentence despite being novel. Computational systems must handle this infinite variety.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Displacement:</strong> Language can refer to things not present — the past, the future, hypotheticals, imaginary entities. "What would have happened if Napoleon had won Waterloo?" — requires reasoning about counterfactuals.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Arbitrariness:</strong> No inherent connection between a word's sound/spelling and its meaning. The word "cat" has no cat-like properties — it is an arbitrary symbol agreed upon by a speech community.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Duality of patterning:</strong> Language is organized at two levels simultaneously — meaningless sounds (phonemes) combine to form meaningful units (morphemes, words), which combine to form sentences. This hierarchical structure enables compositionality.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cultural transmission:</strong> Language is learned socially, not genetically. It is a cultural artifact — understanding a language requires cultural knowledge (idioms, conventions, humor, pragmatics) that is not explicitly stated.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Ambiguity at every level:</strong> Lexical (bank = financial institution OR riverbank), syntactic (I saw the man with the telescope — who has the telescope?), semantic (it's cold here), pragmatic (can you pass the salt? — not a question about ability).</div></li>
+  </ul>
+
+  <h3>1.3 Why is Processing Natural Language Hard for Computers?</h3>
+  <p>Computers excel at formal, precisely defined languages. Natural language was not designed for computers — it evolved for human communication. This creates a fundamental mismatch:</p>
+
+  <table class="compare-table">
+    <tr><th>Formal Language (Python, SQL)</th><th>Natural Language (English, Hindi)</th></tr>
+    <tr><td>Unambiguous — exactly one interpretation per statement</td><td>Deeply ambiguous — multiple interpretations common</td></tr>
+    <tr><td>Context-free — meaning independent of who/when/where</td><td>Context-dependent — meaning changes with speaker, tone, culture</td></tr>
+    <tr><td>Fixed vocabulary and grammar</td><td>Open vocabulary — new words coined daily; grammar has many exceptions</td></tr>
+    <tr><td>No figurative language</td><td>Rich in metaphor, irony, sarcasm, hyperbole, idiom</td></tr>
+    <tr><td>Error-free by design</td><td>Full of errors — typos, grammatical mistakes, slang, abbreviations</td></tr>
+    <tr><td>Meaning is explicit</td><td>Much is implied (pragmatics) — requires world knowledge to understand</td></tr>
+  </table>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-intro">
+    <div class="section-num">Section 2</div>
+    <h2>NLU vs NLP vs NLG — The Three Pillars</h2>
+  </div>
+
+  <h3>2.1 The Triad of Language AI</h3>
+
+  <div class="diagram">
+    <pre>
+  NATURAL LANGUAGE PROCESSING (NLP)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  The broad field of enabling computers to work with human language.
+  Encompasses ALL computational approaches to language — the umbrella term.
+
+  ┌──────────────────────────┐    ┌──────────────────────────┐
+  │  NATURAL LANGUAGE        │    │  NATURAL LANGUAGE        │
+  │  UNDERSTANDING (NLU)     │    │  GENERATION (NLG)        │
+  │                          │    │                          │
+  │  INPUT: Human text/speech│    │  OUTPUT: Human-like text │
+  │  OUTPUT: Machine meaning │    │  INPUT: Machine meaning  │
+  │                          │    │  or data                 │
+  │  "Comprehension"         │    │  "Expression"            │
+  │  Machine reads/listens   │    │  Machine writes/speaks   │
+  │                          │    │                          │
+  │  Tasks:                  │    │  Tasks:                  │
+  │  • Sentiment Analysis    │    │  • Text Summarization    │
+  │  • Named Entity Recog.   │    │  • Machine Translation   │
+  │  • Intent Classification │    │  • Story Generation      │
+  │  • Coreference Resolution│    │  • Report Generation     │
+  │  • Relation Extraction   │    │  • Dialogue Response     │
+  └──────────────────────────┘    └──────────────────────────┘
+
+  Many tasks require BOTH: Machine Translation (NLU source → NLG target)
+                           Chatbots (NLU question → NLG answer)
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — NLP is the umbrella field. NLU handles comprehension (text → meaning). NLG handles generation (meaning → text).</div>
+  </div>
+
+  <h3>2.2 NLU — Natural Language Understanding</h3>
+  <p>NLU is the subfield of NLP focused on <strong>machine comprehension</strong> of human language — extracting structured meaning, intent, entities, relationships, and knowledge from unstructured text or speech.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Input:</strong> Raw, unstructured human language — text, speech transcripts, social media posts, documents.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Output:</strong> Structured, machine-interpretable representations — intent labels, entity types, sentiment scores, knowledge graphs, logical forms.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Core goal:</strong> Bridge the semantic gap between human language and computer-processable structures. Enable machines to "understand" not just recognize patterns in text.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Deep understanding requires:</strong> Syntactic parsing (grammar structure), semantic parsing (meaning), pragmatic interpretation (speaker intent), world knowledge (common sense), discourse coherence (multi-sentence context).</div></li>
+  </ul>
+
+  <h3>2.3 Levels of Understanding</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Surface understanding:</strong> Pattern matching, keyword extraction. Siri recognizing "play music" from keywords alone. Shallow but fast.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Syntactic understanding:</strong> Parsing sentence structure, identifying parts of speech, dependency relations. "The cat chased the dog" — "cat" is the subject, "chased" is the verb, "dog" is the object.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Semantic understanding:</strong> Extracting meaning from words and their combinations. Distinguishing "bat" (cricket) from "bat" (animal) based on context.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Pragmatic understanding:</strong> Interpreting speaker intent beyond literal meaning. "Do you have a pen?" literally asks about possession but pragmatically requests the pen.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Discourse understanding:</strong> Tracking meaning across multiple sentences — pronoun resolution, topic continuity, narrative structure.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Commonsense understanding:</strong> Applying world knowledge to interpret text. "The bottle fell off the shelf. It broke." — we know "it" refers to the bottle and that bottles break when dropped, not shelves.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-intro">
+    <div class="section-num">Section 3</div>
+    <h2>Levels of Language Analysis</h2>
+  </div>
+
+  <h3>3.1 The Six Linguistic Levels</h3>
+  <p>Language is analyzed at multiple levels of abstraction, from the smallest sound units to full texts. NLU systems must handle all these levels simultaneously.</p>
+
+  <table class="compare-table">
+    <tr><th>Level</th><th>Unit of Analysis</th><th>What It Studies</th><th>NLU Tasks</th><th>Example</th></tr>
+    <tr>
+      <td><strong>Phonology</strong></td>
+      <td>Phoneme (sound unit)</td>
+      <td>Sound patterns, pronunciation, prosody</td>
+      <td>Automatic Speech Recognition (ASR), TTS</td>
+      <td>/k/ + /æ/ + /t/ → "cat"</td>
+    </tr>
+    <tr>
+      <td><strong>Morphology</strong></td>
+      <td>Morpheme (meaning unit)</td>
+      <td>Word structure, prefixes/suffixes, inflection</td>
+      <td>Stemming, lemmatization, tokenization</td>
+      <td>"unhappy" = un + happy (prefix + root)</td>
+    </tr>
+    <tr>
+      <td><strong>Syntax</strong></td>
+      <td>Phrase, clause, sentence</td>
+      <td>Grammar rules, sentence structure, parse trees</td>
+      <td>POS tagging, dependency parsing, constituency parsing</td>
+      <td>NP [The cat] VP [sat NP [on the mat]]</td>
+    </tr>
+    <tr>
+      <td><strong>Semantics</strong></td>
+      <td>Word meaning, sentence meaning</td>
+      <td>Meaning of words and their combinations</td>
+      <td>Word sense disambiguation, semantic role labeling, NER</td>
+      <td>"Bank" → financial OR riverbank based on context</td>
+    </tr>
+    <tr>
+      <td><strong>Pragmatics</strong></td>
+      <td>Utterance in context</td>
+      <td>Intended meaning, speech acts, implicature</td>
+      <td>Intent detection, dialogue systems, sarcasm detection</td>
+      <td>"It's cold" → implicit request to close the window</td>
+    </tr>
+    <tr>
+      <td><strong>Discourse</strong></td>
+      <td>Multi-sentence text</td>
+      <td>Coherence, pronoun resolution, structure</td>
+      <td>Coreference resolution, summarization, topic segmentation</td>
+      <td>"Alice greeted Bob. She smiled." → "she" = Alice</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Why All Levels Matter</div>
+    <p>A complete NLU system cannot succeed at just one linguistic level. Sentiment Analysis appears to be a semantic task, but: morphology handles negations ("un-happy"), syntax determines scope ("not very bad"), pragmatics identifies sarcasm ("Oh great, another Monday"), and discourse tracks sentiment across a review (positive beginning, negative ending). Real NLU requires integration across all levels.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-intro">
+    <div class="section-num">Section 4</div>
+    <h2>The NLU Processing Pipeline</h2>
+  </div>
+
+  <h3>4.1 Classic NLU Pipeline</h3>
+  <p>Traditional NLU systems process text through a sequence of steps, each building on the previous one. Modern deep learning systems often collapse these into end-to-end learned transformations, but understanding the pipeline clarifies what must be computed.</p>
+
+  <div class="pipeline-h">
+    <div class="pipe-stage">
+      <div class="ps-num">01</div>
+      <div class="ps-name">Raw Text Input</div>
+      <div class="ps-ex">"Apple Inc. hired 5000 workers."</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">02</div>
+      <div class="ps-name">Sentence Splitting</div>
+      <div class="ps-ex">Split on ".", "!", "?"</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">03</div>
+      <div class="ps-name">Tokenization</div>
+      <div class="ps-ex">["Apple", "Inc.", "hired", "5000", "workers", "."]</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">04</div>
+      <div class="ps-name">POS Tagging</div>
+      <div class="ps-ex">NNP NNP VBD CD NNS .</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">05</div>
+      <div class="ps-name">Parsing</div>
+      <div class="ps-ex">Dependency / Constituency tree</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">06</div>
+      <div class="ps-name">NER</div>
+      <div class="ps-ex">[Apple Inc.]=ORG [5000]=NUM</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">07</div>
+      <div class="ps-name">Coreference</div>
+      <div class="ps-ex">Resolve pronouns across sentences</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">08</div>
+      <div class="ps-name">Semantic Role Labeling</div>
+      <div class="ps-ex">Agent=Apple, Action=hire, Number=5000</div>
+    </div>
+  </div>
+
+  <h3>4.2 Key Pipeline Components Explained</h3>
+
+  <h4>Tokenization</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Splitting raw text into individual units (tokens). Can be words, subwords, characters, or sentences. The first and most fundamental step.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Challenges:</strong> Contractions ("don't" → ["don", "'t"]?), hyphens ("state-of-the-art" → one or four tokens?), URLs, hashtags, emojis, language-specific rules (no spaces in Chinese/Japanese).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Subword tokenization (modern standard):</strong> BPE (Byte Pair Encoding), WordPiece (BERT), SentencePiece (T5, LLaMA). Split rare words into subword units: "unhappiness" → ["un", "##happiness"]. Handles unknown words, multilingual text, morphologically rich languages without a fixed vocabulary.</div></li>
+  </ul>
+
+  <h4>Part-of-Speech (POS) Tagging</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Assign a grammatical category (noun, verb, adjective, etc.) to each token. Penn Treebank tagset: 45 tags (NNP=proper noun, VBD=past tense verb, etc.).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Why needed:</strong> Disambiguates words — "bank" is NN (noun) in "the river bank" and VB (verb) in "bank the cheque". POS tags inform parsing, NER, and many downstream tasks.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Modern approach:</strong> BiLSTM+CRF or BERT fine-tuned. Accuracy ~97% on standard English. Harder for social media, code-switching, low-resource languages.</div></li>
+  </ul>
+
+  <h4>Named Entity Recognition (NER)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Identify and classify named entities: Person (PER), Organization (ORG), Location (LOC), Date, Money, Product, etc.</div></li>
+    <li><span class="bullet">▸</span><div><strong>BIO tagging:</strong> B-PER (beginning of person entity), I-PER (inside person entity), O (outside any entity). Encodes entity spans as token-level labels.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Challenges:</strong> Ambiguity ("Jordan" = person or country?), nested entities ([WHO [Geneva]] → organization within location), emerging entities (new company names, product names not in training data).</div></li>
+  </ul>
+
+  <h4>Dependency Parsing</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Definition:</strong> Determine grammatical relationships between words — which word modifies which. Produces a directed tree where each edge is a labeled dependency relation (nsubj, dobj, amod, etc.).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Example:</strong> "The quick brown fox jumps." → fox→jumps (nsubj), quick→fox (amod), brown→fox (amod), The→fox (det).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Information extraction, question answering, machine translation. The dependency tree reveals WHO did WHAT to WHOM — the core of semantic understanding.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 2: INCEPTION / HISTORY ████████████ -->
+<div class="part-banner pb-inc">Part 2 — Inception: History and Evolution of NLU</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-inc">
+    <div class="section-num">Section 5</div>
+    <h2>Inception — A History of NLP and NLU</h2>
+  </div>
+
+  <h3>5.1 From Rules to Learning — The Full Timeline</h3>
+
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="ti-year">1950</div>
+      <div class="ti-title">Turing Test — The Foundational Vision</div>
+      <div class="ti-desc">Alan Turing proposed the "Imitation Game" (Turing Test): can a machine produce text indistinguishable from a human? This defined the NLU challenge — not just processing text, but <em>understanding</em> it well enough to converse naturally. Set the north star for the field.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">1954</div>
+      <div class="ti-title">Georgetown-IBM Experiment — First MT</div>
+      <div class="ti-desc">First public machine translation demonstration: 60 Russian sentences automatically translated to English using 6 grammar rules and 250 words. Overly optimistic claims followed ("3–5 years to solve MT"). Began the first wave of NLP funding, followed by disillusionment (ALPAC report 1966 cut MT funding).</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">1960s</div>
+      <div class="ti-title">ELIZA — Rule-Based Conversational Agent</div>
+      <div class="ti-desc">Joseph Weizenbaum's ELIZA (1966) simulated a Rogerian psychotherapist using pattern matching and scripted responses. Famous for the "ELIZA effect" — users attributed understanding and empathy to a program with no actual comprehension. Showed both the promise and deception of surface-level language processing.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">1970s–80s</div>
+      <div class="ti-title">Symbolic NLP — Grammar-Based Systems</div>
+      <div class="ti-desc">SHRDLU (Winograd, 1972): conversational agent in a toy "blocks world" — parsed English commands to manipulate virtual blocks. Succeeded because the domain was closed and fully defined. Showed limitations: symbolic approaches break down in open domains. This era also produced formal linguistics frameworks (Chomsky's transformational grammar, LFG, HPSG) and expert systems for language.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">1980s–90s</div>
+      <div class="ti-title">Statistical NLP — Corpus-Based Revolution</div>
+      <div class="ti-desc">IBM's statistical machine translation models (Brown et al., 1988–1990) used large parallel corpora and probability theory instead of hand-coded rules. N-gram language models became standard. Hidden Markov Models for POS tagging and speech recognition. The field shifted from linguistics-driven to data-driven. Key datasets: Penn Treebank (1992), WordNet (1995).</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">1990s–2000s</div>
+      <div class="ti-title">Machine Learning Methods — SVMs, MaxEnt</div>
+      <div class="ti-desc">Support Vector Machines, Maximum Entropy models, Conditional Random Fields (CRFs) dominated NLP. First successful NER systems. Shared tasks and benchmarks (CoNLL) standardized evaluation. Web crawling provided massive text data. Google's PageRank and early search engines applied statistical NLP at scale.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">2003–2013</div>
+      <div class="ti-title">Neural Language Models — Early Deep NLP</div>
+      <div class="ti-desc">Bengio et al. (2003): first neural probabilistic language model — word embeddings emerge as a by-product. Collobert &amp; Weston (2008): unified neural architecture for NLP tasks. Word2Vec (Mikolov, 2013): efficient, scalable word embeddings capturing semantic relationships (king − man + woman ≈ queen). GloVe (2014). The field began transitioning from feature engineering to representation learning.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">2013–2017</div>
+      <div class="ti-title">Deep Learning NLP — RNNs and Attention</div>
+      <div class="ti-desc">LSTM-based Seq2Seq models (Sutskever et al., 2014) revolutionized machine translation. Bahdanau attention (2015) solved the bottleneck problem. BiLSTM+CRF became the standard for sequence labeling. Convolutional sentence classifiers (Kim, 2014). ELMo (2018): first contextual word embeddings from biLSTM language models. The idea that pre-training on language data could transfer to downstream tasks began to crystallize.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">2017</div>
+      <div class="ti-title">"Attention Is All You Need" — The Transformer</div>
+      <div class="ti-desc">Vaswani et al. introduced the Transformer architecture, replacing RNNs with self-attention. Parallelizable, captures long-range dependencies in O(1) layers (not O(n) for RNNs). Immediately became the new standard for machine translation and was soon applied to all NLP tasks. This paper arguably triggered the modern era of NLP.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">2018</div>
+      <div class="ti-title">BERT and the Pre-training Revolution</div>
+      <div class="ti-desc">BERT (Devlin et al., Google) demonstrated that pre-training a deep bidirectional Transformer on massive unlabeled text (Masked Language Modeling + Next Sentence Prediction), then fine-tuning on task-specific labeled data, achieved state-of-the-art on 11 NLP benchmarks simultaneously. This established "pre-train then fine-tune" as the dominant NLP paradigm. GPT (OpenAI, 2018) showed the same worked for autoregressive language modeling.</div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="ti-year">2020–Present</div>
+      <div class="ti-title">Large Language Models — The Foundation Model Era</div>
+      <div class="ti-desc">GPT-3 (2020, 175B params): few-shot in-context learning — tasks specified in natural language, no gradient updates needed. ChatGPT/InstructGPT (2022): RLHF aligns LLMs with human preferences. GPT-4, Claude, Gemini, LLaMA, Mistral — the era of foundation models. Modern LLMs pass the Turing Test in many settings, answer medical/legal questions, write code, reason about multi-step problems. The boundary between NLU and NLG has blurred — the same model does both.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-inc">
+    <div class="section-num">Section 6</div>
+    <h2>The Rise of Deep Learning in NLU</h2>
+  </div>
+
+  <h3>6.1 Why Deep Learning Transformed NLU</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>End-to-end learning:</strong> Feature engineering — the dominant effort in classical NLP — was replaced by automatic feature discovery. A deep model learned its own task-relevant representations from raw text, often surpassing hand-crafted features.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Distributed representations:</strong> Dense word embeddings encode semantic similarity — "cat" and "kitten" are close in embedding space. Classical approaches (one-hot) had no notion of similarity. This allows generalizing from training to test examples with similar meaning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transfer learning at scale:</strong> Pre-train once on terabytes of text → fine-tune on any task. BERT, GPT and their successors encoded vast linguistic and world knowledge from pre-training, which transferred to tasks with only hundreds of labeled examples.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Long-range dependencies:</strong> Transformers with self-attention handle dependencies across arbitrarily long contexts. RNNs struggled with sequences longer than ~50 tokens. Transformers process thousands of tokens simultaneously.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Multilingual understanding:</strong> A single model like mBERT or XLM-R, trained on 104 languages, understands all of them. Fine-tune in English → works in Hindi. Zero-shot cross-lingual transfer was impossible with classical methods.</div></li>
+  </ul>
+
+  <h3>6.2 Paradigm Shifts in NLU</h3>
+
+  <table class="compare-table">
+    <tr><th>Era</th><th>Paradigm</th><th>Knowledge Source</th><th>Bottleneck</th></tr>
+    <tr>
+      <td><strong>Rule-Based (1950s–80s)</strong></td>
+      <td>Hand-crafted grammar rules and lexicons</td>
+      <td>Linguist expertise</td>
+      <td>Coverage — rules can't cover all cases; brittleness</td>
+    </tr>
+    <tr>
+      <td><strong>Statistical (1980s–2000s)</strong></td>
+      <td>Probabilistic models trained on corpora</td>
+      <td>Labeled corpora + probability theory</td>
+      <td>Feature engineering — which features capture meaning?</td>
+    </tr>
+    <tr>
+      <td><strong>Early Deep Learning (2013–2017)</strong></td>
+      <td>Word embeddings + RNN/CNN sequence models</td>
+      <td>Large unlabeled corpora + labeled task data</td>
+      <td>Labeled data — each task needed its own large dataset</td>
+    </tr>
+    <tr>
+      <td><strong>Pre-trained Transformers (2018–present)</strong></td>
+      <td>Pre-train on massive unlabeled text → fine-tune</td>
+      <td>Web-scale text + small task-specific labels</td>
+      <td>Compute — training frontier models requires billions in infrastructure</td>
+    </tr>
+    <tr>
+      <td><strong>Foundation Models / LLMs (2020–present)</strong></td>
+      <td>Prompt/RLHF-aligned giant models for all tasks</td>
+      <td>Internet-scale text + human feedback</td>
+      <td>Alignment, safety, hallucination, factual accuracy</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ████████████ PART 3: APPLICATIONS ████████████ -->
+<div class="part-banner pb-app">Part 3 — Applications of Natural Language Understanding</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-app">
+    <div class="section-num">Section 7</div>
+    <h2>Applications of NLU — Overview</h2>
+  </div>
+
+  <h3>7.1 Application Landscape</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Conversational AI</div>
+      <p>Chatbots, virtual assistants (Alexa, Siri, Google Assistant). Intent detection + entity extraction + dialogue management. NLU extracts what the user wants; NLG formulates the response.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Machine Translation</div>
+      <p>Automatic translation between languages. Google Translate, DeepL. Requires deep NLU of source language. 100+ language pairs. Enables global communication.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Sentiment Analysis</div>
+      <p>Determine opinion polarity (positive/negative/neutral) or emotion (joy, anger, fear). Used in brand monitoring, product feedback, financial market prediction, political polling.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Information Extraction</div>
+      <p>NER, relation extraction, event detection. Extract structured facts from unstructured text. "Apple Inc. acquired Beats Electronics for $3B in 2014." → (Apple, acquired, Beats, $3B, 2014).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Question Answering</div>
+      <p>Answer natural language questions from documents or knowledge bases. Reading comprehension (SQuAD), open-domain QA (DrQA), knowledge-grounded QA. Core capability of modern LLMs.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Text Summarization</div>
+      <p>Extract or generate concise summaries of long documents. News article → 3-sentence summary. Scientific paper → abstract. Legal document → key points. Extractive and abstractive approaches.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Search &amp; Information Retrieval</div>
+      <p>Understand query intent, match to relevant documents. Semantic search goes beyond keyword matching — understands meaning. Google, Bing, enterprise search. Dense retrieval with BERT embeddings.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Healthcare NLU</div>
+      <p>Clinical note extraction, medical coding (ICD), drug-drug interaction detection, radiology report analysis, patient triage chatbots. High stakes — errors have life-or-death consequences.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Legal NLU</div>
+      <p>Contract review, legal research, e-discovery (relevant document identification), compliance checking. Enormous time savings for legal professionals. Requires precision — ambiguity is expensive.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Code Intelligence</div>
+      <p>Natural language → code generation (GitHub Copilot, GPT-4). Code documentation. Bug detection from error messages. NLU of requirements specifications to generate test cases.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Education Technology</div>
+      <p>Automated essay scoring, grammar correction (Grammarly), language tutoring (Duolingo chatbots), reading comprehension assessment, student question answering.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Content Moderation</div>
+      <p>Detect hate speech, misinformation, spam, toxicity, NSFW content at scale. Protect platform users. Requires cultural context understanding. Extremely challenging due to context-dependence and evolving language.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-app">
+    <div class="section-num">Section 8</div>
+    <h2>Application Deep Dives</h2>
+  </div>
+
+  <h3>8.1 Conversational AI — Intent and Entity Extraction</h3>
+  <p>The backbone of every voice assistant and chatbot is the ability to understand what the user wants (intent) and extract the relevant parameters (entities):</p>
+
+  <div class="diagram">
+    <pre>
+  User utterance: "Book me a flight from Mumbai to Delhi on December 25th"
+
+  INTENT CLASSIFICATION:
+  → Intent: book_flight    (vs. search_flight, cancel_flight, check_status)
+  → Confidence: 0.97
+
+  ENTITY EXTRACTION (Slot Filling):
+  → from_location:  "Mumbai"     [CITY]
+  → to_location:    "Delhi"      [CITY]
+  → date:           "December 25th" → 2024-12-25  [DATE, normalized]
+
+  DIALOGUE STATE (tracked across turns):
+  → class: ?           (not mentioned — system must ask)
+  → num_passengers: ?  (not mentioned — system must ask)
+
+  RESPONSE GENERATION (NLG):
+  → "Great! I found flights from Mumbai to Delhi on December 25th.
+     How many passengers and what class would you prefer?"
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Conversational AI pipeline. NLU extracts intent and entities; dialogue manager tracks state; NLG generates response.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Intent classification:</strong> Multi-class classification over a fixed set of intents. BERT fine-tuned on labeled utterances. Needs to handle paraphrases ("book", "reserve", "get me") and out-of-scope utterances.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Entity extraction (slot filling):</strong> Sequence labeling with BIO tags. Extract values for predefined slots. Can be fine-tuned BERT or joint intent+entity model.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dialogue management:</strong> Tracks conversation state across turns. Decides when to ask for clarification, when enough information is gathered to act. Traditional: finite state machines. Modern: neural dialogue models or LLMs with conversation history.</div></li>
+  </ul>
+
+  <h3>8.2 Sentiment Analysis — Beyond Positive/Negative</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Document-level:</strong> Classify entire review as positive/negative/neutral. Binary: IMDB reviews. Multi-class: Amazon 1–5 stars. Relatively solved by BERT fine-tuning (95%+ accuracy on standard benchmarks).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Aspect-based sentiment analysis (ABSA):</strong> Identify sentiment for specific aspects. "The food was great but the service was terrible and the prices were reasonable." → food: positive, service: negative, prices: neutral. Much harder — requires NER for aspects + sentiment association.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Emotion detection:</strong> Beyond polarity — detect specific emotions: joy, sadness, anger, fear, surprise, disgust. Multi-label (a text can express multiple emotions). Used in mental health monitoring, customer experience analysis.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Financial sentiment:</strong> FinBERT pre-trained on financial news. Sentiment drives stock price prediction models. Domain matters — "profit warning" is negative in finance, "warning" alone may be neutral in general text.</div></li>
+  </ul>
+
+  <h3>8.3 Question Answering — Types and Approaches</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Extractive QA:</strong> Given a context passage, find the exact span that answers the question. BERT+SQuAD: predict start and end token positions of the answer span. Fast, interpretable, faithful to source.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Abstractive QA:</strong> Generate a free-form answer that may not appear verbatim in the source. Requires NLG component. T5, GPT-4 style. Can synthesize from multiple sources but may hallucinate.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Open-domain QA:</strong> No context passage given — the model must retrieve relevant information from a large corpus (Wikipedia, web) then extract/generate the answer. Retrieval-Augmented Generation (RAG) is the dominant approach: dense retriever + reader.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Knowledge-based QA:</strong> Answer by querying a structured knowledge graph (Freebase, Wikidata). Natural language → SPARQL query. Can answer factual questions with guaranteed accuracy (no hallucination from the knowledge base).</div></li>
+  </ul>
+
+  <h3>8.4 Text Summarization</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Extractive:</strong> Select the most important sentences from the source text. BertSum: BERT sentence encoder + classifier (is this sentence summary-worthy?). Simple, faithful, but lacks coherence — selected sentences may not flow naturally.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Abstractive:</strong> Generate a new text that captures the main points. BART/T5 fine-tuned on CNN/DailyMail, XSum. Can produce fluent, concise summaries. Risk of hallucination — generating facts not in the source.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Evaluation:</strong> ROUGE-N (n-gram recall vs reference), ROUGE-L (longest common subsequence). BERTScore (semantic similarity using BERT embeddings). Human evaluation remains gold standard.</div></li>
+  </ul>
+</div>
+
+<!-- ████████████ PART 4: CHALLENGES ████████████ -->
+<div class="part-banner pb-chal">Part 4 — Challenges in NLU</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-chal">
+    <div class="section-num">Section 9</div>
+    <h2>Linguistic Challenges</h2>
+  </div>
+
+  <h3>9.1 The Core Linguistic Hurdles</h3>
+
+  <div class="chal-grid">
+
+    <div class="chal-card">
+      <div class="cc-num">01</div>
+      <div class="cc-title">Ambiguity</div>
+      <p>The most pervasive challenge in NLU. Language is ambiguous at every level and humans resolve it effortlessly using context — computers struggle.</p>
+      <p><strong>Lexical ambiguity:</strong> "bass" (fish/musical), "crane" (bird/machine), "bank" (financial/river). <strong>Syntactic ambiguity:</strong> Different parse trees, same words. <strong>Semantic ambiguity:</strong> Multiple meanings at sentence level. <strong>Pragmatic ambiguity:</strong> Same utterance, different intentions.</p>
+      <code>"I saw the man with the telescope" — who has the telescope?</code>
+      <code>"Flying planes can be dangerous" — flying AS planes, or flying IN planes?</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">02</div>
+      <div class="cc-title">Coreference Resolution</div>
+      <p>Identifying which mentions in text refer to the same real-world entity. Pronouns (he, she, it, they), demonstratives (this, that), noun phrases can all co-refer.</p>
+      <p>The Winograd Schema Challenge specifically tests coreference requiring world knowledge:</p>
+      <code>"The trophy didn't fit in the suitcase because it was too big."</code>
+      <p>"It" = the trophy (logic: too big to fit). Replace "big" with "small" → "it" = the suitcase. Trivial for humans; hard for NLP systems without world knowledge.</p>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">03</div>
+      <div class="cc-title">Figurative Language</div>
+      <p>Metaphor, irony, sarcasm, hyperbole, idioms — language where literal meaning ≠ intended meaning. Ubiquitous in human communication; largely absent from training data labels.</p>
+      <p><strong>Sarcasm:</strong> "Oh great, another software update that breaks everything!" (negative sentiment, positive words). <strong>Idiom:</strong> "Kick the bucket" ≠ physically kicking a bucket. <strong>Metaphor:</strong> "Time is money" — not literally.</p>
+      <code>"I'm so hungry I could eat a horse." → literal NLU fails completely.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">04</div>
+      <div class="cc-title">Discourse and Coherence</div>
+      <p>Understanding text as a coherent whole — not just independent sentences. Topics shift, information is presupposed, implicit connections must be inferred.</p>
+      <p><strong>Discourse relations:</strong> Causality, contrast, elaboration, temporal ordering between sentences. <strong>Topic segmentation:</strong> Where does one topic end and another begin? <strong>Discourse coherence:</strong> Is this paragraph internally consistent? Does it make sense as a whole?</p>
+      <code>"He opened the door. She walked in. A cat followed her."</code>
+      <p>Who is "she"? What door? Requires tracking entities across sentences.</p>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">05</div>
+      <div class="cc-title">Pragmatics and Implicature</div>
+      <p>What is meant beyond what is literally said. Grice's maxims of conversation (quantity, quality, relation, manner) explain how humans communicate far more than they explicitly state.</p>
+      <p><strong>Speech acts:</strong> Questions, requests, promises, apologies — the same grammatical form serves different communicative functions. "It's cold in here" = request to close the window.</p>
+      <code>"Can you pass the salt?" — not a question about physical ability.</code>
+      <code>"A: Did you eat the cake? B: I was in the library all day." → B implies no, but never says no.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">06</div>
+      <div class="cc-title">Code Switching and Multilingualism</div>
+      <p>Real-world users mix languages within the same sentence or conversation ("Hinglish", "Spanglish"). Social media is full of romanized scripts, dialect variations, and code-switching.</p>
+      <p>NLU systems trained on standard "clean" text fail catastrophically on code-switched text. Labeled data for mixed-language scenarios is extremely scarce.</p>
+      <code>"Kal main library gaya tha to meet my professor." (Hindi-English mix)</code>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-chal">
+    <div class="section-num">Section 10</div>
+    <h2>Computational and Data Challenges</h2>
+  </div>
+
+  <div class="chal-grid">
+
+    <div class="chal-card">
+      <div class="cc-num">07</div>
+      <div class="cc-title">Data Scarcity for Low-Resource Languages</div>
+      <p>Of the world's ~7,000 languages, most NLU research focuses on ~10 high-resource languages (English, Chinese, German, French...). Thousands of languages have virtually no labeled NLU data.</p>
+      <p><strong>Low-resource languages:</strong> Swahili, Tamil, Yoruba, Bengali, Nepali — hundreds of millions of speakers but minimal NLP tools. Models trained on English perform poorly when directly applied. Zero-shot cross-lingual transfer helps but gaps remain large.</p>
+      <code>English NER F1: ~93%. Low-resource language NER: ~50–60% at best.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">08</div>
+      <div class="cc-title">Annotation Bias and Label Quality</div>
+      <p>All supervised NLU systems depend on labeled data — but labels reflect annotator biases, ambiguities in guidelines, and cultural assumptions. Inter-annotator agreement is rarely 100%.</p>
+      <p>Sentiment annotation: "The movie was predictable" — positive (enjoyable familiarity) or negative (boring)? Depends on annotator. Dataset biases become model biases. Models inherit the systematic errors of their training labels.</p>
+      <code>SemEval sentiment datasets show inter-annotator agreement ~70–80% for sentiment — meaning 20–30% of labels are disputed even among human experts.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">09</div>
+      <div class="cc-title">Domain Shift and Generalization</div>
+      <p>Models trained on one domain (news articles) often fail on another (medical reports, social media, legal texts, scientific papers). Vocabulary, writing style, and linguistic patterns differ dramatically.</p>
+      <p>A NER model trained on news correctly tags "Apple" as ORG, but in a recipe it may incorrectly tag it as ORG instead of PRODUCT. Out-of-domain performance can drop 20–30% compared to in-domain.</p>
+      <code>BioBERT for biomedical NER significantly outperforms general BERT — domain-specific pre-training is crucial.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">10</div>
+      <div class="cc-title">Hallucination and Factual Accuracy</div>
+      <p>Large language models generate fluent, confident text that is factually wrong — "hallucination." They cannot distinguish what they know from what they fabricate. For NLU + generation tasks (QA, summarization), hallucinated answers are dangerous.</p>
+      <p><strong>Types:</strong> Factual (wrong dates, names, numbers), Faithful (contradicts source document in summarization), Contextual (contradicts earlier parts of the conversation).</p>
+      <code>GPT-3 asked "Who invented the telephone?" → sometimes "Alexander Graham Bell" (correct) sometimes "Thomas Edison" (wrong) with similar confidence.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">11</div>
+      <div class="cc-title">Computational Cost and Scalability</div>
+      <p>Modern NLU models (BERT-large: 340M params, GPT-3: 175B params, GPT-4: ~1T params) require enormous compute for training and inference. Training GPT-3 cost ~$4.6M in compute alone. Inference cost at scale is prohibitive for many organizations.</p>
+      <p><strong>Solutions:</strong> Knowledge distillation (DistilBERT: 40% smaller, retains 97% performance), quantization (INT8: 4× faster), pruning, LoRA (fine-tune with 0.1% params). Edge deployment remains very challenging for large models.</p>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">12</div>
+      <div class="cc-title">Long Document Understanding</div>
+      <p>Standard Transformer attention is O(n²) in sequence length. BERT processes 512 tokens max. Many real tasks need much longer context — legal contracts (50k+ tokens), scientific papers, novels.</p>
+      <p><strong>Solutions:</strong> Longformer (local+global sparse attention), BigBird (random+local+global), hierarchical models (encode paragraphs, then document), sliding window approaches. GPT-4 Turbo: 128k token context. Still challenging for very long reasoning chains.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-chal">
+    <div class="section-num">Section 11</div>
+    <h2>Knowledge, Ethics and Societal Challenges</h2>
+  </div>
+
+  <div class="chal-grid">
+
+    <div class="chal-card">
+      <div class="cc-num">13</div>
+      <div class="cc-title">Commonsense and World Knowledge</div>
+      <p>Understanding language often requires knowledge about the world that is never stated explicitly in text — "common sense." Current models learn statistical patterns but lack grounded commonsense reasoning.</p>
+      <p>Winogrande, CommonsenseQA, HellaSwag benchmarks test commonsense. LLMs have improved dramatically but still fail on novel scenarios requiring causal, physical, or social reasoning that deviates from training data patterns.</p>
+      <code>"The man walked into the glass door. He got a bruise." → glass doors are hard, people can't walk through them, bruises come from impacts. All implicit.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">14</div>
+      <div class="cc-title">Bias and Fairness</div>
+      <p>NLU models trained on internet text inherit and amplify societal biases — gender, racial, religious, cultural. Models associate "nurse" with women, "engineer" with men. May perform worse for minority dialects (AAVE), non-native English, or underrepresented cultures.</p>
+      <p><strong>Types:</strong> Representational bias (stereotyped associations), Performance bias (lower accuracy for some groups), Allocational bias (unfair resource distribution from model outputs). Measuring and mitigating bias remains an open research problem.</p>
+      <code>GPT: "The doctor said to his patient..." → GPT completes with male pronouns. "The nurse told her patient..." → female pronouns. Reflects training data biases.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">15</div>
+      <div class="cc-title">Privacy and Security</div>
+      <p>NLU systems trained on personal data (emails, medical records, private conversations) may memorize and leak sensitive information. LLMs have been shown to reproduce training data verbatim when prompted appropriately.</p>
+      <p><strong>Privacy attacks:</strong> Membership inference (was this text in the training data?), training data extraction, attribute inference. <strong>Adversarial attacks:</strong> Subtle text perturbations cause confident misclassifications. <strong>Prompt injection:</strong> Malicious instructions injected into user inputs override system instructions.</p>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">16</div>
+      <div class="cc-title">Temporal Knowledge Cutoff</div>
+      <p>NLU models have a training data cutoff date — they are unaware of events, new entities, or changed facts after this date. A model trained on data up to 2021 doesn't know about 2023 events.</p>
+      <p><strong>Solutions:</strong> Retrieval-Augmented Generation (RAG) — retrieve current information at inference time. Continual learning — update model with new data without catastrophic forgetting. Frequent re-training. Each approach has costs and limitations.</p>
+      <code>"Who is the current CEO of OpenAI?" → incorrect after leadership changes if model wasn't updated.</code>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">17</div>
+      <div class="cc-title">Interpretability and Explainability</div>
+      <p>Large Transformer-based NLU models are black boxes — they produce outputs but cannot explain their reasoning in a way that satisfies regulatory or scientific standards. For high-stakes applications (medical diagnosis, legal judgment, loan approval), unexplained decisions are unacceptable.</p>
+      <p>LIME, SHAP, Attention visualization, Grad-CAM for text, Integrated Gradients — all provide approximate explanations but none are fully satisfying for complex multi-hop reasoning. "Attention is not explanation" controversy.</p>
+    </div>
+
+    <div class="chal-card">
+      <div class="cc-num">18</div>
+      <div class="cc-title">Evaluation and Benchmarks</div>
+      <p>As models improve, they "saturate" benchmarks — achieving near-human performance on GLUE, SuperGLUE, SQuAD. But high benchmark scores don't always translate to real-world understanding. Models exploit statistical shortcuts (artifacts) rather than learning the intended skill.</p>
+      <p><strong>Annotation artifacts:</strong> NLI datasets contain lexical cues (negation → contradiction) that models exploit without reasoning. True understanding requires benchmarks with no exploitable shortcuts — an unsolved problem in NLU evaluation design.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ████████████ PART 5: BEST PRACTICES ████████████ -->
+<div class="part-banner pb-best">Part 5 — Best Practices in NLU</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-best">
+    <div class="section-num">Section 12</div>
+    <h2>Best Practices — Data</h2>
+  </div>
+
+  <div class="bp-grid">
+
+    <div class="bp-card bp-green">
+      <div class="bp-tag">Data Collection</div>
+      <div class="bp-title">Invest Heavily in Data Quality</div>
+      <p><strong>Principle:</strong> In NLU, data quality matters more than model sophistication. A simple model on high-quality data consistently outperforms a complex model on noisy data.</p>
+      <p><strong>Steps:</strong> Define annotation guidelines with concrete examples before labeling begins. Pilot with a small batch, compute inter-annotator agreement (Cohen's Kappa ≥ 0.7 is acceptable). Resolve disagreements through adjudication — do not discard disputed cases, they often reveal genuinely ambiguous instances.</p>
+      <div class="bp-note">Tool tip: Use Label Studio, Prodigy, or Scale AI for annotation management. Always version your datasets.</div>
+    </div>
+
+    <div class="bp-card bp-blue">
+      <div class="bp-tag">Data Preprocessing</div>
+      <div class="bp-title">Task-Appropriate Preprocessing</div>
+      <p><strong>Principle:</strong> Preprocessing should preserve task-relevant signals. Over-cleaning loses important information.</p>
+      <p><strong>Do:</strong> Lowercase (usually), handle special characters, normalize Unicode, sentence tokenization with sentence-transformers or NLTK. Handle contractions consistently.</p>
+      <p><strong>Don't:</strong> Remove stopwords for deep learning models (they hurt BERT-style models). Stem aggressively (use lemmatization instead). Remove punctuation for models that understand it (e.g., "!" matters for sentiment).</p>
+      <div class="bp-note">For Transformers: let the subword tokenizer handle most normalization — trust the tokenizer.</div>
+    </div>
+
+    <div class="bp-card bp-purple">
+      <div class="bp-tag">Data Augmentation</div>
+      <div class="bp-title">Augment Strategically for Low-Resource Tasks</div>
+      <p><strong>When to use:</strong> Fewer than ~1000 labeled examples per class. Highly imbalanced classes. Domain transfer from related datasets.</p>
+      <p><strong>Text augmentation techniques:</strong> Back-translation (EN→FR→EN via Google Translate). Synonym substitution with WordNet or BERT-masked-predictions. Paraphrase generation using T5. EDA (Easy Data Augmentation): random swap, random deletion, random insertion. Mixup in embedding space.</p>
+      <p><strong>Caution:</strong> Augment only training set — never validation or test. Verify augmented samples are correctly labeled — some augmentations change the label.</p>
+    </div>
+
+    <div class="bp-card bp-teal">
+      <div class="bp-tag">Train/Val/Test Split</div>
+      <div class="bp-title">Split for Real-World Generalization</div>
+      <p><strong>Random split pitfall:</strong> For NLU, random splits may put lexically similar sentences in train and test — the model appears to generalize but is actually exploiting lexical overlap.</p>
+      <p><strong>Better approaches:</strong> Speaker/author split (different documents by different authors in test). Temporal split (test on data from a later time period). Topic split (test on unseen topics). These simulate real deployment where the model sees new contexts.</p>
+      <p><strong>For imbalanced classes:</strong> Use stratified splits to ensure each class is proportionally represented in each set.</p>
+    </div>
+
+    <div class="bp-card bp-amber">
+      <div class="bp-tag">Domain Knowledge</div>
+      <div class="bp-title">Leverage Domain-Specific Resources</div>
+      <p><strong>Principle:</strong> General-purpose models often fail in specialized domains. Domain expertise should inform feature design, training data selection, and evaluation.</p>
+      <p><strong>Domain-specific pre-training:</strong> BioBERT (biomedical text), ClinicalBERT (clinical notes), LegalBERT (legal text), FinBERT (financial news). These dramatically outperform general BERT on domain-specific NLU tasks.</p>
+      <p><strong>Domain lexicons:</strong> Incorporate medical ontologies (SNOMED-CT, UMLS), legal glossaries, financial terminology into models or as features. Human expert review of model outputs catches domain-specific errors early.</p>
+    </div>
+
+    <div class="bp-card bp-rose">
+      <div class="bp-tag">Bias Mitigation</div>
+      <div class="bp-title">Audit and Mitigate Dataset Bias</div>
+      <p><strong>Before training:</strong> Analyze dataset for demographic representation, label distribution, annotation artifacts. Tools: Checklist, WinoBias, StereoSet. Remove or reweight biased samples.</p>
+      <p><strong>During training:</strong> Adversarial debiasing (train a debiaser to remove sensitive attributes from representations). Re-weighting loss by demographic group. Counterfactual data augmentation (replace gendered terms and relabel).</p>
+      <p><strong>After training:</strong> Disaggregated evaluation — measure performance by demographic group separately. If gaps exist, investigate and address before deployment.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-best">
+    <div class="section-num">Section 13</div>
+    <h2>Best Practices — Modelling</h2>
+  </div>
+
+  <div class="bp-grid">
+
+    <div class="bp-card bp-green">
+      <div class="bp-tag">Model Selection</div>
+      <div class="bp-title">Start Simple, Scale with Evidence</div>
+      <p><strong>Principle:</strong> The best model is the simplest one that solves the problem. Complex models are harder to debug, deploy, and maintain. Start with a baseline, beat it with evidence, not intuition.</p>
+      <p><strong>Recommended progression:</strong> (1) Baseline: logistic regression on TF-IDF. (2) Word embeddings + BiLSTM. (3) BERT fine-tuned. (4) Domain-specific BERT. (5) Large LLM (GPT-4, LLaMA) only if smaller models are insufficient.</p>
+      <p>If BERT already achieves 95% accuracy, don't spend GPU time fine-tuning a 70B parameter model.</p>
+    </div>
+
+    <div class="bp-card bp-blue">
+      <div class="bp-tag">Pre-training &amp; Fine-tuning</div>
+      <div class="bp-title">Transfer Learning Strategy</div>
+      <p><strong>Pre-trained model selection:</strong> Match the domain and language — don't use English BERT for Hindi text. Check model card for training data and known limitations.</p>
+      <p><strong>Fine-tuning best practices:</strong> Use small learning rate (2e-5 to 5e-5). Fine-tune all layers, not just the head. Warm up learning rate for first 6–10% of steps. Gradient clipping (max_norm=1.0) prevents exploding gradients. Use early stopping on validation metric.</p>
+      <p><strong>Catastrophic forgetting:</strong> Gradual unfreezing (fine-tune head first, then progressively unfreeze deeper layers) helps preserve pre-trained representations in low-data scenarios.</p>
+    </div>
+
+    <div class="bp-card bp-purple">
+      <div class="bp-tag">Regularization</div>
+      <div class="bp-title">Prevent Overfitting in NLU Models</div>
+      <p><strong>For Transformer models:</strong> Dropout (default 0.1 in BERT). Label smoothing (0.1): instead of hard 0/1 labels, use 0.1/(C-1) for wrong classes, 0.9 for correct class. Prevents overconfidence. Weight decay (L2 regularization, lambda=0.01).</p>
+      <p><strong>For small datasets:</strong> Increase dropout (0.2–0.3). Use LoRA instead of full fine-tuning. Mix in general domain data during fine-tuning (multi-task learning). Ensemble multiple fine-tuned checkpoints.</p>
+      <div class="bp-note">Monitor train vs validation loss curves — divergence indicates overfitting. Stop before it gets severe.</div>
+    </div>
+
+    <div class="bp-card bp-teal">
+      <div class="bp-tag">Handling Noise</div>
+      <div class="bp-title">Robust NLU for Real-World Text</div>
+      <p><strong>The real-world gap:</strong> User text contains typos, slang, abbreviations, emojis, mixed scripts — nothing like clean training data. Robustness engineering is often neglected but critical for deployment.</p>
+      <p><strong>Solutions:</strong> Character-level models or subword tokenizers handle morphological variants and typos. Data augmentation with synthetic noise (random character insertion/deletion/replacement). Test with realistic noisy examples before deployment. SpellCheck as preprocessing for typo-sensitive tasks.</p>
+    </div>
+
+    <div class="bp-card bp-amber">
+      <div class="bp-tag">Efficient Inference</div>
+      <div class="bp-title">Optimize for Production Latency</div>
+      <p><strong>Techniques:</strong> Knowledge distillation (DistilBERT: 2× faster). INT8 quantization (2–4× speedup, ~1% accuracy loss). Dynamic quantization with PyTorch or ONNX. Model pruning. TensorRT or ONNX Runtime for optimized inference engines.</p>
+      <p><strong>Caching:</strong> For frequently repeated queries, cache results. Semantic caching — cache results for semantically similar queries using embedding similarity. Can dramatically reduce inference cost in production.</p>
+      <div class="bp-note">Profile your bottleneck before optimizing — often the tokenizer or I/O, not the model forward pass.</div>
+    </div>
+
+    <div class="bp-card bp-rose">
+      <div class="bp-tag">Prompting LLMs</div>
+      <div class="bp-title">Prompt Engineering for NLU Tasks</div>
+      <p><strong>When to use LLMs vs fine-tuned models:</strong> LLMs (via prompting) for prototyping, low-data scenarios, complex multi-step tasks. Fine-tuned BERT for production systems with latency constraints and abundant labeled data.</p>
+      <p><strong>Prompting best practices:</strong> Be explicit about the task format. Provide 2–5 examples (few-shot). Specify the output format precisely. Use chain-of-thought for complex reasoning tasks. Specify constraints ("answer in one word: positive or negative").</p>
+      <p><strong>Pitfall:</strong> LLM outputs are non-deterministic (temperature &gt; 0). For classification tasks, use logprobs to get calibrated probabilities rather than parsing the text output.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header sh-best">
+    <div class="section-num">Section 14</div>
+    <h2>Best Practices — Evaluation and Deployment</h2>
+  </div>
+
+  <h3>14.1 Evaluation Best Practices</h3>
+
+  <div class="bp-grid">
+
+    <div class="bp-card bp-green">
+      <div class="bp-tag">Metrics Selection</div>
+      <div class="bp-title">Choose Metrics That Match the Task</div>
+      <p><strong>Classification tasks:</strong> Accuracy alone is misleading for imbalanced classes. Use macro-F1 (equal weight per class), weighted-F1 (weight by support), or per-class P/R/F1. For binary tasks: ROC-AUC or PR-AUC give a threshold-independent picture.</p>
+      <p><strong>NER/Sequence labeling:</strong> Entity-level F1 (not token-level) — exact span match required. SeqEval library computes this correctly. CoNLL evaluation script is the gold standard.</p>
+      <p><strong>Generation tasks:</strong> ROUGE for summarization, BLEU for translation (both are automatic proxies, not gold standards). BERTScore for semantic similarity. Human evaluation remains irreplaceable for generation quality.</p>
+    </div>
+
+    <div class="bp-card bp-blue">
+      <div class="bp-tag">Error Analysis</div>
+      <div class="bp-title">Systematic Error Analysis Before Ship</div>
+      <p><strong>Why mandatory:</strong> Overall accuracy hides systematic failures. A model with 90% accuracy that fails on all questions containing negation is not production-ready.</p>
+      <p><strong>Process:</strong> Sample 100–200 errors from the validation set. Categorize errors by type (ambiguity, rare entity, long sentence, domain-specific term). Quantify — what fraction of errors is each type? Target the largest error category with data or model changes. Repeat.</p>
+      <p><strong>Tools:</strong> Confusion matrices for classification. Calibration plots (reliability diagrams). Confidence histograms — are high-confidence predictions mostly correct?</p>
+    </div>
+
+    <div class="bp-card bp-purple">
+      <div class="bp-tag">Robustness Testing</div>
+      <div class="bp-title">Test Beyond the Benchmark</div>
+      <p><strong>Behavioral testing (CheckList):</strong> Define expected model behaviors (negation handling, vocabulary sensitivity, temporal sensitivity) and write test cases for each. Tests invariance (should not change: "I love this" = "I love this product"), directional expectations (adding "very" should increase sentiment score), and minimum functionality.</p>
+      <p><strong>Adversarial testing:</strong> Character perturbations (typos), word substitution with synonyms, sentence paraphrasing. A robust model's predictions should not change drastically under these perturbations.</p>
+    </div>
+
+    <div class="bp-card bp-teal">
+      <div class="bp-tag">Deployment</div>
+      <div class="bp-title">Responsible Production Deployment</div>
+      <p><strong>Monitoring:</strong> Track input distribution shifts (embedding drift), output distribution shifts (predicted class proportions), and performance metrics on labeled production samples. Set up automated alerts for anomalies.</p>
+      <p><strong>Human-in-the-loop:</strong> For high-stakes decisions (medical, legal, financial), model predictions should supplement, not replace, human judgment. Define confidence thresholds below which the system defers to humans.</p>
+      <p><strong>Model cards:</strong> Document model architecture, training data, intended use cases, known limitations, and fairness evaluations before deployment. Required by responsible AI guidelines.</p>
+    </div>
+
+    <div class="bp-card bp-amber">
+      <div class="bp-tag">Continual Improvement</div>
+      <div class="bp-title">Feedback Loop for Production NLU</div>
+      <p><strong>Active learning:</strong> From production traffic, identify high-uncertainty predictions (low model confidence, high disagreement). Label these samples preferentially — they provide the most information for model improvement.</p>
+      <p><strong>Annotation pipeline:</strong> Route a sample of production inputs to human annotators. Use these to create a production-domain evaluation set and fine-tuning data. Retrain periodically.</p>
+      <p><strong>A/B testing:</strong> When deploying a new model version, route a fraction of traffic to the new model. Compare metrics. Roll out fully only when improvement is statistically significant.</p>
+    </div>
+
+    <div class="bp-card bp-rose">
+      <div class="bp-tag">Ethics and Safety</div>
+      <div class="bp-title">Build NLU Systems Responsibly</div>
+      <p><strong>Pre-deployment audit:</strong> Formal bias audit across demographic groups. Red-team the system for adversarial misuse — how could a bad actor exploit this? Document the intended use cases and explicit prohibitions.</p>
+      <p><strong>Hallucination prevention:</strong> For QA and summarization, implement faithfulness checking (does the output contradict the source?). Use retrieval-augmented generation to ground outputs in verifiable sources. Add uncertainty quantification — the model should say "I don't know" when uncertain.</p>
+      <p><strong>Privacy:</strong> Never log personally identifiable information from user inputs. Use differential privacy during training if the training data is sensitive. Apply output filters to prevent PII leakage.</p>
+    </div>
+
+  </div>
+
+  <h3>14.2 NLU Evaluation Benchmarks</h3>
+
+  <table class="compare-table">
+    <tr><th>Benchmark</th><th>Tasks Covered</th><th>Significance</th></tr>
+    <tr>
+      <td><strong>GLUE (2018)</strong></td>
+      <td>Sentiment, textual entailment, paraphrase, QA, grammaticality</td>
+      <td>First multi-task NLU benchmark. Saturated quickly by BERT variants (~92 vs human 87).</td>
+    </tr>
+    <tr>
+      <td><strong>SuperGLUE (2019)</strong></td>
+      <td>Harder tasks: Winogrande, BoolQ, MultiRC, CB, WiC, ReCoRD</td>
+      <td>Harder replacement for GLUE. Tests reasoning, commonsense, word sense. Models now ~90 vs human 89.8.</td>
+    </tr>
+    <tr>
+      <td><strong>SQuAD 2.0 (2018)</strong></td>
+      <td>Reading comprehension + unanswerable questions</td>
+      <td>Models must also detect when the question cannot be answered from the passage. Tests faithfulness.</td>
+    </tr>
+    <tr>
+      <td><strong>MMLU (2021)</strong></td>
+      <td>57-subject academic test (law, medicine, math, history...)</td>
+      <td>Tests broad world knowledge and reasoning. Human expert ~89%. GPT-4 ~86–90%.</td>
+    </tr>
+    <tr>
+      <td><strong>BIG-bench (2022)</strong></td>
+      <td>204 tasks beyond current LLM capabilities</td>
+      <td>Focuses on tasks where models still fail. Includes logic, causal reasoning, unusual analogies.</td>
+    </tr>
+    <tr>
+      <td><strong>HELM (2022)</strong></td>
+      <td>Multi-metric: accuracy, calibration, fairness, toxicity, efficiency</td>
+      <td>Holistic evaluation — not just accuracy but safety and reliability properties.</td>
+    </tr>
+  </table>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 1 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Natural Language:</strong> Evolved human communication system — ambiguous, context-dependent, productive, culturally transmitted. Different from formal languages in being indefinitely creative, figurative, and implicitly pragmatic. Computers struggle because NL was not designed for them.</div></li>
+      <li><span class="bullet">2.</span><div><strong>NLU vs NLP vs NLG:</strong> NLP = umbrella field. NLU = machine comprehension (text → meaning): intent, entities, sentiment, relations. NLG = machine expression (meaning → text): summarization, translation, dialogue. Most real systems need both.</div></li>
+      <li><span class="bullet">3.</span><div><strong>Linguistic Levels:</strong> Phonology (sounds), Morphology (word structure), Syntax (sentence structure), Semantics (meaning), Pragmatics (speaker intent), Discourse (multi-sentence). NLU must handle all levels simultaneously — they interact deeply.</div></li>
+      <li><span class="bullet">4.</span><div><strong>NLU Pipeline:</strong> Sentence splitting → Tokenization → POS Tagging → Dependency Parsing → NER → Coreference Resolution → Semantic Role Labeling. Modern deep learning collapses these into end-to-end learned representations.</div></li>
+      <li><span class="bullet">5.</span><div><strong>History (Inception):</strong> Rule-based (1950s–80s) → Statistical/Corpus-based (1980s–2000s) → ML/SVM/CRF (1990s–2010s) → Word Embeddings+RNN (2013–17) → Transformer (2017) → BERT Pre-training (2018) → LLMs/Foundation Models (2020–present).</div></li>
+      <li><span class="bullet">6.</span><div><strong>Applications:</strong> Conversational AI (intent + entities + dialogue), Sentiment Analysis (document, aspect-based, emotion), QA (extractive, abstractive, open-domain, knowledge-based), Summarization (extractive/abstractive), Search, Healthcare, Legal, Code Intelligence, Education, Content Moderation.</div></li>
+      <li><span class="bullet">7.</span><div><strong>Linguistic Challenges:</strong> Ambiguity (lexical/syntactic/semantic/pragmatic), coreference resolution (Winograd schemas), figurative language (sarcasm, idiom, metaphor), discourse coherence, pragmatics/implicature, code-switching.</div></li>
+      <li><span class="bullet">8.</span><div><strong>Computational Challenges:</strong> Low-resource languages (7000 languages, only ~10 well-resourced), annotation bias, domain shift, hallucination (LLM factual errors), computational cost (175B+ params), long document handling (O(n²) attention).</div></li>
+      <li><span class="bullet">9.</span><div><strong>Societal Challenges:</strong> Commonsense and world knowledge gaps, bias and fairness (gender, racial, cultural), privacy (memorization, extraction attacks), temporal knowledge cutoff, interpretability (black box NLU), benchmark saturation (models exploit artifacts not language).</div></li>
+      <li><span class="bullet">10.</span><div><strong>Best Practices:</strong> Data quality over model complexity; task-appropriate preprocessing; strategic augmentation; domain-specific pre-training; simple-to-complex model progression; fine-tune with small LR + warmup; systematic error analysis; behavioral testing (CheckList); disaggregated evaluation; human-in-the-loop for high stakes; model cards for responsible deployment.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Natural Language Processing — Module 1</span>
+  <span>NLU · NLP History · Applications · Challenges · Best Practices</span>
+</div>
+
+</body>
+</html>

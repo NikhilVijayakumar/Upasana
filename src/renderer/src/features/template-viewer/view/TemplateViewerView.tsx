@@ -1,9 +1,13 @@
 import { FC, useMemo, useRef } from 'react'
+import { marked } from 'marked'
+import html2pdf from 'html2pdf.js'
 import {
   AppBar,
   Box,
+  Button,
   Chip,
   Divider,
+  IconButton,
   List,
   ListItemButton,
   ListItemText,
@@ -14,6 +18,7 @@ import {
 import SchoolIcon from '@mui/icons-material/School'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
+import DownloadIcon from '@mui/icons-material/Download'
 import {
   ThemeToggle,
   FileTree,
@@ -24,6 +29,31 @@ import {
   useTheme,
 } from 'astra'
 import { useTemplateViewerViewModel } from '../viewmodel/useTemplateViewerViewModel'
+
+const getPdfStyles = () => `
+  @page { margin: 20pt; }
+  body { font-family: 'Roboto', Arial, sans-serif; line-height: 1.8; color: #333; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.55rem; font-weight: 700; margin-top: 3.5rem; margin-bottom: 1.5rem; color: #1976d2; }
+  h2 { font-size: 1.25rem; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem; color: #1976d2; border-bottom: 1px solid #e0e0e0; padding-bottom: 0.5rem; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 0.75rem; color: #333; }
+  h4 { font-size: 0.95rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; color: #666; }
+  p { margin-bottom: 1.5rem; }
+  ul, ol { padding-left: 3rem; margin-bottom: 1.5rem; }
+  li { margin-bottom: 0.5rem; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+  a { color: #1976d2; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.83em; background-color: #f5f5f5; border-radius: 4px; padding: 0.2rem 0.7rem; border: 1px solid #e0e0e0; }
+  pre { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.83em; background-color: #f5f5f5; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; overflow-x: auto; border: 1px solid #e0e0e0; }
+  pre code { border: none; background: transparent; padding: 0; border-radius: 0; }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
+  th { border: 1px solid #e0e0e0; padding: 1.25rem; background-color: #f5f5f5; font-weight: 600; text-align: left; font-size: 0.85rem; }
+  td { border: 1px solid #e0e0e0; padding: 1.25rem; font-size: 0.85rem; }
+  blockquote { border-left: 3px solid #1976d2; padding-left: 2rem; margin: 2rem 0; color: #666; font-style: italic; background-color: #f5f5f5; border-radius: 0 6px 6px 0; padding: 1rem 1rem 1rem 2rem; }
+  hr { border: none; border-top: 1px solid #e0e0e0; margin: 2.5rem 0; }
+  img { max-width: 100%; border-radius: 6px; }
+`
 
 const SIDEBAR_WIDTH = 280
 const TOC_WIDTH = 216
@@ -380,6 +410,69 @@ export const TemplateViewerView: FC = () => {
     onSelect,
   } = useTemplateViewerViewModel()
 
+  const handleDownloadPDF = async () => {
+    if (!fileContent) return
+    const { name, content } = fileContent
+    const ext = name.split('.').pop()?.toLowerCase()
+    let fullHtml = ''
+
+    if (ext === 'md' || ext === 'markdown' || ext === 'txt') {
+      const parsedHtml = marked.parse(content) as string
+      fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>${getPdfStyles()}</style>
+</head>
+<body>${parsedHtml}</body>
+</html>`
+    } else if (ext === 'html' || ext === 'htm') {
+      const bodyMatch = content.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+      const bodyContent = bodyMatch ? bodyMatch[1] : content
+      fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>${getPdfStyles()}</style>
+</head>
+<body>${bodyContent}</body>
+</html>`
+    } else {
+      const escapedContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>${getPdfStyles()}</style>
+</head>
+<body><pre>${escapedContent}</pre></body>
+</html>`
+    }
+
+    try {
+      // Create temporary element to render HTML
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = fullHtml
+      tempDiv.style.position = 'absolute'
+      tempDiv.style.left = '-9999px'
+      document.body.appendChild(tempDiv)
+
+      const opt = {
+        margin: 20,
+        filename: name.replace(/\.[^.]+$/, '') + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      }
+
+      await html2pdf(tempDiv, opt)
+      document.body.removeChild(tempDiv)
+      alert('PDF downloaded successfully')
+    } catch (error) {
+      alert('Failed to download PDF: ' + error.message)
+    }
+  }
+
   const renderMain = () => {
     if (isLoading) return <LoadingState />
     if (error) return <ErrorState message={error} />
@@ -400,7 +493,21 @@ export const TemplateViewerView: FC = () => {
 
     if (fileContent?.content) {
       const displayName = fileContent.displayName || fileContent.name
-      return <FileContentView name={displayName} content={fileContent.content} />
+      return (
+        <Box sx={{ position: 'relative', height: '100%' }}>
+          <Box sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleDownloadPDF}
+              startIcon={<DownloadIcon />}
+            >
+              Download PDF
+            </Button>
+          </Box>
+          <FileContentView name={displayName} content={fileContent.content} />
+        </Box>
+      )
     }
 
     if (selectedFolderId && selectedFolder) {
