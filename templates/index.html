@@ -3,112 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upasana - Learning Modules</title>
+  <title>Upasana – Subjects</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600&display=swap');
-
-    :root {
-      --bg: #faf9f7;
-      --surface: #ffffff;
-      --surface2: #f4f2ee;
-      --border: #e5e0d8;
-      --text: #1a1814;
-      --text2: #4a4540;
-      --text3: #7a7268;
-      --accent: #1e5fa8;
-      --accent-bg: #edf3fc;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    body {
-      font-family: 'Source Serif 4', Georgia, serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      padding: 40px;
-    }
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=Inter:wght@400;500;600&display=swap');
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+  :root {
+    --bg:         #f8f7f4;
+    --surface:    #ffffff;
+    --surface2:   #f2f0ec;
+    --border:     #e2ddd6;
+    --text:       #18160f;
+    --text2:      #4a4640;
+    --text3:      #8a8480;
+    --accent:     #2b5faa;
+    --accent-lt:  #eaf0fb;
+    --radius:     8px;
+  }
 
-    header {
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 48px 24px;
+  }
 
-    .subtitle {
-      color: var(--text3);
-      font-size: 1.1rem;
-    }
+  .container { max-width: 840px; margin: 0 auto; }
 
-    .subjects-grid {
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    margin-bottom: 32px;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  header { margin-bottom: 36px; }
+
+  header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text3);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    transition: opacity .15s;
+  }
+  .btn:hover { opacity: .8; }
+  .btn-primary   { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--accent-lt); color: var(--accent); }
+
+
+    .grid {
       display: grid;
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
     }
 
     .subject-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius);
       padding: 24px;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .subject-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-
-    .subject-card h2 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .module-count {
-      color: var(--text3);
-      font-size: 0.9rem;
-      margin-bottom: 16px;
-    }
-
-    .card-links {
       display: flex;
+      flex-direction: column;
       gap: 12px;
+      transition: box-shadow .15s, transform .15s;
+    }
+    .subject-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      transform: translateY(-2px);
     }
 
-    .view-link, .syllabus-link {
+    .subject-card h2 { font-size: 1.15rem; font-weight: 600; }
+
+    .meta {
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      transition: opacity 0.2s;
-    }
-
-    .view-link {
-      background: var(--accent);
-      color: white;
-    }
-
-    .syllabus-link {
-      background: var(--accent-bg);
-      color: var(--accent);
-    }
-
-    .view-link:hover, .syllabus-link:hover {
-      opacity: 0.85;
+      font-size: 0.82rem;
+      color: var(--text3);
+      flex: 1;
     }
   </style>
 </head>
@@ -116,20 +114,21 @@
   <div class="container">
     <header>
       <h1>Upasana</h1>
-      <p class="subtitle">Select a subject to begin learning</p>
+      <p class="subtitle">AI Classroom — select a subject to begin</p>
     </header>
-
-    <div class="subjects-grid">
-    
+    <div class="grid">
+      
     <div class="subject-card">
-      <h2>Neural Networks</h2>
-      <p class="module-count">5 modules</p>
-      <div class="card-links">
-        <a href="NeuralNetworks/index.html" class="view-link">View Modules →</a>
-        <a href="NeuralNetworks/index.html" class="syllabus-link">Syllabus</a>
-      </div>
+      <h2>Deep Learning Techniques</h2>
+      <p class="meta">4 modules · syllabus available</p>
+      <a class="btn btn-primary" href="Deep Learning Techniques/index.html">Open →</a>
     </div>
 
+    <div class="subject-card">
+      <h2>NeuralNetworks</h2>
+      <p class="meta">5 modules · syllabus available</p>
+      <a class="btn btn-primary" href="NeuralNetworks/index.html">Open →</a>
+    </div>
     </div>
   </div>
 </body>

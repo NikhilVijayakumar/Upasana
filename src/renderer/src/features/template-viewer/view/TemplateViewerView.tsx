@@ -1,178 +1,593 @@
-import { FC, useEffect } from 'react'
+import { FC, useMemo, useRef } from 'react'
+import {
+  AppBar,
+  Box,
+  Chip,
+  Divider,
+  List,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  Toolbar,
+  Typography,
+} from '@mui/material'
+import SchoolIcon from '@mui/icons-material/School'
+import FolderOpenIcon from '@mui/icons-material/FolderOpen'
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
+import {
+  ThemeToggle,
+  FileTree,
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  MdViewer,
+  useTheme,
+} from 'astra'
 import { useTemplateViewerViewModel } from '../viewmodel/useTemplateViewerViewModel'
 
-const styles = {
-  container: {
-    display: 'flex',
-    height: '100vh',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-  },
-  sidebar: {
-    width: 280,
-    borderRight: '1px solid #e0e0e0',
-    padding: '16px',
-    backgroundColor: '#fafafa',
-    overflowY: 'auto' as const
-  },
-  main: {
-    flex: 1,
-    padding: '24px',
-    overflow: 'auto',
-    backgroundColor: '#f5f5f5'
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 600,
-    marginBottom: 16,
-    color: '#333'
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: 600,
-    color: '#666',
-    textTransform: 'uppercase' as const,
-    marginBottom: 8,
-    marginTop: 16
-  },
-  listItem: {
-    padding: '8px 12px',
-    borderRadius: 4,
-    cursor: 'pointer',
-    marginBottom: 4,
-    backgroundColor: 'transparent',
-    border: 'none',
-    width: '100%',
-    textAlign: 'left' as const,
-    fontSize: 14
-  },
-  listItemSelected: {
-    backgroundColor: '#e3f2fd'
-  },
-  fileSize: {
-    fontSize: 12,
-    color: '#999'
-  },
-  paper: {
-    padding: 24,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    minHeight: 'calc(100vh - 96px)'
-  },
-  loading: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%'
-  },
-  empty: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    color: '#999'
-  },
-  htmlContent: {
-    lineHeight: 1.6
-  } as const
+const SIDEBAR_WIDTH = 280
+const TOC_WIDTH = 216
+
+interface TocItem {
+  id: string
+  text: string
+  level: number
 }
 
-export const TemplateViewerView: FC = () => {
-  const {
-    folders,
-    files,
-    selectedFolder,
-    selectedFile,
-    fileContent,
-    isLoading,
-    error,
-    setSelectedFolder,
-    setSelectedFile
-  } = useTemplateViewerViewModel()
+function extractToc(html: string): TocItem[] {
+  const div = document.createElement('div')
+  div.innerHTML = html
+  const headings = div.querySelectorAll('h1, h2, h3, h4')
+  const items: TocItem[] = []
+  headings.forEach((h, i) => {
+    const level = parseInt(h.tagName[1])
+    const text = (h.textContent || '').trim()
+    if (!text) return
+    const slug = text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 50)
+    items.push({ id: `h-${i}-${slug}`, text, level })
+  })
+  return items
+}
 
-  useEffect(() => {
-    if (selectedFolder) {
-      console.log('[View] Selected folder changed:', selectedFolder.path)
+function injectHeadingIds(html: string, toc: TocItem[]): string {
+  let counter = 0
+  return html.replace(/<(h[1-4])([^>]*?)>/gi, (match, tag, attrs) => {
+    if (/\bid\s*=/.test(attrs)) {
+      counter++
+      return match
     }
-  }, [selectedFolder])
+    const item = toc[counter++]
+    return item ? `<${tag}${attrs} id="${item.id}">` : match
+  })
+}
 
-  useEffect(() => {
-    if (selectedFile) {
-      console.log('[View] Selected file changed:', selectedFile.name)
-    }
-  }, [selectedFile])
+const TocPanel: FC<{ items: TocItem[]; scrollRef: React.RefObject<HTMLDivElement | null> }> = ({
+  items,
+  scrollRef,
+}) => {
+  if (items.length < 2) return null
 
-  if (isLoading) {
-    return <div style={styles.loading}>Loading...</div>
+  const scrollTo = (id: string) => {
+    const el = scrollRef.current?.querySelector(`#${CSS.escape(id)}`)
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  if (error) {
-    return (
-      <div style={{ padding: 24 }}>
-        <h2>Error</h2>
-        <p style={{ color: 'red' }}>{error}</p>
-      </div>
-    )
-  }
+  return (
+    <Box
+      sx={{
+        width: TOC_WIDTH,
+        flexShrink: 0,
+        borderLeft: '1px solid',
+        borderColor: 'divider',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Box sx={{ px: 2, pt: 2.5, pb: 1 }}>
+        <Typography
+          variant="overline"
+          sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5 }}
+        >
+          On this page
+        </Typography>
+      </Box>
+      <List dense disablePadding sx={{ pb: 2 }}>
+        {items.map((item) => (
+          <ListItemButton
+            key={item.id}
+            onClick={() => scrollTo(item.id)}
+            sx={{
+              pl: 1.5 + (item.level - 1) * 1.5,
+              py: 0.35,
+              minHeight: 'unset',
+              borderRadius: 0,
+            }}
+          >
+            <ListItemText
+              primary={item.text}
+              primaryTypographyProps={{
+                sx: {
+                  fontSize: item.level <= 2 ? '0.75rem' : '0.7rem',
+                  fontWeight: item.level === 1 ? 600 : item.level === 2 ? 500 : 400,
+                  color: item.level <= 2 ? 'text.primary' : 'text.secondary',
+                  lineHeight: 1.5,
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                },
+              }}
+            />
+          </ListItemButton>
+        ))}
+      </List>
+    </Box>
+  )
+}
 
-  if (folders.length === 0) {
+const HtmlViewer: FC<{ name: string; content: string }> = ({ name, content }) => {
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const toc = useMemo(() => extractToc(content), [content])
+  const processedHtml = useMemo(() => injectHeadingIds(content, toc), [content, toc])
+
+  return (
+    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <Box ref={scrollRef} sx={{ flex: 1, overflowY: 'auto' }}>
+        <Box sx={{ p: 3, maxWidth: 860, mx: 'auto', width: '100%' }}>
+          <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 700 }}>
+            {name}
+          </Typography>
+          <Divider sx={{ mb: 2.5 }} />
+          <Box
+            sx={{
+              lineHeight: 1.8,
+              color: 'text.primary',
+              '& h1': {
+                fontSize: '1.55rem',
+                fontWeight: 700,
+                mt: 3.5,
+                mb: 1.5,
+                color: 'primary.main',
+                scrollMarginTop: '20px',
+              },
+              '& h2': {
+                fontSize: '1.25rem',
+                fontWeight: 600,
+                mt: 3,
+                mb: 1,
+                color: 'primary.main',
+                scrollMarginTop: '20px',
+                pb: 0.5,
+                borderBottom: '1px solid',
+                borderColor: 'divider',
+              },
+              '& h3': {
+                fontSize: '1.05rem',
+                fontWeight: 600,
+                mt: 2.5,
+                mb: 0.75,
+                color: 'text.primary',
+                scrollMarginTop: '20px',
+              },
+              '& h4': {
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                mt: 2,
+                mb: 0.5,
+                color: 'text.secondary',
+                scrollMarginTop: '20px',
+              },
+              '& p': { mb: 1.5 },
+              '& ul, & ol': { pl: 3, mb: 1.5 },
+              '& li': { mb: 0.5 },
+              '& strong': { fontWeight: 600 },
+              '& em': { fontStyle: 'italic' },
+              '& a': {
+                color: 'primary.main',
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              },
+              '& code': {
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: '0.83em',
+                backgroundColor: 'action.selected',
+                borderRadius: '4px',
+                px: 0.7,
+                py: 0.2,
+                border: '1px solid',
+                borderColor: 'divider',
+              },
+              '& pre': {
+                fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                fontSize: '0.83em',
+                backgroundColor: 'action.selected',
+                borderRadius: '8px',
+                p: 2,
+                mb: 2,
+                overflowX: 'auto',
+                border: '1px solid',
+                borderColor: 'divider',
+              },
+              '& pre code': {
+                border: 'none',
+                backgroundColor: 'transparent',
+                p: 0,
+                borderRadius: 0,
+              },
+              '& table': { borderCollapse: 'collapse', width: '100%', mb: 2 },
+              '& th': {
+                border: '1px solid',
+                borderColor: 'divider',
+                p: 1.25,
+                backgroundColor: 'action.hover',
+                fontWeight: 600,
+                textAlign: 'left',
+                fontSize: '0.85rem',
+              },
+              '& td': { border: '1px solid', borderColor: 'divider', p: 1.25, fontSize: '0.85rem' },
+              '& blockquote': {
+                borderLeft: '3px solid',
+                borderColor: 'primary.main',
+                pl: 2,
+                ml: 0,
+                my: 2,
+                color: 'text.secondary',
+                fontStyle: 'italic',
+                bgcolor: 'action.hover',
+                borderRadius: '0 6px 6px 0',
+                py: 1,
+                pr: 1,
+              },
+              '& hr': { border: 'none', borderTop: '1px solid', borderColor: 'divider', my: 2.5 },
+              '& img': { maxWidth: '100%', borderRadius: '6px' },
+            }}
+            dangerouslySetInnerHTML={{ __html: processedHtml }}
+          />
+        </Box>
+      </Box>
+      <TocPanel items={toc} scrollRef={scrollRef} />
+    </Box>
+  )
+}
+
+const FileContentView: FC<{ name: string; content: string }> = ({ name, content }) => {
+  const ext = name.split('.').pop()?.toLowerCase()
+  if (ext === 'md' || ext === 'markdown' || ext === 'txt') {
+    return <MdViewer fileName={name} fileContent={content} />
+  }
+  return <HtmlViewer name={name} content={content} />
+}
+
+interface FolderFile {
+  name: string
+  displayName: string
+  path: string
+  size: number
+  modifiedAt: string
+}
+
+const FolderIndexView: FC<{
+  folderName: string
+  files: FolderFile[]
+  onSelectFile: (id: string) => void
+}> = ({ folderName, files, onSelectFile }) => {
+  if (files.length === 0) {
     return (
-      <div style={{ padding: 24 }}>
-        <h2>No template folders configured</h2>
-        <p style={{ color: '#666' }}>Configure template_folders in config/upasana.json</p>
-      </div>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <FolderOpenIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+          <Typography variant="body1" color="text.secondary">
+            No files in this subject
+          </Typography>
+        </Box>
+      </Box>
     )
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.sidebar}>
-        <h2 style={styles.title}>Templates</h2>
-        
-        <div style={styles.sectionTitle}>Subjects</div>
-        {folders.map((folder) => (
-          <button
-            key={folder.path}
-            style={{
-              ...styles.listItem,
-              ...(selectedFolder?.path === folder.path ? styles.listItemSelected : {})
-            }}
-            onClick={() => setSelectedFolder(folder)}
-          >
-            <strong>{folder.name}</strong>
-            <div style={{ fontSize: 12, color: '#666' }}>{folder.subject}</div>
-          </button>
-        ))}
+    <Box sx={{ p: 3, maxWidth: 860, mx: 'auto', width: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5 }}>
+        <FolderOpenIcon sx={{ color: 'primary.main', fontSize: 28 }} />
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+          {folderName}
+        </Typography>
+        <Chip
+          label={`${files.length} file${files.length !== 1 ? 's' : ''}`}
+          size="small"
+          sx={{ ml: 0.5, height: 22, fontSize: '0.7rem', fontWeight: 600 }}
+        />
+      </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
+        Select a topic below to start reading
+      </Typography>
+      <Divider sx={{ mb: 2.5 }} />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 1.5,
+        }}
+      >
+        {files.map((file) => {
+          const ext = file.name.split('.').pop()?.toLowerCase()
+          const displayName = file.displayName || file.name
+          return (
+            <Paper
+              key={file.path}
+              variant="outlined"
+              onClick={() => onSelectFile(`file:${file.path}`)}
+              sx={{
+                p: 2,
+                cursor: 'pointer',
+                borderRadius: 2,
+                transition: 'all 0.15s ease',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  bgcolor: 'action.hover',
+                  transform: 'translateY(-1px)',
+                  boxShadow: 2,
+                },
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                <InsertDriveFileOutlinedIcon
+                  sx={{ color: 'primary.main', fontSize: 22, mt: 0.25, flexShrink: 0 }}
+                />
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 600, lineHeight: 1.4, wordBreak: 'break-word' }}
+                  >
+                    {displayName}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, mt: 0.75, alignItems: 'center' }}>
+                    {ext && (
+                      <Chip
+                        label={ext.toUpperCase()}
+                        size="small"
+                        sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700 }}
+                      />
+                    )}
+                    <Typography variant="caption" color="text.secondary">
+                      {(file.size / 1024).toFixed(1)} KB
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
+          )
+        })}
+      </Box>
+    </Box>
+  )
+}
 
-        <div style={styles.sectionTitle}>Files</div>
-        {files.map((file) => (
-          <button
-            key={file.path}
-            style={{
-              ...styles.listItem,
-              ...(selectedFile?.path === file.path ? styles.listItemSelected : {})
-            }}
-            onClick={() => setSelectedFile(file)}
-          >
-            <div>{file.name}</div>
-            <div style={styles.fileSize}>{(file.size / 1024).toFixed(1)} KB</div>
-          </button>
-        ))}
-      </div>
+export const TemplateViewerView: FC = () => {
+  const themeContext = useTheme()
+  const {
+    treeNodes,
+    expandedIds,
+    selectedId,
+    selectedFolderId,
+    selectedFolder,
+    folderFiles,
+    fileContent,
+    isLoading,
+    error,
+    onToggle,
+    onSelect,
+  } = useTemplateViewerViewModel()
 
-      <div style={styles.main}>
-        {fileContent?.content ? (
-          <div style={styles.paper}>
-            <h2 style={{ marginBottom: 16, color: '#333' }}>{fileContent.name}</h2>
-            <hr style={{ marginBottom: 16, border: 'none', borderTop: '1px solid #e0e0e0' }} />
-            <div
-              style={styles.htmlContent}
-              dangerouslySetInnerHTML={{ __html: fileContent.content }}
-            />
-          </div>
-        ) : (
-          <div style={styles.empty}>Select a file to view</div>
-        )}
-      </div>
-    </div>
+  const renderMain = () => {
+    if (isLoading) return <LoadingState />
+    if (error) return <ErrorState message={error} />
+
+    if (treeNodes.length === 0)
+      return (
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+        >
+          <Box sx={{ textAlign: 'center' }}>
+            <SchoolIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+            <Typography variant="body1" color="text.secondary">
+              No subjects found in templates/
+            </Typography>
+          </Box>
+        </Box>
+      )
+
+    if (fileContent?.content) {
+      const displayName = fileContent.displayName || fileContent.name
+      return <FileContentView name={displayName} content={fileContent.content} />
+    }
+
+    if (selectedFolderId && selectedFolder) {
+      return (
+        <Box sx={{ overflowY: 'auto', height: '100%' }}>
+          <FolderIndexView
+            folderName={selectedFolder.name}
+            files={folderFiles as FolderFile[]}
+            onSelectFile={onSelect}
+          />
+        </Box>
+      )
+    }
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <SchoolIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
+          <Typography variant="body1" color="text.secondary">
+            Select a subject or file from the sidebar
+          </Typography>
+        </Box>
+      </Box>
+    )
+  }
+
+  const totalFiles = treeNodes.reduce((sum, n) => sum + (n.childrenNodes?.length ?? 0), 0)
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      {/* Top AppBar */}
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={(theme) => ({
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor:
+            theme.palette.mode === 'dark'
+              ? theme.palette.background.paper
+              : theme.palette.background.paper,
+          backgroundImage: 'none',
+          boxShadow:
+            theme.palette.mode === 'light'
+              ? '0 1px 0 rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)'
+              : '0 1px 0 rgba(255,255,255,0.06)',
+        })}
+      >
+        <Toolbar variant="dense" sx={{ minHeight: 52, px: 2.5, gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              px: 1.25,
+              py: 0.5,
+              borderRadius: 1.5,
+              bgcolor: 'primary.main',
+            }}
+          >
+            <SchoolIcon sx={{ color: '#fff', fontSize: 18 }} />
+          </Box>
+          <Box>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1.2, fontSize: '0.95rem' }}
+            >
+              Upasana
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', fontSize: '0.65rem', lineHeight: 1, display: 'block' }}
+            >
+              AI Classroom
+            </Typography>
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {totalFiles > 0 && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', mr: 1, fontSize: '0.72rem' }}>
+              {treeNodes.length} subject{treeNodes.length !== 1 ? 's' : ''} · {totalFiles} file
+              {totalFiles !== 1 ? 's' : ''}
+            </Typography>
+          )}
+
+          <Box
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              borderRadius: 1.5,
+              border: '1px solid',
+              borderColor: 'divider',
+              bgcolor:
+                theme.palette.mode === 'dark'
+                  ? 'rgba(255,255,255,0.04)'
+                  : 'rgba(0,0,0,0.02)',
+              px: 0.5,
+            })}
+          >
+            <ThemeToggle themeContext={themeContext} />
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* Body */}
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Sidebar */}
+        <Box
+          sx={(theme) => ({
+            width: SIDEBAR_WIDTH,
+            borderRight: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            flexShrink: 0,
+            bgcolor:
+              theme.palette.mode === 'dark'
+                ? 'rgba(255,255,255,0.015)'
+                : 'rgba(0,0,0,0.012)',
+          })}
+        >
+          {/* Sidebar header */}
+          <Box
+            sx={{
+              px: 2,
+              py: 1.5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              minHeight: 44,
+            }}
+          >
+            <Typography
+              variant="overline"
+              sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5 }}
+            >
+              Subjects
+            </Typography>
+            {treeNodes.length > 0 && (
+              <Chip
+                label={treeNodes.length}
+                size="small"
+                sx={{
+                  height: 18,
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  bgcolor: 'primary.main',
+                  color: '#fff',
+                  '& .MuiChip-label': { px: 0.75 },
+                }}
+              />
+            )}
+          </Box>
+          <Divider />
+
+          {/* Tree */}
+          <Box sx={{ flex: 1, overflowY: 'auto', pt: 0.5 }}>
+            {isLoading ? (
+              <LoadingState />
+            ) : error ? (
+              <ErrorState message={error} />
+            ) : treeNodes.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <FileTree
+                nodes={treeNodes}
+                expandedIds={expandedIds}
+                selectedId={selectedId ?? selectedFolderId}
+                onToggle={onToggle}
+                onSelect={onSelect}
+              />
+            )}
+          </Box>
+        </Box>
+
+        {/* Main Content */}
+        <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+          <Paper
+            elevation={0}
+            sx={{ flex: 1, overflow: 'hidden', display: 'flex', bgcolor: 'background.paper', borderRadius: 0 }}
+          >
+            {renderMain()}
+          </Paper>
+        </Box>
+      </Box>
+    </Box>
   )
 }
