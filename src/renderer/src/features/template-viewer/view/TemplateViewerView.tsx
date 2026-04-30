@@ -1,10 +1,7 @@
-import { FC, useMemo, useRef } from 'react'
-import { marked } from 'marked'
-import html2pdf from 'html2pdf.js'
+import { FC, useMemo, useRef, useState } from 'react'
 import {
   AppBar,
   Box,
-  Button,
   Chip,
   Divider,
   IconButton,
@@ -13,12 +10,16 @@ import {
   ListItemText,
   Paper,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import SchoolIcon from '@mui/icons-material/School'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
 import DownloadIcon from '@mui/icons-material/Download'
+import MenuIcon from '@mui/icons-material/Menu'
+import MenuOpenIcon from '@mui/icons-material/MenuOpen'
+import TocIcon from '@mui/icons-material/Toc'
 import {
   ThemeToggle,
   FileTree,
@@ -30,33 +31,8 @@ import {
 } from 'astra'
 import { useTemplateViewerViewModel } from '../viewmodel/useTemplateViewerViewModel'
 
-const getPdfStyles = () => `
-  @page { margin: 20pt; }
-  body { font-family: 'Roboto', Arial, sans-serif; line-height: 1.8; color: #333; max-width: 860px; margin: 0 auto; }
-  h1 { font-size: 1.55rem; font-weight: 700; margin-top: 3.5rem; margin-bottom: 1.5rem; color: #1976d2; }
-  h2 { font-size: 1.25rem; font-weight: 600; margin-top: 3rem; margin-bottom: 1rem; color: #1976d2; border-bottom: 1px solid #e0e0e0; padding-bottom: 0.5rem; }
-  h3 { font-size: 1.05rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 0.75rem; color: #333; }
-  h4 { font-size: 0.95rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.5rem; color: #666; }
-  p { margin-bottom: 1.5rem; }
-  ul, ol { padding-left: 3rem; margin-bottom: 1.5rem; }
-  li { margin-bottom: 0.5rem; }
-  strong { font-weight: 600; }
-  em { font-style: italic; }
-  a { color: #1976d2; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  code { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.83em; background-color: #f5f5f5; border-radius: 4px; padding: 0.2rem 0.7rem; border: 1px solid #e0e0e0; }
-  pre { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.83em; background-color: #f5f5f5; border-radius: 8px; padding: 2rem; margin-bottom: 2rem; overflow-x: auto; border: 1px solid #e0e0e0; }
-  pre code { border: none; background: transparent; padding: 0; border-radius: 0; }
-  table { border-collapse: collapse; width: 100%; margin-bottom: 2rem; }
-  th { border: 1px solid #e0e0e0; padding: 1.25rem; background-color: #f5f5f5; font-weight: 600; text-align: left; font-size: 0.85rem; }
-  td { border: 1px solid #e0e0e0; padding: 1.25rem; font-size: 0.85rem; }
-  blockquote { border-left: 3px solid #1976d2; padding-left: 2rem; margin: 2rem 0; color: #666; font-style: italic; background-color: #f5f5f5; border-radius: 0 6px 6px 0; padding: 1rem 1rem 1rem 2rem; }
-  hr { border: none; border-top: 1px solid #e0e0e0; margin: 2.5rem 0; }
-  img { max-width: 100%; border-radius: 6px; }
-`
-
 const SIDEBAR_WIDTH = 280
-const TOC_WIDTH = 216
+const TOC_WIDTH = 220
 
 interface TocItem {
   id: string
@@ -91,11 +67,12 @@ function injectHeadingIds(html: string, toc: TocItem[]): string {
   })
 }
 
-const TocPanel: FC<{ items: TocItem[]; scrollRef: React.RefObject<HTMLDivElement | null> }> = ({
-  items,
-  scrollRef,
-}) => {
-  if (items.length < 2) return null
+const TocPanel: FC<{
+  items: TocItem[]
+  scrollRef: React.RefObject<HTMLDivElement | null>
+  open: boolean
+}> = ({ items, scrollRef, open }) => {
+  const visible = open && items.length >= 2
 
   const scrollTo = (id: string) => {
     const el = scrollRef.current?.querySelector(`#${CSS.escape(id)}`)
@@ -105,66 +82,76 @@ const TocPanel: FC<{ items: TocItem[]; scrollRef: React.RefObject<HTMLDivElement
   return (
     <Box
       sx={{
-        width: TOC_WIDTH,
+        width: visible ? TOC_WIDTH : 0,
         flexShrink: 0,
-        borderLeft: '1px solid',
+        borderLeft: visible ? '1px solid' : 'none',
         borderColor: 'divider',
-        overflowY: 'auto',
+        overflowY: visible ? 'auto' : 'hidden',
+        overflowX: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         bgcolor: 'background.default',
+        transition: 'width 0.2s ease',
       }}
     >
-      <Box sx={{ px: 2, pt: 2.5, pb: 1 }}>
-        <Typography
-          variant="overline"
-          sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5 }}
-        >
-          On this page
-        </Typography>
-      </Box>
-      <List dense disablePadding sx={{ pb: 2 }}>
-        {items.map((item) => (
-          <ListItemButton
-            key={item.id}
-            onClick={() => scrollTo(item.id)}
-            sx={{
-              pl: 1.5 + (item.level - 1) * 1.5,
-              py: 0.35,
-              minHeight: 'unset',
-              borderRadius: 0,
-            }}
-          >
-            <ListItemText
-              primary={item.text}
-              primaryTypographyProps={{
-                sx: {
-                  fontSize: item.level <= 2 ? '0.75rem' : '0.7rem',
-                  fontWeight: item.level === 1 ? 600 : item.level === 2 ? 500 : 400,
-                  color: item.level <= 2 ? 'text.primary' : 'text.secondary',
-                  lineHeight: 1.5,
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden',
-                },
-              }}
-            />
-          </ListItemButton>
-        ))}
-      </List>
+      {visible && (
+        <>
+          <Box sx={{ px: 2, pt: 2.5, pb: 1 }}>
+            <Typography
+              variant="overline"
+              sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5 }}
+            >
+              On this page
+            </Typography>
+          </Box>
+          <List dense disablePadding sx={{ pb: 2 }}>
+            {items.map((item) => (
+              <ListItemButton
+                key={item.id}
+                onClick={() => scrollTo(item.id)}
+                sx={{
+                  pl: 1.5 + (item.level - 1) * 1.5,
+                  py: 0.35,
+                  minHeight: 'unset',
+                  borderRadius: 0,
+                }}
+              >
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    sx: {
+                      fontSize: item.level <= 2 ? '0.75rem' : '0.7rem',
+                      fontWeight: item.level === 1 ? 600 : item.level === 2 ? 500 : 400,
+                      color: item.level <= 2 ? 'text.primary' : 'text.secondary',
+                      lineHeight: 1.5,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                    },
+                  }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+        </>
+      )}
     </Box>
   )
 }
 
-const HtmlViewer: FC<{ name: string; content: string }> = ({ name, content }) => {
+const HtmlViewer: FC<{ name: string; content: string; tocOpen: boolean }> = ({
+  name,
+  content,
+  tocOpen,
+}) => {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const toc = useMemo(() => extractToc(content), [content])
   const processedHtml = useMemo(() => injectHeadingIds(content, toc), [content, toc])
 
   return (
     <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      <Box ref={scrollRef} sx={{ flex: 1, overflowY: 'auto' }}>
+      <Box ref={scrollRef} sx={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
         <Box sx={{ p: 3, maxWidth: 860, mx: 'auto', width: '100%' }}>
           <Typography variant="h5" sx={{ mb: 0.5, fontWeight: 700 }}>
             {name}
@@ -277,17 +264,21 @@ const HtmlViewer: FC<{ name: string; content: string }> = ({ name, content }) =>
           />
         </Box>
       </Box>
-      <TocPanel items={toc} scrollRef={scrollRef} />
+      <TocPanel items={toc} scrollRef={scrollRef} open={tocOpen} />
     </Box>
   )
 }
 
-const FileContentView: FC<{ name: string; content: string }> = ({ name, content }) => {
+const FileContentView: FC<{ name: string; content: string; tocOpen: boolean }> = ({
+  name,
+  content,
+  tocOpen,
+}) => {
   const ext = name.split('.').pop()?.toLowerCase()
   if (ext === 'md' || ext === 'markdown' || ext === 'txt') {
     return <MdViewer fileName={name} fileContent={content} />
   }
-  return <HtmlViewer name={name} content={content} />
+  return <HtmlViewer name={name} content={content} tocOpen={tocOpen} />
 }
 
 interface FolderFile {
@@ -396,6 +387,9 @@ const FolderIndexView: FC<{
 
 export const TemplateViewerView: FC = () => {
   const themeContext = useTheme()
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [tocOpen, setTocOpen] = useState(true)
+
   const {
     treeNodes,
     expandedIds,
@@ -411,67 +405,20 @@ export const TemplateViewerView: FC = () => {
   } = useTemplateViewerViewModel()
 
   const handleDownloadPDF = async () => {
-    if (!fileContent) return
-    const { name, content } = fileContent
-    const ext = name.split('.').pop()?.toLowerCase()
-    let fullHtml = ''
-
-    if (ext === 'md' || ext === 'markdown' || ext === 'txt') {
-      const parsedHtml = marked.parse(content) as string
-      fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>${getPdfStyles()}</style>
-</head>
-<body>${parsedHtml}</body>
-</html>`
-    } else if (ext === 'html' || ext === 'htm') {
-      const bodyMatch = content.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
-      const bodyContent = bodyMatch ? bodyMatch[1] : content
-      fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>${getPdfStyles()}</style>
-</head>
-<body>${bodyContent}</body>
-</html>`
-    } else {
-      const escapedContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>${getPdfStyles()}</style>
-</head>
-<body><pre>${escapedContent}</pre></body>
-</html>`
-    }
-
-    try {
-      // Create temporary element to render HTML
-      const tempDiv = document.createElement('div')
-      tempDiv.innerHTML = fullHtml
-      tempDiv.style.position = 'absolute'
-      tempDiv.style.left = '-9999px'
-      document.body.appendChild(tempDiv)
-
-      const opt = {
-        margin: 20,
-        filename: name.replace(/\.[^.]+$/, '') + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-      }
-
-      await html2pdf(tempDiv, opt)
-      document.body.removeChild(tempDiv)
-      alert('PDF downloaded successfully')
-    } catch (error) {
-      alert('Failed to download PDF: ' + error.message)
+    if (!fileContent?.path) return
+    const api = (window as any).api?.templates
+    if (!api) return
+    const result = await api.exportPdf(fileContent.path, fileContent.displayName || fileContent.name)
+    if (!result.success && result.error !== 'cancelled') {
+      alert('Failed to export PDF: ' + result.error)
     }
   }
+
+  const isHtmlFile = (() => {
+    if (!fileContent?.name) return false
+    const ext = fileContent.name.split('.').pop()?.toLowerCase()
+    return ext === 'html' || ext === 'htm'
+  })()
 
   const renderMain = () => {
     if (isLoading) return <LoadingState />
@@ -479,9 +426,7 @@ export const TemplateViewerView: FC = () => {
 
     if (treeNodes.length === 0)
       return (
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flex: 1 }}>
           <Box sx={{ textAlign: 'center' }}>
             <SchoolIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
             <Typography variant="body1" color="text.secondary">
@@ -494,25 +439,15 @@ export const TemplateViewerView: FC = () => {
     if (fileContent?.content) {
       const displayName = fileContent.displayName || fileContent.name
       return (
-        <Box sx={{ position: 'relative', height: '100%' }}>
-          <Box sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={handleDownloadPDF}
-              startIcon={<DownloadIcon />}
-            >
-              Download PDF
-            </Button>
-          </Box>
-          <FileContentView name={displayName} content={fileContent.content} />
+        <Box sx={{ height: '100%', flex: 1, minWidth: 0 }}>
+          <FileContentView name={displayName} content={fileContent.content} tocOpen={tocOpen} />
         </Box>
       )
     }
 
     if (selectedFolderId && selectedFolder) {
       return (
-        <Box sx={{ overflowY: 'auto', height: '100%' }}>
+        <Box sx={{ overflowY: 'auto', height: '100%', flex: 1, minWidth: 0 }}>
           <FolderIndexView
             folderName={selectedFolder.name}
             files={folderFiles as FolderFile[]}
@@ -523,7 +458,7 @@ export const TemplateViewerView: FC = () => {
     }
 
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flex: 1 }}>
         <Box sx={{ textAlign: 'center' }}>
           <SchoolIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
           <Typography variant="body1" color="text.secondary">
@@ -545,10 +480,7 @@ export const TemplateViewerView: FC = () => {
         sx={(theme) => ({
           borderBottom: '1px solid',
           borderColor: 'divider',
-          bgcolor:
-            theme.palette.mode === 'dark'
-              ? theme.palette.background.paper
-              : theme.palette.background.paper,
+          bgcolor: theme.palette.background.paper,
           backgroundImage: 'none',
           boxShadow:
             theme.palette.mode === 'light'
@@ -556,7 +488,19 @@ export const TemplateViewerView: FC = () => {
               : '0 1px 0 rgba(255,255,255,0.06)',
         })}
       >
-        <Toolbar variant="dense" sx={{ minHeight: 52, px: 2.5, gap: 1 }}>
+        <Toolbar variant="dense" sx={{ minHeight: 52, px: 1.5, gap: 0.5 }}>
+          {/* Hamburger — left sidebar toggle */}
+          <Tooltip title={sidebarOpen ? 'Hide subjects' : 'Show subjects'}>
+            <IconButton
+              size="small"
+              onClick={() => setSidebarOpen((p) => !p)}
+              sx={{ color: 'text.secondary', mr: 0.5 }}
+            >
+              {sidebarOpen ? <MenuOpenIcon fontSize="small" /> : <MenuIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+
+          {/* Brand */}
           <Box
             sx={{
               display: 'flex',
@@ -570,7 +514,7 @@ export const TemplateViewerView: FC = () => {
           >
             <SchoolIcon sx={{ color: '#fff', fontSize: 18 }} />
           </Box>
-          <Box>
+          <Box sx={{ ml: 0.5 }}>
             <Typography
               variant="subtitle1"
               sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1.2, fontSize: '0.95rem' }}
@@ -587,13 +531,15 @@ export const TemplateViewerView: FC = () => {
 
           <Box sx={{ flexGrow: 1 }} />
 
+          {/* File count */}
           {totalFiles > 0 && (
-            <Typography variant="caption" sx={{ color: 'text.secondary', mr: 1, fontSize: '0.72rem' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.5, fontSize: '0.72rem' }}>
               {treeNodes.length} subject{treeNodes.length !== 1 ? 's' : ''} · {totalFiles} file
               {totalFiles !== 1 ? 's' : ''}
             </Typography>
           )}
 
+          {/* Controls group */}
           <Box
             sx={(theme) => ({
               display: 'flex',
@@ -602,12 +548,35 @@ export const TemplateViewerView: FC = () => {
               border: '1px solid',
               borderColor: 'divider',
               bgcolor:
-                theme.palette.mode === 'dark'
-                  ? 'rgba(255,255,255,0.04)'
-                  : 'rgba(0,0,0,0.02)',
+                theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)',
               px: 0.5,
+              gap: 0.25,
             })}
           >
+            {/* Download PDF — only when a file is open */}
+            {fileContent?.path && (
+              <Tooltip title="Download PDF">
+                <IconButton size="small" onClick={handleDownloadPDF} sx={{ color: 'text.secondary' }}>
+                  <DownloadIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {/* TOC toggle — only for HTML files */}
+            {isHtmlFile && (
+              <Tooltip title={tocOpen ? 'Hide table of contents' : 'Show table of contents'}>
+                <IconButton
+                  size="small"
+                  onClick={() => setTocOpen((p) => !p)}
+                  sx={{
+                    color: tocOpen ? 'primary.main' : 'text.secondary',
+                  }}
+                >
+                  <TocIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+
             <ThemeToggle themeContext={themeContext} />
           </Box>
         </Toolbar>
@@ -615,20 +584,19 @@ export const TemplateViewerView: FC = () => {
 
       {/* Body */}
       <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Sidebar */}
+        {/* Left Sidebar — collapsible */}
         <Box
           sx={(theme) => ({
-            width: SIDEBAR_WIDTH,
-            borderRight: '1px solid',
+            width: sidebarOpen ? SIDEBAR_WIDTH : 0,
+            flexShrink: 0,
+            borderRight: sidebarOpen ? '1px solid' : 'none',
             borderColor: 'divider',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            flexShrink: 0,
+            transition: 'width 0.2s ease',
             bgcolor:
-              theme.palette.mode === 'dark'
-                ? 'rgba(255,255,255,0.015)'
-                : 'rgba(0,0,0,0.012)',
+              theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.012)',
           })}
         >
           {/* Sidebar header */}
@@ -640,11 +608,12 @@ export const TemplateViewerView: FC = () => {
               alignItems: 'center',
               justifyContent: 'space-between',
               minHeight: 44,
+              flexShrink: 0,
             }}
           >
             <Typography
               variant="overline"
-              sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5 }}
+              sx={{ fontWeight: 700, fontSize: '0.62rem', color: 'text.secondary', letterSpacing: 1.5, whiteSpace: 'nowrap' }}
             >
               Subjects
             </Typography>
@@ -686,10 +655,26 @@ export const TemplateViewerView: FC = () => {
         </Box>
 
         {/* Main Content */}
-        <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            bgcolor: 'background.default',
+            minWidth: 0,
+          }}
+        >
           <Paper
             elevation={0}
-            sx={{ flex: 1, overflow: 'hidden', display: 'flex', bgcolor: 'background.paper', borderRadius: 0 }}
+            sx={{
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              bgcolor: 'background.paper',
+              borderRadius: 0,
+              minWidth: 0,
+            }}
           >
             {renderMain()}
           </Paper>

@@ -26,6 +26,7 @@ interface Window {
       listFolders: () => Promise<TemplateFolder[]>
       listFiles: (folderPath: string) => Promise<TemplateFile[]>
       readFile: (folderPath: string, fileName: string) => Promise<TemplateFileContent>
+      exportPdf: (filePath: string, displayName: string) => Promise<{ success: boolean; error?: string }>
     }
   }
 }

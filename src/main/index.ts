@@ -141,6 +141,42 @@ app.whenReady().then(() => {
     }
   })
 
+  ipcMain.handle('templates:export-pdf', async (_event: unknown, payload: { filePath: string; displayName: string }) => {
+    const basePath = getBasePath()
+    const fullPath = join(basePath, payload.filePath)
+
+    if (!existsSync(fullPath)) {
+      return { success: false, error: 'File not found: ' + fullPath }
+    }
+
+    const { canceled, filePath: savePath } = await dialog.showSaveDialog(mainWindow!, {
+      defaultPath: payload.displayName.replace(/\.[^.]+$/, '') + '.pdf',
+      filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
+    })
+
+    if (canceled || !savePath) return { success: false, error: 'cancelled' }
+
+    const pdfWin = new BrowserWindow({
+      show: false,
+      webPreferences: { sandbox: false, webgl: false },
+    })
+
+    try {
+      await pdfWin.loadFile(fullPath)
+      const pdfData = await pdfWin.webContents.printToPDF({
+        printBackground: true,
+        pageSize: 'A4',
+        margins: { marginType: 'custom', top: 0.5, bottom: 0.5, left: 0.5, right: 0.5 },
+      })
+      writeFileSync(savePath, pdfData)
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err.message }
+    } finally {
+      pdfWin.close()
+    }
+  })
+
   createWindow()
 
   app.on('activate', () => {

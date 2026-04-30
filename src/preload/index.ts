@@ -7,7 +7,9 @@ const api = {
     listFolders: () => ipcRenderer.invoke('templates:list-folders'),
     listFiles: (folderPath: string) => ipcRenderer.invoke('templates:list-files', { folderPath }),
     readFile: (folderPath: string, fileName: string) =>
-      ipcRenderer.invoke('templates:read-file', { folderPath, fileName })
+      ipcRenderer.invoke('templates:read-file', { folderPath, fileName }),
+    exportPdf: (filePath: string, displayName: string) =>
+      ipcRenderer.invoke('templates:export-pdf', { filePath, displayName }),
   }
 }
 
