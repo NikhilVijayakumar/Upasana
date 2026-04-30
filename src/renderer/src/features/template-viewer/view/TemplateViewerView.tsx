@@ -1,4 +1,4 @@
-import { FC, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import {
   AppBar,
   Box,
@@ -140,14 +140,39 @@ const TocPanel: FC<{
   )
 }
 
+const DARK_MODE_CSS = `<style>
+.upasana-dark-html *,.upasana-dark-html *::before,.upasana-dark-html *::after{
+  background:none !important;border-color:rgba(255,255,255,0.1) !important;
+  box-shadow:none !important;color:#CDD2DC !important;
+}
+.upasana-dark-html h1,.upasana-dark-html h2,.upasana-dark-html h3,
+.upasana-dark-html h4,.upasana-dark-html h5,.upasana-dark-html h6{color:#818CF8 !important;}
+.upasana-dark-html strong,.upasana-dark-html b{color:#E2E6F0 !important;}
+.upasana-dark-html em,.upasana-dark-html i{color:#BCC5D6 !important;}
+.upasana-dark-html a{color:#818CF8 !important;}
+.upasana-dark-html a:hover{color:#A5B4FC !important;}
+.upasana-dark-html code,.upasana-dark-html kbd,.upasana-dark-html samp{
+  background-color:rgba(255,255,255,0.09) !important;color:#BAC8E0 !important;
+}
+.upasana-dark-html pre{background-color:rgba(255,255,255,0.06) !important;}
+.upasana-dark-html pre code{background:transparent !important;}
+.upasana-dark-html th{background-color:rgba(255,255,255,0.07) !important;color:#E2E6F0 !important;}
+.upasana-dark-html mark{background-color:rgba(129,140,248,0.25) !important;color:#E2E6F0 !important;}
+.upasana-dark-html img{filter:brightness(0.82) !important;}
+</style>`
+
 const HtmlViewer: FC<{ name: string; content: string; tocOpen: boolean }> = ({
   name,
   content,
   tocOpen,
 }) => {
   const scrollRef = useRef<HTMLDivElement | null>(null)
+  const { darkMode } = useTheme()
   const toc = useMemo(() => extractToc(content), [content])
-  const processedHtml = useMemo(() => injectHeadingIds(content, toc), [content, toc])
+  const processedHtml = useMemo(() => {
+    const html = injectHeadingIds(content, toc)
+    return darkMode ? DARK_MODE_CSS + html : html
+  }, [content, toc, darkMode])
 
   return (
     <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
@@ -260,6 +285,7 @@ const HtmlViewer: FC<{ name: string; content: string; tocOpen: boolean }> = ({
               '& hr': { border: 'none', borderTop: '1px solid', borderColor: 'divider', my: 2.5 },
               '& img': { maxWidth: '100%', borderRadius: '6px' },
             }}
+            className={darkMode ? 'upasana-dark-html' : undefined}
             dangerouslySetInnerHTML={{ __html: processedHtml }}
           />
         </Box>
@@ -389,6 +415,10 @@ export const TemplateViewerView: FC = () => {
   const themeContext = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [tocOpen, setTocOpen] = useState(true)
+
+  useEffect(() => {
+    ;(window as any).api?.setTheme?.(themeContext.darkMode)
+  }, [themeContext.darkMode])
 
   const {
     treeNodes,
@@ -667,14 +697,18 @@ export const TemplateViewerView: FC = () => {
         >
           <Paper
             elevation={0}
-            sx={{
+            sx={(theme) => ({
               flex: 1,
               overflow: 'hidden',
               display: 'flex',
               bgcolor: 'background.paper',
               borderRadius: 0,
               minWidth: 0,
-            }}
+              boxShadow:
+                theme.palette.mode === 'light'
+                  ? '0 2px 16px rgba(0,0,0,0.07)'
+                  : '0 0 0 1px rgba(255,255,255,0.06)',
+            })}
           >
             {renderMain()}
           </Paper>

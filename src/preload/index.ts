@@ -10,7 +10,8 @@ const api = {
       ipcRenderer.invoke('templates:read-file', { folderPath, fileName }),
     exportPdf: (filePath: string, displayName: string) =>
       ipcRenderer.invoke('templates:export-pdf', { filePath, displayName }),
-  }
+  },
+  setTheme: (isDark: boolean) => ipcRenderer.send('theme:set', isDark),
 }
 
 try {

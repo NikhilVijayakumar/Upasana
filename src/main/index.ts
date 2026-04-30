@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog } from 'electron'
+import { app, BrowserWindow, dialog, nativeTheme } from 'electron'
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync, unlinkSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -59,6 +59,10 @@ const createWindow = (): void => {
 
 app.whenReady().then(() => {
   const { ipcMain } = require('electron')
+
+  ipcMain.on('theme:set', (_event: unknown, isDark: boolean) => {
+    nativeTheme.themeSource = isDark ? 'dark' : 'light'
+  })
 
   // Auto-scan templates/ directory — every subdirectory is a subject
   ipcMain.handle('templates:list-folders', async () => {

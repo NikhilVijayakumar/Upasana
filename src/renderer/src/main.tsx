@@ -46,15 +46,39 @@ const { lightTheme, darkTheme } = createAstraTheme(
       MuiListItemButton: {
         styleOverrides: {
           root: {
-            borderRadius: 6,
+            borderRadius: 7,
             marginLeft: 4,
             marginRight: 4,
+            transition: 'background-color 0.15s ease, box-shadow 0.15s ease',
             '&.Mui-selected': {
               backgroundColor: 'rgba(90, 96, 245, 0.10)',
+              boxShadow: 'inset 0 0 0 1px rgba(90, 96, 245, 0.30)',
               '&:hover': {
                 backgroundColor: 'rgba(90, 96, 245, 0.15)',
               },
             },
+            '&:hover': {
+              backgroundColor: 'rgba(0,0,0,0.04)',
+              boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+            },
+          },
+        },
+      },
+      MuiListItemText: {
+        styleOverrides: {
+          primary: {
+            color: '#1C1F26',
+            fontSize: '0.875rem',
+          },
+          secondary: {
+            color: '#687076',
+          },
+        },
+      },
+      MuiListItemIcon: {
+        styleOverrides: {
+          root: {
+            color: '#687076',
           },
         },
       },
@@ -64,49 +88,90 @@ const { lightTheme, darkTheme } = createAstraTheme(
   {
     palette: {
       background: {
-        default: '#0D0F14',
-        paper: '#13161C',
+        default: '#0F1117',
+        paper: '#161A23',
       },
       text: {
-        primary: '#E8E9EF',
-        secondary: '#9299A6',
+        primary: '#E2E6F0',
+        secondary: '#8B93A8',
       },
-      divider: 'rgba(255,255,255,0.07)',
+      divider: 'rgba(255,255,255,0.09)',
+      action: {
+        hover: 'rgba(255,255,255,0.05)',
+        selected: 'rgba(255,255,255,0.08)',
+      },
     },
     components: {
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundColor: '#13161C',
-            color: '#E8E9EF',
+            backgroundColor: '#161A23',
+            color: '#E2E6F0',
           },
         },
       },
       MuiListItemButton: {
         styleOverrides: {
           root: {
-            borderRadius: 6,
+            borderRadius: 7,
             marginLeft: 4,
             marginRight: 4,
+            transition: 'background-color 0.15s ease, box-shadow 0.15s ease',
+            color: '#C8CDD8',
             '&.Mui-selected': {
-              backgroundColor: 'rgba(90, 96, 245, 0.18)',
+              backgroundColor: 'rgba(90, 96, 245, 0.16)',
+              color: '#E2E6F0',
+              boxShadow: 'inset 0 0 0 1px rgba(90, 96, 245, 0.40)',
               '&:hover': {
-                backgroundColor: 'rgba(90, 96, 245, 0.24)',
+                backgroundColor: 'rgba(90, 96, 245, 0.22)',
               },
             },
             '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.05)',
+              backgroundColor: 'rgba(255,255,255,0.06)',
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.09)',
             },
+          },
+        },
+      },
+      MuiListItemText: {
+        styleOverrides: {
+          primary: {
+            color: '#D4D8E4',
+            fontSize: '0.875rem',
+          },
+          secondary: {
+            color: '#8B93A8',
+          },
+        },
+      },
+      MuiListItemIcon: {
+        styleOverrides: {
+          root: {
+            color: '#8B93A8',
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          overline: {
+            color: '#8B93A8',
           },
         },
       },
       MuiPaper: {
         styleOverrides: {
           outlined: {
-            borderColor: 'rgba(255,255,255,0.08)',
+            borderColor: 'rgba(255,255,255,0.1)',
             '&:hover': {
-              borderColor: 'rgba(90,96,245,0.6)',
+              borderColor: 'rgba(129,140,248,0.6)',
             },
+          },
+        },
+      },
+      MuiDivider: {
+        styleOverrides: {
+          root: {
+            borderColor: 'rgba(255,255,255,0.09)',
           },
         },
       },
