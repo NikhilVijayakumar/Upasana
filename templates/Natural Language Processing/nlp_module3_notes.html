@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Language Processing – Module 3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg:#f6f8f5; --surface:#fff; --surface2:#edf0eb;
+    --border:#d4dcd0; --border2:#b4c0b0;
+    --text:#0e1610; --text2:#303c2c; --text3:#60706a;
+    --accent:#1a5c38; --accent-bg:#e8f5ee; --accent-border:#88d0a8;
+    --blue:#1a3060; --blue-bg:#eaeffc; --blue-border:#a0b4e8;
+    --amber:#7a4800; --amber-bg:#fef8e8; --amber-border:#e8c060;
+    --red:#8c1818; --red-bg:#fdf0f0; --red-border:#e8a8a8;
+    --purple:#481878; --purple-bg:#f2eefa; --purple-border:#c0a0e0;
+    --teal:#085450; --teal-bg:#e4f4f2; --teal-border:#80c8c0;
+    --orange:#7c3800; --orange-bg:#fdf0e4; --orange-border:#e0a860;
+    --indigo:#1c1860; --indigo-bg:#eceaf8; --indigo-border:#a0a0d8;
+    --code-bg:#e8ede5;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);font-size:17px;line-height:1.75;}
+
+  .doc-header{background:linear-gradient(135deg,#061008 0%,#1a4020 55%,#061008 100%);color:#ecf4ec;padding:3rem 4rem 2.5rem;position:relative;overflow:hidden;}
+  .doc-header .subject-tag{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#50c878;margin-bottom:.75rem;}
+  .doc-header h1{font-size:2.4rem;font-weight:300;letter-spacing:-.01em;line-height:1.2;color:#ecf4ec;margin-bottom:.5rem;}
+  .doc-header h1 span{font-weight:600;}
+  .doc-header .subtitle{font-family:'Inter',sans-serif;font-size:14px;color:#308048;margin-top:1rem;}
+
+  .part-banner{padding:.7rem 4rem;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;}
+  .pb-tc{background:#1a3828;} .pb-feat{background:#1a1a5c;} .pb-nb{background:#5c1a1a;} .pb-sent{background:#3a1060;} .pb-eval{background:#085450;}
+
+  .toc{background:var(--surface2);border-bottom:1px solid var(--border);padding:1.5rem 4rem;}
+  .toc h2{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 2rem;}
+  .toc a{font-family:'Inter',sans-serif;font-size:13px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:6px;padding:2px 0;}
+  .toc a:hover{text-decoration:underline;}
+  .toc a .num{font-weight:600;color:var(--text3);min-width:22px;}
+
+  .content{padding:3rem 4rem;max-width:980px;}
+  .section{margin-bottom:4rem;}
+  .section-header{padding-left:1.25rem;margin-bottom:2rem;}
+  .sh-tc{border-left:4px solid #1a3828;} .sh-feat{border-left:4px solid #1a1a5c;}
+  .sh-nb{border-left:4px solid #5c1a1a;} .sh-sent{border-left:4px solid #3a1060;} .sh-eval{border-left:4px solid #085450;}
+  .section-header .section-num{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.25rem;}
+  .section-header h2{font-size:1.8rem;font-weight:600;line-height:1.2;}
+
+  h3{font-size:1.15rem;font-weight:600;color:var(--text);margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+  h4{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 .5rem;}
+  p{margin-bottom:1rem;color:var(--text2);}
+  p:last-child{margin-bottom:0;}
+
+  .callout{border-radius:8px;padding:1rem 1.25rem;margin:1.25rem 0;border-left:3px solid;}
+  .callout-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;}
+  .callout p{margin-bottom:.4rem;font-size:15.5px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout-key{background:var(--accent-bg);border-color:var(--accent);} .callout-key .callout-title{color:var(--accent);} .callout-key p{color:#0c3828;}
+  .callout-tip{background:var(--blue-bg);border-color:var(--blue);} .callout-tip .callout-title{color:var(--blue);} .callout-tip p{color:#102060;}
+  .callout-warn{background:var(--amber-bg);border-color:var(--amber);} .callout-warn .callout-title{color:var(--amber);} .callout-warn p{color:#5a3400;}
+  .callout-exam{background:var(--red-bg);border-color:var(--red);} .callout-exam .callout-title{color:var(--red);} .callout-exam p{color:#6a1010;}
+  .callout-formula{background:var(--purple-bg);border-color:var(--purple);} .callout-formula .callout-title{color:var(--purple);} .callout-formula p{color:#340c54;}
+  .callout-teal{background:var(--teal-bg);border-color:var(--teal);} .callout-teal .callout-title{color:var(--teal);} .callout-teal p{color:#063434;}
+  .callout-orange{background:var(--orange-bg);border-color:var(--orange);} .callout-orange .callout-title{color:var(--orange);} .callout-orange p{color:#4a2000;}
+  .callout-indigo{background:var(--indigo-bg);border-color:var(--indigo);} .callout-indigo .callout-title{color:var(--indigo);} .callout-indigo p{color:#101040;}
+
+  .point-list{list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .point-list li{display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);color:var(--text2);font-size:16px;line-height:1.65;align-items:flex-start;}
+  .point-list li:last-child{border-bottom:none;}
+  .point-list li .bullet{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:var(--text3);min-width:22px;padding-top:3px;}
+  .point-list li strong{color:var(--text);font-weight:600;}
+
+  .step-list{counter-reset:steps;list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .step-list li{counter-increment:steps;display:flex;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);align-items:flex-start;font-size:16px;color:var(--text2);line-height:1.65;}
+  .step-list li:last-child{border-bottom:none;}
+  .step-list li::before{content:counter(steps);font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:var(--surface);background:#061008;border-radius:50%;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .step-list li strong{color:var(--text);}
+
+  .formula-block{background:var(--code-bg);border:1px solid var(--border2);border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .formula-block .formula-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;}
+  .formula{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);line-height:2;}
+  .formula .comment{font-size:12.5px;color:var(--text3);margin-left:.75rem;}
+  .formula .var{color:var(--purple);font-weight:500;} .formula .hl{color:var(--accent);font-weight:500;}
+  .formula .bl{color:var(--blue);font-weight:500;} .formula .gr{color:#1a7a40;font-weight:500;}
+  .formula .rd{color:var(--red);font-weight:500;} .formula .or{color:var(--orange);font-weight:500;}
+
+  .diagram{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin:1.25rem 0;overflow-x:auto;}
+  .diagram pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text2);line-height:1.7;white-space:pre;}
+  .diagram-caption{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);margin-top:.5rem;font-style:italic;}
+
+  .compare-table{width:100%;border-collapse:collapse;margin:1.25rem 0;font-size:15px;}
+  .compare-table th{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--surface2);padding:.75rem 1rem;text-align:left;border:1px solid var(--border);color:var(--text2);}
+  .compare-table td{padding:.7rem 1rem;border:1px solid var(--border);vertical-align:top;color:var(--text2);line-height:1.6;}
+  .compare-table tr:nth-child(even) td{background:var(--surface2);}
+  .compare-table td strong{color:var(--text);}
+
+  .code-block{background:#0e160e;border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .code-block .code-lang{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#3c5c40;margin-bottom:.5rem;}
+  .code-block code{font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.8;white-space:pre;display:block;}
+  .code-block .kw{color:#50c878;} .code-block .fn{color:#80c8f0;} .code-block .st{color:#f0d060;}
+  .code-block .cm{color:#385840;} .code-block .nm{color:#c8a060;} .code-block .va{color:#d8e8d0;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:1.25rem 0;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;}
+  .card .card-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:.4rem;}
+  .card p{font-size:14px;line-height:1.6;}
+
+  /* ── BOW MATRIX VISUAL ── */
+  .bow-table{border-collapse:collapse;margin:1rem 0;font-size:13.5px;}
+  .bow-table th{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;background:var(--surface2);padding:.5rem .75rem;border:1px solid var(--border);color:var(--accent);}
+  .bow-table td{font-family:'JetBrains Mono',monospace;padding:.45rem .75rem;border:1px solid var(--border);text-align:center;color:var(--text2);}
+  .bow-table .doc-col{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);text-align:left;background:var(--surface2);}
+  .bow-table .high{background:#d8f0d8;color:#1a5c38;font-weight:600;}
+  .bow-table .zero{color:#b0b8b0;}
+
+  /* ── TF-IDF HEAT ── */
+  .tfidf-row{display:flex;align-items:center;gap:.75rem;margin:.3rem 0;}
+  .tfidf-word{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent);min-width:120px;}
+  .tfidf-bar{height:20px;background:var(--accent);border-radius:3px;opacity:.75;}
+  .tfidf-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text3);}
+
+  /* ── PIPELINE VISUAL ── */
+  .pipe-h{display:flex;flex-wrap:wrap;gap:0;margin:1.25rem 0;align-items:stretch;}
+  .pipe-stage{background:var(--surface);border:1px solid var(--border);padding:.7rem 1rem;flex:1;min-width:90px;text-align:center;position:relative;}
+  .pipe-stage:first-child{border-radius:8px 0 0 8px;}
+  .pipe-stage:last-child{border-radius:0 8px 8px 0;}
+  .pipe-stage+.pipe-stage{border-left:none;}
+  .pipe-stage::after{content:'→';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--text3);font-size:14px;z-index:1;}
+  .pipe-stage:last-child::after{content:'';}
+  .pipe-stage .ps-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+  .pipe-stage .ps-name{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--text);margin:.2rem 0;}
+  .pipe-stage .ps-ex{font-size:11px;color:var(--text3);font-style:italic;}
+
+  /* ── CONFUSION MATRIX ── */
+  .cm-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:15px;}
+  .cm-table th{padding:.7rem 1rem;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+  .cm-table .cm-rl{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:.7rem 1rem;}
+  .cm-table td{padding:.7rem 1.2rem;border:1px solid var(--border);text-align:center;font-size:16px;font-weight:600;}
+  .cm-tp{background:#c8f0d8;color:#0c3820;} .cm-tn{background:#c8d8f8;color:#102060;}
+  .cm-fp{background:#fce0c8;color:#3c1800;} .cm-fn{background:#fcc8c8;color:#5c1010;}
+  .cm-corner{background:var(--surface2);}
+
+  /* ── WORKED EXAMPLE BOX ── */
+  .example-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+  .example-box .ex-header{background:#061008;color:#a0d0b0;padding:.6rem 1.25rem;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.04em;}
+  .example-box .ex-body{padding:1rem 1.25rem;}
+  .example-box .ex-row{display:flex;gap:1rem;padding:.45rem 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+  .example-box .ex-row:last-child{border-bottom:none;}
+  .example-box .ex-label{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);min-width:130px;padding-top:2px;}
+  .example-box .ex-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);line-height:1.7;}
+
+  /* ── NB CARD ── */
+  .nb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:1.5rem 0;}
+  .nb-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.3rem 1.5rem;position:relative;overflow:hidden;}
+  .nb-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:12px 0 0 12px;}
+  .nbc-green::before{background:#1a5c38;} .nbc-blue::before{background:#1a3060;}
+  .nbc-red::before{background:#8c1818;} .nbc-purple::before{background:#481878;}
+  .nbc-teal::before{background:#085450;} .nbc-amber::before{background:#7a4800;}
+  .nb-card .nb-tag{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+  .nb-card .nb-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:.7rem;}
+  .nb-card p{font-size:14.5px;line-height:1.65;color:var(--text2);margin-bottom:.5rem;}
+  .nb-card p:last-child{margin-bottom:0;}
+  .nb-card .nb-note{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:.5rem;margin-top:.75rem;}
+
+  .summary-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:1.5rem 2rem;margin:2rem 0;}
+  .summary-box h4{margin-top:0;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;}
+
+  code{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--code-bg);border-radius:3px;padding:1px 5px;color:var(--purple);}
+  hr{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+  .doc-footer{background:var(--surface2);border-top:1px solid var(--border);padding:1.5rem 4rem;font-family:'Inter',sans-serif;font-size:13px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;}
+
+  @media(max-width:700px){
+    .doc-header,.toc,.content{padding-left:1.5rem;padding-right:1.5rem;}
+    .doc-header h1{font-size:1.8rem;} .part-banner{padding-left:1.5rem;}
+    .pipe-h{flex-direction:column;} .pipe-stage{border-radius:0 !important;border-left:1px solid var(--border) !important;}
+    .pipe-stage::after{content:'↓';right:50%;bottom:-12px;top:auto;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Natural Language Processing — Module 3</div>
+  <h1><span>Module 3:</span> Text Classification &amp; Sentiment Analysis</h1>
+  <div class="subtitle">ML Overview · Words &amp; Term Frequency · CountVectorizer · TF-IDF · Text Conversion · Confusion Matrix · Naïve Bayes Classifier</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Text Classification Overview</a>
+    <a href="#s2"><span class="num">2.</span> ML for Text — The Pipeline</a>
+    <a href="#s3"><span class="num">3.</span> Words and Term Frequency</a>
+    <a href="#s4"><span class="num">4.</span> Bag-of-Words and CountVectorizer</a>
+    <a href="#s5"><span class="num">5.</span> Inverse Document Frequency</a>
+    <a href="#s6"><span class="num">6.</span> TF-IDF — Full Derivation</a>
+    <a href="#s7"><span class="num">7.</span> Text Conversion Pipeline</a>
+    <a href="#s8"><span class="num">8.</span> Naïve Bayes — Probabilistic Foundation</a>
+    <a href="#s9"><span class="num">9.</span> Naïve Bayes for Text Classification</a>
+    <a href="#s10"><span class="num">10.</span> Naïve Bayes Variants</a>
+    <a href="#s11"><span class="num">11.</span> Sentiment Analysis</a>
+    <a href="#s12"><span class="num">12.</span> Sentiment Analysis — Methods</a>
+    <a href="#s13"><span class="num">13.</span> Confusion Matrix for Text Tasks</a>
+    <a href="#s14"><span class="num">14.</span> Evaluation Metrics for Text Classification</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████ PART 1: TEXT CLASSIFICATION ████████ -->
+<div class="part-banner pb-tc">Part 1 — Text Classification and ML Overview</div>
+
+<!-- ══ SECTION 1 ══ -->
+<div class="section" id="s1">
+  <div class="section-header sh-tc">
+    <div class="section-num">Section 1</div>
+    <h2>Text Classification — Overview</h2>
+  </div>
+
+  <h3>1.1 What is Text Classification?</h3>
+  <p><strong>Text classification</strong> (also called text categorization) is the task of automatically assigning predefined categories to text documents based on their content. It is the most fundamental and widely applied NLP task, forming the backbone of spam detection, sentiment analysis, topic labeling, intent recognition, and content moderation.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Text Classification in One Line</div>
+    <p>Given a text document d and a finite set of classes C = {c₁, c₂, ..., cₙ}, assign the most appropriate class c* ∈ C to d. The assignment is learned from labeled training examples — not hand-coded rules.</p>
+  </div>
+
+  <h3>1.2 Text Classification Tasks — Examples</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Spam Detection</div>
+      <p>Email → {Spam, Not-Spam}. One of the earliest and most successful commercial NLP applications. Naïve Bayes became famous solving this task.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Sentiment Analysis</div>
+      <p>Review → {Positive, Negative, Neutral}. Applied to product reviews, tweets, news articles, customer feedback. Detailed in Part 4.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Topic Classification</div>
+      <p>News article → {Sports, Politics, Technology, Business, Science}. Enables automatic content routing and recommendation.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Intent Detection</div>
+      <p>User utterance → {BookFlight, CancelOrder, GetHelp, CheckStatus}. Core of every chatbot and virtual assistant's NLU layer.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Language Identification</div>
+      <p>Text → {English, Hindi, French, German, ...}. Preprocessing step for multilingual systems. Character n-gram features work well.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Content Moderation</div>
+      <p>Post → {Safe, Hate Speech, Harassment, NSFW}. Critical for social media platforms at scale. Multi-label classification common.</p>
+    </div>
+  </div>
+
+  <h3>1.3 Binary vs Multi-class Text Classification</h3>
+  <table class="compare-table">
+    <tr><th>Type</th><th>Output</th><th>Examples</th><th>Model Output</th></tr>
+    <tr><td><strong>Binary</strong></td><td>2 classes</td><td>Spam/Ham, Positive/Negative</td><td>Single probability P(positive) via sigmoid</td></tr>
+    <tr><td><strong>Multi-class</strong></td><td>K &gt; 2 classes, pick 1</td><td>Topic classification (K topics)</td><td>Probability distribution over K classes via softmax</td></tr>
+    <tr><td><strong>Multi-label</strong></td><td>K classes, pick any subset</td><td>News tags (Tech + Business + AI)</td><td>K independent binary classifiers; sigmoid per class</td></tr>
+    <tr><td><strong>Hierarchical</strong></td><td>Tree of categories</td><td>Amazon product taxonomy</td><td>Cascaded classifiers or flat multi-class over all nodes</td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 2 ══ -->
+<div class="section" id="s2">
+  <div class="section-header sh-tc">
+    <div class="section-num">Section 2</div>
+    <h2>Machine Learning for Text — The Pipeline</h2>
+  </div>
+
+  <h3>2.1 Why ML for Text Classification?</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Scale:</strong> Millions of emails, tweets, reviews, and documents cannot be manually classified. ML models classify at millions-per-second speeds once trained.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Adaptability:</strong> Spammers adapt their language — an ML model can be retrained on new data. Hand-coded rules quickly go stale.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Generalization:</strong> ML models learn patterns from labeled examples and generalize to new, unseen text. They handle paraphrases, synonyms, and novel sentence structures that rule-based systems miss.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Language agnosticism:</strong> The same ML pipeline applies to any language given labeled training data — just change the preprocessing and vocabulary.</div></li>
+  </ul>
+
+  <h3>2.2 The ML Text Classification Pipeline</h3>
+
+  <div class="pipe-h">
+    <div class="pipe-stage">
+      <div class="ps-num">01</div>
+      <div class="ps-name">Raw Text</div>
+      <div class="ps-ex">"I love this product! Highly recommend."</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">02</div>
+      <div class="ps-name">Preprocessing</div>
+      <div class="ps-ex">clean, lowercase, tokenize, remove stopwords</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">03</div>
+      <div class="ps-name">Feature Extraction</div>
+      <div class="ps-ex">BoW / TF-IDF / Embeddings → numeric vector</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">04</div>
+      <div class="ps-name">Model Training</div>
+      <div class="ps-ex">Naïve Bayes / SVM / LR / Neural Net</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">05</div>
+      <div class="ps-name">Prediction</div>
+      <div class="ps-ex">Class label + confidence</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="ps-num">06</div>
+      <div class="ps-name">Evaluation</div>
+      <div class="ps-ex">Accuracy, F1, Confusion Matrix</div>
+    </div>
+  </div>
+
+  <h3>2.3 Overview of ML Algorithms for Text</h3>
+
+  <table class="compare-table">
+    <tr><th>Algorithm</th><th>Feature Input</th><th>Speed</th><th>Interpretable</th><th>Best For</th></tr>
+    <tr><td><strong>Naïve Bayes</strong></td><td>Count vectors / TF-IDF</td><td>Extremely fast</td><td>Yes</td><td>Spam, sentiment; small data; baseline</td></tr>
+    <tr><td><strong>Logistic Regression</strong></td><td>TF-IDF vectors</td><td>Fast</td><td>Yes (via weights)</td><td>Strong baseline for most text tasks</td></tr>
+    <tr><td><strong>SVM (Linear)</strong></td><td>TF-IDF vectors</td><td>Moderate</td><td>Partially</td><td>High-dimensional text; strong performance</td></tr>
+    <tr><td><strong>Random Forest</strong></td><td>TF-IDF or embeddings</td><td>Moderate</td><td>Partially</td><td>Non-linear patterns; feature importance</td></tr>
+    <tr><td><strong>LSTM / GRU</strong></td><td>Word embeddings (sequential)</td><td>Slow</td><td>No</td><td>Long-range dependencies; sentiment</td></tr>
+    <tr><td><strong>BERT (fine-tuned)</strong></td><td>Contextual embeddings</td><td>Very slow (train)</td><td>No</td><td>State-of-the-art; complex tasks</td></tr>
+  </table>
+
+  <div class="callout callout-tip">
+    <div class="callout-title">The Golden Rule — Start Simple</div>
+    <p>Always build a Naïve Bayes or Logistic Regression + TF-IDF baseline first. It is fast, interpretable, and often achieves 85–90% of BERT performance with 1% of the training time. Only invest in complex models if the baseline is clearly insufficient for the task's requirements.</p>
+  </div>
+</div>
+
+<!-- ████████ PART 2: WORDS & FEATURES ████████ -->
+<div class="part-banner pb-feat">Part 2 — Words, Term Frequency, CountVectorizer and TF-IDF</div>
+
+<!-- ══ SECTION 3 ══ -->
+<div class="section" id="s3">
+  <div class="section-header sh-feat">
+    <div class="section-num">Section 3</div>
+    <h2>Words and Term Frequency</h2>
+  </div>
+
+  <h3>3.1 Words as Features — The Fundamental Idea</h3>
+  <p>To apply any ML algorithm to text, we must convert variable-length text strings into fixed-length numeric vectors. The most natural approach: use the words (terms) in the text as features. Each unique word in the vocabulary becomes one dimension. This treats text as a "bag" — ignoring grammar and word order, keeping only what words appear and how often.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">The Bag-of-Words Assumption</div>
+    <p>"A document can be represented as an unordered set of its words, where each word's frequency carries meaning about the document's topic and sentiment." Two documents sharing many words on "machine learning" are likely about the same topic, even if sentence structure differs. The bag-of-words model ignores "not good" vs "good not" — a limitation addressed by n-grams and deeper models.</p>
+  </div>
+
+  <h3>3.2 Term Frequency (TF)</h3>
+  <p><strong>Term Frequency TF(t, d)</strong> counts how many times term t appears in document d. It captures how central a word is to the document's content.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Term Frequency — Three Variants</div>
+    <div class="formula">
+      <span class="hl">Raw count:</span>  TF(t, d) = count of term t in document d<br>
+      <span class="comment">← simple count. Most common form.</span><br><br>
+      <span class="var">Relative frequency:</span>  TF(t, d) = count(t, d) / Σₜ' count(t', d)<br>
+      <span class="comment">← normalize by total words in d. Documents of any length comparable.</span><br><br>
+      <span class="gr">Log normalization:</span>  TF(t, d) = 1 + log(count(t, d))  if count(t,d) &gt; 0, else 0<br>
+      <span class="comment">← reduces impact of very high-frequency words. Diminishing returns.</span><br><br>
+      <span class="or">Binary:</span>  TF(t, d) = 1 if t appears in d, else 0<br>
+      <span class="comment">← presence/absence only. Ignores frequency. Used in some Naïve Bayes variants.</span>
+    </div>
+  </div>
+
+  <h3>3.3 Vocabulary Construction</h3>
+  <ol class="step-list">
+    <li><div><strong>Tokenize</strong> all documents into words.</div></li>
+    <li><div><strong>Normalize:</strong> lowercase, remove punctuation, optionally remove stopwords, stem or lemmatize.</div></li>
+    <li><div><strong>Collect all unique terms</strong> across all training documents → this is the vocabulary V.</div></li>
+    <li><div><strong>Assign index</strong> to each term: V = {term₀:0, term₁:1, ..., term_{|V|-1}:|V|-1}.</div></li>
+    <li><div><strong>Represent each document</strong> as a vector of length |V| where entry j = TF(termⱼ, doc).</div></li>
+  </ol>
+
+  <div class="example-box">
+    <div class="ex-header">Vocabulary Construction — Worked Example</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Doc 1</div><div class="ex-value">"the cat sat on the mat"</div></div>
+      <div class="ex-row"><div class="ex-label">Doc 2</div><div class="ex-value">"the dog sat on the log"</div></div>
+      <div class="ex-row"><div class="ex-label">Doc 3</div><div class="ex-value">"cats and dogs are pets"</div></div>
+      <div class="ex-row"><div class="ex-label">All tokens</div><div class="ex-value">the, cat, sat, on, mat, dog, log, cats, and, dogs, are, pets</div></div>
+      <div class="ex-row"><div class="ex-label">After stopwords</div><div class="ex-value">cat, sat, mat, dog, log, cats, dogs, pets  (removed: the, on, and, are)</div></div>
+      <div class="ex-row"><div class="ex-label">After lemmatize</div><div class="ex-value">cat, sat, mat, dog, log, cat, dog, pet  → unique: {cat, dog, log, mat, pet, sat}</div></div>
+      <div class="ex-row"><div class="ex-label">Vocabulary V</div><div class="ex-value">V = {cat:0, dog:1, log:2, mat:3, pet:4, sat:5}   |V| = 6</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 4 ══ -->
+<div class="section" id="s4">
+  <div class="section-header sh-feat">
+    <div class="section-num">Section 4</div>
+    <h2>Bag-of-Words and CountVectorizer</h2>
+  </div>
+
+  <h3>4.1 Bag-of-Words (BoW) Matrix</h3>
+  <p>The <strong>Bag-of-Words model</strong> represents the entire corpus as a matrix where each row is a document and each column is a vocabulary term. The cell at (row i, column j) contains TF(termⱼ, docᵢ) — how often word j appears in document i.</p>
+
+  <div style="overflow-x:auto;margin:1.25rem 0;">
+    <table class="bow-table">
+      <tr>
+        <th class="cm-corner">Document</th>
+        <th>cat</th><th>dog</th><th>log</th><th>mat</th><th>pet</th><th>sat</th>
+      </tr>
+      <tr>
+        <td class="doc-col">Doc 1: "the cat sat on the mat"</td>
+        <td class="high">1</td><td class="zero">0</td><td class="zero">0</td><td class="high">1</td><td class="zero">0</td><td class="high">1</td>
+      </tr>
+      <tr>
+        <td class="doc-col">Doc 2: "the dog sat on the log"</td>
+        <td class="zero">0</td><td class="high">1</td><td class="high">1</td><td class="zero">0</td><td class="zero">0</td><td class="high">1</td>
+      </tr>
+      <tr>
+        <td class="doc-col">Doc 3: "cats and dogs are pets"</td>
+        <td class="high">1</td><td class="high">1</td><td class="zero">0</td><td class="zero">0</td><td class="high">1</td><td class="zero">0</td>
+      </tr>
+    </table>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Sparsity:</strong> Real BoW matrices are extremely sparse. A corpus of 50,000 documents and vocabulary of 100,000 terms → 5 billion cells, but only ~0.01–0.1% are non-zero. Sparse matrix formats (CSR, CSC) are essential for memory efficiency.</div></li>
+    <li><span class="bullet">▸</span><div><strong>High dimensionality:</strong> The vocabulary size becomes the feature space dimensionality. Large corpora have 50,000–500,000 unique terms after preprocessing. This is the "curse of dimensionality" for text — handled by vocabulary limits, min_df, and max_df filters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Word order lost:</strong> "The cat bit the dog" and "The dog bit the cat" have identical BoW representations. Bigrams and trigrams partially address this by treating word pairs/triples as features.</div></li>
+  </ul>
+
+  <h3>4.2 CountVectorizer — Scikit-learn Implementation</h3>
+  <p><code>CountVectorizer</code> from scikit-learn is the standard tool for converting a collection of text documents to a matrix of token counts (raw TF values). It handles tokenization, lowercasing, stopword removal, vocabulary building, and matrix construction in one step.</p>
+
+  <div class="code-block">
+    <div class="code-lang">Python — CountVectorizer Deep Dive</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">CountVectorizer</span>
+<span class="kw">import</span> <span class="va">pandas</span> <span class="kw">as</span> <span class="va">pd</span>
+
+<span class="va">corpus</span> = [
+    <span class="st">"I love this product it is amazing"</span>,
+    <span class="st">"This product is terrible I hate it"</span>,
+    <span class="st">"Amazing quality highly recommended"</span>,
+    <span class="st">"Worst purchase ever do not buy"</span>,
+]
+
+<span class="cm"># Basic CountVectorizer</span>
+<span class="va">cv</span> = <span class="fn">CountVectorizer</span>(
+    <span class="va">lowercase</span>=<span class="kw">True</span>,            <span class="cm"># convert to lowercase</span>
+    <span class="va">stop_words</span>=<span class="st">'english'</span>,      <span class="cm"># remove English stopwords</span>
+    <span class="va">min_df</span>=<span class="nm">1</span>,                  <span class="cm"># min doc frequency (ignore rarer terms)</span>
+    <span class="va">max_df</span>=<span class="nm">0.95</span>,               <span class="cm"># max doc freq (ignore terms in 95%+ docs)</span>
+    <span class="va">max_features</span>=<span class="nm">5000</span>,         <span class="cm"># limit vocabulary size</span>
+    <span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>),          <span class="cm"># include unigrams AND bigrams</span>
+    <span class="va">token_pattern</span>=<span class="st">r'\b[a-z]{2,}\b'</span>  <span class="cm"># only words 2+ chars</span>
+)
+
+<span class="va">X</span> = <span class="va">cv</span>.<span class="fn">fit_transform</span>(<span class="va">corpus</span>)   <span class="cm"># sparse matrix (4 docs × vocab_size)</span>
+
+<span class="fn">print</span>(<span class="st">"Vocabulary:"</span>, <span class="va">cv</span>.<span class="fn">get_feature_names_out</span>())
+<span class="fn">print</span>(<span class="st">"Matrix shape:"</span>, <span class="va">X</span>.<span class="fn">shape</span>)
+<span class="fn">print</span>(<span class="st">"Dense matrix:\n"</span>, <span class="va">X</span>.<span class="fn">toarray</span>())
+
+<span class="cm"># View as DataFrame</span>
+<span class="va">df</span> = <span class="fn">pd.DataFrame</span>(<span class="va">X</span>.<span class="fn">toarray</span>(), <span class="va">columns</span>=<span class="va">cv</span>.<span class="fn">get_feature_names_out</span>())
+<span class="fn">print</span>(<span class="va">df</span>)
+
+<span class="cm"># CORRECT: fit on train, transform both</span>
+<span class="va">cv_prod</span> = <span class="fn">CountVectorizer</span>()
+<span class="va">X_train_cv</span> = <span class="va">cv_prod</span>.<span class="fn">fit_transform</span>(<span class="va">train_docs</span>)   <span class="cm"># learn vocab from train</span>
+<span class="va">X_test_cv</span>  = <span class="va">cv_prod</span>.<span class="fn">transform</span>(<span class="va">test_docs</span>)        <span class="cm"># apply same vocab to test</span></code>
+  </div>
+
+  <h3>4.3 CountVectorizer Parameters — Key Choices</h3>
+
+  <table class="compare-table">
+    <tr><th>Parameter</th><th>Default</th><th>Effect</th><th>Guidance</th></tr>
+    <tr><td><strong>min_df</strong></td><td>1</td><td>Ignore terms appearing in fewer than min_df documents</td><td>Set to 2–5 to remove typos and rare noise. Reduces vocab by 40–60%.</td></tr>
+    <tr><td><strong>max_df</strong></td><td>1.0</td><td>Ignore terms appearing in more than max_df fraction of documents</td><td>Set to 0.85–0.95 to remove domain-specific stopwords not in NLTK list.</td></tr>
+    <tr><td><strong>max_features</strong></td><td>None</td><td>Keep only top max_features most frequent terms</td><td>Set 5,000–50,000 for speed/memory. Critical for very large corpora.</td></tr>
+    <tr><td><strong>ngram_range</strong></td><td>(1,1)</td><td>(min_n, max_n) — range of n-gram sizes to include</td><td>(1,2) adds bigrams, capturing "not good", "highly recommended". Powerful for sentiment.</td></tr>
+    <tr><td><strong>analyzer</strong></td><td>'word'</td><td>'word', 'char', or 'char_wb' — what tokens represent</td><td>'char' (2,4) great for noisy text, spelling variants, morphology-rich languages.</td></tr>
+    <tr><td><strong>stop_words</strong></td><td>None</td><td>'english' or custom list</td><td>Use for BoW classification. DON'T use if n-grams or Naïve Bayes sentiment — "not" is critical.</td></tr>
+  </table>
+
+  <h3>4.4 Limitations of Pure Count Vectors</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Dominated by frequent words:</strong> "the", "a", "is", "of" appear in every document. Even after stopword removal, domain-specific frequent words (in medical text: "patient", "treatment") dominate raw counts and dilute discriminative signal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>No importance weighting:</strong> Raw counts treat all words equally. "machine" appearing twice is twice as important as "learning" appearing once — but neither's frequency reflects its discriminative power for the topic.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Document length bias:</strong> Longer documents naturally have higher counts for all terms. A short positive review with "excellent" once and a long lukewarm review with "excellent" twice might rank equally — unfairly.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Solution — TF-IDF:</strong> Weights each term by how informative it is across the corpus — high weight for terms that are frequent in a specific document but rare across documents. Solves all three problems above.</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 5 ══ -->
+<div class="section" id="s5">
+  <div class="section-header sh-feat">
+    <div class="section-num">Section 5</div>
+    <h2>Inverse Document Frequency (IDF)</h2>
+  </div>
+
+  <h3>5.1 The IDF Intuition</h3>
+  <p>A word that appears in almost every document (like "the" or "is") carries no information about what makes any specific document unique — it can't help distinguish a sports article from a finance article. Conversely, a word like "photosynthesis" appearing in only a handful of biology documents tells us a lot about those documents' content. <strong>IDF measures this rarity signal.</strong></p>
+
+  <div class="formula-block">
+    <div class="formula-label">Inverse Document Frequency (IDF) — Variants</div>
+    <div class="formula">
+      N  = total number of documents in the corpus<br>
+      df(t) = number of documents containing term t<br><br>
+      <span class="hl">Standard IDF:</span>      IDF(t) = log( N / df(t) )<br>
+      <span class="var">Smoothed IDF:</span>      IDF(t) = log( N / (df(t) + 1) ) + 1    ← sklearn default<br>
+      <span class="gr">sklearn IDF:</span>       IDF(t) = log( (N+1) / (df(t)+1) ) + 1  ← add-one smoothing<br><br>
+      Interpretation:<br>
+      Term in ALL docs:  df(t) = N → IDF = log(1) = 0  ← zero weight, useless<br>
+      Term in 1 doc:     df(t) = 1 → IDF = log(N) ← maximum weight, very distinctive<br>
+      Term in 10% docs:  df(t) = N/10 → IDF = log(10) ≈ 2.3<br><br>
+      Smoothing avoids zero-IDF for terms appearing in all documents and
+      zero-division for terms not in training vocabulary.
+    </div>
+  </div>
+
+  <h3>5.2 IDF Values — Concrete Example</h3>
+
+  <div class="example-box">
+    <div class="ex-header">IDF Calculation — Corpus of 100 Documents</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Corpus size</div><div class="ex-value">N = 100 documents</div></div>
+      <div class="ex-row"><div class="ex-label">"the" (df=100)</div><div class="ex-value">IDF = log(100/100) = log(1) = 0.00  ← useless, appears everywhere</div></div>
+      <div class="ex-row"><div class="ex-label">"machine" (df=50)</div><div class="ex-value">IDF = log(100/50) = log(2) = 0.693  ← low, common across half corpus</div></div>
+      <div class="ex-row"><div class="ex-label">"learning" (df=30)</div><div class="ex-value">IDF = log(100/30) = log(3.33) = 1.20  ← moderate</div></div>
+      <div class="ex-row"><div class="ex-label">"backprop" (df=5)</div><div class="ex-value">IDF = log(100/5)  = log(20) = 3.00  ← high, rare and distinctive</div></div>
+      <div class="ex-row"><div class="ex-label">"LSTM" (df=2)</div><div class="ex-value">IDF = log(100/2)  = log(50) = 3.91  ← very distinctive</div></div>
+      <div class="ex-row"><div class="ex-label">"XTRANSFORMER" (df=1)</div><div class="ex-value">IDF = log(100/1)  = log(100) = 4.61  ← maximum distinction</div></div>
+    </div>
+  </div>
+
+  <h3>5.3 Visualizing IDF Weight Impact</h3>
+
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin:1.25rem 0;">
+    <p style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:.75rem;">IDF weights for selected terms (N=100 docs)</p>
+    <div class="tfidf-row"><span class="tfidf-word">"the"</span><div class="tfidf-bar" style="width:0px"></div><span class="tfidf-val">0.00</span></div>
+    <div class="tfidf-row"><span class="tfidf-word">"machine"</span><div class="tfidf-bar" style="width:40px"></div><span class="tfidf-val">0.69</span></div>
+    <div class="tfidf-row"><span class="tfidf-word">"learning"</span><div class="tfidf-bar" style="width:70px"></div><span class="tfidf-val">1.20</span></div>
+    <div class="tfidf-row"><span class="tfidf-word">"backprop"</span><div class="tfidf-bar" style="width:174px"></div><span class="tfidf-val">3.00</span></div>
+    <div class="tfidf-row"><span class="tfidf-word">"LSTM"</span><div class="tfidf-bar" style="width:227px"></div><span class="tfidf-val">3.91</span></div>
+    <div class="tfidf-row"><span class="tfidf-word">"XTRANSFORMER"</span><div class="tfidf-bar" style="width:267px"></div><span class="tfidf-val">4.61</span></div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 ══ -->
+<div class="section" id="s6">
+  <div class="section-header sh-feat">
+    <div class="section-num">Section 6</div>
+    <h2>TF-IDF — Full Derivation and TfidfVectorizer</h2>
+  </div>
+
+  <h3>6.1 TF-IDF — The Combined Weight</h3>
+  <p><strong>TF-IDF (Term Frequency — Inverse Document Frequency)</strong> multiplies the term frequency (how often the word appears in the document) by the inverse document frequency (how rare the word is across the corpus). This gives high weight to words that are frequent in a specific document but rare elsewhere — the most informative words for distinguishing documents.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">TF-IDF — Complete Formula (sklearn default)</div>
+    <div class="formula">
+      <span class="hl">TF-IDF(t, d, D)</span>  =  TF(t, d)  ×  IDF(t, D)<br><br>
+      TF(t, d)   = count(t in d) / total_words_in_d   ← relative frequency<br>
+      IDF(t, D)  = log( (N+1)/(df(t)+1) ) + 1         ← smoothed IDF<br><br>
+      N     = |D| = total documents in corpus<br>
+      df(t) = number of docs in D containing term t<br><br>
+      After computing TF-IDF matrix, each row is L2-normalized:<br>
+      <span class="var">v_normalized = v / ‖v‖₂</span>   ← divide by Euclidean norm<br>
+      <span class="comment">← ensures documents of different lengths have comparable vectors</span><br><br>
+      High TF-IDF: word appears OFTEN in THIS doc but RARELY across all docs<br>
+      → Highly discriminative for this document's topic<br><br>
+      Low TF-IDF: word appears in MANY docs OR rarely in this doc<br>
+      → Not useful for distinguishing this document
+    </div>
+  </div>
+
+  <h3>6.2 TF-IDF — Full Worked Example</h3>
+
+  <div class="example-box">
+    <div class="ex-header">TF-IDF Calculation — "machine learning deep learning" in 4-document corpus</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Corpus (N=4)</div><div class="ex-value">D1:"machine learning deep learning" | D2:"machine learning" | D3:"deep neural networks" | D4:"learning from data"</div></div>
+      <div class="ex-row"><div class="ex-label">Focus: Doc D1</div><div class="ex-value">"machine learning deep learning"  (4 words total)</div></div>
+      <div class="ex-row"><div class="ex-label">TF("machine", D1)</div><div class="ex-value">1/4 = 0.25  (appears once in 4-word doc)</div></div>
+      <div class="ex-row"><div class="ex-label">TF("learning", D1)</div><div class="ex-value">2/4 = 0.50  (appears TWICE — more central)</div></div>
+      <div class="ex-row"><div class="ex-label">TF("deep", D1)</div><div class="ex-value">1/4 = 0.25</div></div>
+      <div class="ex-row"><div class="ex-label">df("machine")</div><div class="ex-value">2  (in D1 and D2) → IDF = log(4/2) = 0.693</div></div>
+      <div class="ex-row"><div class="ex-label">df("learning")</div><div class="ex-value">3  (in D1, D2, D4) → IDF = log(4/3) = 0.288  ← lower, more common</div></div>
+      <div class="ex-row"><div class="ex-label">df("deep")</div><div class="ex-value">2  (in D1 and D3) → IDF = log(4/2) = 0.693</div></div>
+      <div class="ex-row"><div class="ex-label">TFIDF("machine",D1)</div><div class="ex-value">0.25 × 0.693 = 0.173</div></div>
+      <div class="ex-row"><div class="ex-label">TFIDF("learning",D1)</div><div class="ex-value">0.50 × 0.288 = 0.144  ← lower despite appearing TWICE (less rare)</div></div>
+      <div class="ex-row"><div class="ex-label">TFIDF("deep",D1)</div><div class="ex-value">0.25 × 0.693 = 0.173</div></div>
+      <div class="ex-row"><div class="ex-label">Key insight</div><div class="ex-value">"learning" appears more in D1 but has lower TF-IDF because it's more common across the corpus. TF-IDF correctly penalizes common words.</div></div>
+    </div>
+  </div>
+
+  <h3>6.3 TfidfVectorizer — Scikit-learn Implementation</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — TfidfVectorizer with Full Options</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LogisticRegression</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+
+<span class="va">train_docs</span> = [<span class="st">"I love this movie it was amazing"</span>,
+               <span class="st">"Terrible film I hated every minute"</span>,
+               <span class="st">"Outstanding performance highly recommend"</span>,
+               <span class="st">"Boring and predictable waste of time"</span>]
+<span class="va">train_labels</span> = [<span class="nm">1</span>, <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">0</span>]  <span class="cm"># 1=positive, 0=negative</span>
+
+<span class="va">tfidf</span> = <span class="fn">TfidfVectorizer</span>(
+    <span class="va">ngram_range</span>=(<span class="nm">1</span>, <span class="nm">2</span>),       <span class="cm"># unigrams + bigrams</span>
+    <span class="va">sublinear_tf</span>=<span class="kw">True</span>,        <span class="cm"># use log(TF)+1 instead of raw TF</span>
+    <span class="va">min_df</span>=<span class="nm">1</span>,
+    <span class="va">max_df</span>=<span class="nm">0.9</span>,               <span class="cm"># ignore terms in 90%+ docs</span>
+    <span class="va">norm</span>=<span class="st">'l2'</span>,                 <span class="cm"># L2-normalize each document vector</span>
+    <span class="va">max_features</span>=<span class="nm">10000</span>,
+    <span class="va">stop_words</span>=<span class="st">'english'</span>
+)
+
+<span class="cm"># Build complete pipeline: vectorize → classify</span>
+<span class="va">pipeline</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'tfidf'</span>,      <span class="va">tfidf</span>),
+    (<span class="st">'classifier'</span>, <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">1.0</span>))
+])
+<span class="va">pipeline</span>.<span class="fn">fit</span>(<span class="va">train_docs</span>, <span class="va">train_labels</span>)
+
+<span class="cm"># Predict new document</span>
+<span class="va">new_doc</span> = [<span class="st">"This film was absolutely wonderful"</span>]
+<span class="fn">print</span>(<span class="va">pipeline</span>.<span class="fn">predict</span>(<span class="va">new_doc</span>))           <span class="cm"># → [1]  (positive)</span>
+<span class="fn">print</span>(<span class="va">pipeline</span>.<span class="fn">predict_proba</span>(<span class="va">new_doc</span>))    <span class="cm"># → [[0.12, 0.88]]</span>
+
+<span class="cm"># Inspect top TF-IDF features</span>
+<span class="va">feature_names</span> = <span class="va">tfidf</span>.<span class="fn">get_feature_names_out</span>()
+<span class="va">X</span> = <span class="va">tfidf</span>.<span class="fn">transform</span>(<span class="va">train_docs</span>)
+<span class="fn">print</span>(<span class="st">"Top features for Doc 1:"</span>,
+      <span class="fn">sorted</span>(<span class="fn">zip</span>(<span class="va">X</span>[<span class="nm">0</span>].<span class="fn">toarray</span>()[<span class="nm">0</span>], <span class="va">feature_names</span>), <span class="va">reverse</span>=<span class="kw">True</span>)[:<span class="nm">5</span>])</code>
+  </div>
+
+  <h3>6.4 TF-IDF vs CountVectorizer — When to Use Which</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>CountVectorizer (Raw TF)</th><th>TfidfVectorizer (TF-IDF)</th></tr>
+    <tr><td><strong>What it captures</strong></td><td>Raw word frequency in document</td><td>Word importance (frequency penalized by commonness)</td></tr>
+    <tr><td><strong>Common word handling</strong></td><td>Over-weights common words ("the", "a")</td><td>Automatically down-weights common words</td></tr>
+    <tr><td><strong>Document length</strong></td><td>Sensitive — longer docs have higher counts</td><td>L2 normalization makes length-independent</td></tr>
+    <tr><td><strong>Naïve Bayes</strong></td><td>Use raw counts (MultinomialNB requires non-negative integers)</td><td>Use for LinearSVC, Logistic Regression</td></tr>
+    <tr><td><strong>General preference</strong></td><td>Naïve Bayes, short texts</td><td>Almost everything else — TF-IDF almost always better</td></tr>
+    <tr><td><strong>sklearn class</strong></td><td>CountVectorizer</td><td>TfidfVectorizer (= CountVectorizer + TF-IDF transform)</td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 7 ══ -->
+<div class="section" id="s7">
+  <div class="section-header sh-feat">
+    <div class="section-num">Section 7</div>
+    <h2>Text Conversion Pipeline — End to End</h2>
+  </div>
+
+  <h3>7.1 Complete Text-to-Vector Conversion</h3>
+  <p>Converting raw text to ML-ready feature vectors involves a sequence of decisions. Each step transforms the representation, filtering noise and capturing relevant signal:</p>
+
+  <div class="diagram">
+    <pre>
+  RAW TEXT: "The BEST movie I've EVER seen!!! 😍 Highly recommend 100%"
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 1: TEXT CLEANING                                           │
+  │ • Lowercase: "the best movie i've ever seen!!! 😍 highly..."   │
+  │ • Remove special chars/emojis: "the best movie ive ever seen"  │
+  │ • Expand contractions: "i've" → "i have"                       │
+  └───┬──────────────────────────────────────────────────────────────┘
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 2: TOKENIZATION                                            │
+  │ ["the","best","movie","i","have","ever","seen","highly","recommend"]│
+  └───┬──────────────────────────────────────────────────────────────┘
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 3: STOPWORD REMOVAL                                        │
+  │ ["best","movie","ever","seen","highly","recommend"]             │
+  │ (removed: the, i, have)                                         │
+  └───┬──────────────────────────────────────────────────────────────┘
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 4: STEMMING / LEMMATIZATION                                │
+  │ ["best","movi","ever","seen","highli","recommend"]   ← stem     │
+  │ ["good","movie","ever","see","highly","recommend"]   ← lemma    │
+  └───┬──────────────────────────────────────────────────────────────┘
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 5: VOCABULARY LOOKUP + VECTORIZATION                       │
+  │ CountVectorizer / TfidfVectorizer                               │
+  │ → Sparse vector: [0,0,...,1,...,0,0,...,2,...,0]               │
+  │    (|V| dimensions, mostly zeros)                               │
+  └───┬──────────────────────────────────────────────────────────────┘
+      │
+  ┌───▼──────────────────────────────────────────────────────────────┐
+  │ STEP 6: ML MODEL                                                │
+  │ Naïve Bayes / Logistic Regression / SVM → class label          │
+  └──────────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 7.1 — Complete text-to-prediction conversion pipeline. Each step reduces noise and increases signal quality.</div>
+  </div>
+
+  <h3>7.2 N-gram Features for Text Classification</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Why n-grams matter for classification:</strong> "not good" is negative but "good" is positive — unigrams miss the negation. "highly recommend" strongly signals positive sentiment as a bigram. "customer service" is a product feature. Bigrams capture local context that dramatically improves accuracy.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Typical setting:</strong> ngram_range=(1,2) in TfidfVectorizer adds all unigrams and bigrams. For spam detection: (1,3) including trigrams often helps capture phishing phrases like "click here now."</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dimensionality explosion:</strong> Adding bigrams can multiply vocabulary size by 5–20×. Use max_features to limit. For bigrams: typically keep top 50,000–100,000 features after TF-IDF weighting selects most informative ones.</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 3: NAÏVE BAYES ████████ -->
+<div class="part-banner pb-nb">Part 3 — Naïve Bayes Classifier</div>
+
+<!-- ══ SECTION 8 ══ -->
+<div class="section" id="s8">
+  <div class="section-header sh-nb">
+    <div class="section-num">Section 8</div>
+    <h2>Naïve Bayes — Probabilistic Foundation</h2>
+  </div>
+
+  <h3>8.1 Bayes' Theorem — The Core</h3>
+  <p>Naïve Bayes is a probabilistic classifier grounded in <strong>Bayes' theorem</strong>. It computes the posterior probability of each class given the observed features, then picks the class with the highest probability.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Bayes' Theorem</div>
+    <div class="formula">
+      <span class="hl">P(c | d) = P(d | c) · P(c) / P(d)</span><br><br>
+      P(c | d) = posterior   — probability of class c given document d<br>
+      P(d | c) = likelihood  — probability of seeing document d if class is c<br>
+      P(c)     = prior       — baseline probability of class c (from training set)<br>
+      P(d)     = evidence    — probability of document d (same for all classes)<br><br>
+      For classification, we want:<br>
+      <span class="var">c* = argmax_c P(c | d) = argmax_c P(d | c) · P(c)</span><br>
+      <span class="comment">← P(d) is a constant → can be ignored for argmax</span>
+    </div>
+  </div>
+
+  <h3>8.2 The Naïve Assumption — Conditional Independence</h3>
+
+  <div class="callout callout-formula">
+    <div class="callout-title">The Naïve Bayes Assumption</div>
+    <p>Given the class label c, all features (words) are <strong>conditionally independent</strong> of each other:</p>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:14px;margin:.5rem 0;"><strong>P(w₁, w₂, ..., wₙ | c) = P(w₁|c) · P(w₂|c) · ... · P(wₙ|c) = Πᵢ P(wᵢ|c)</strong></p>
+    <p>This is "naïve" because it's clearly not true — words co-occur ("machine" and "learning" appear together). But despite this unrealistic assumption, Naïve Bayes achieves surprisingly good performance in practice, especially for text classification where feature independence is a reasonable approximation.</p>
+  </div>
+
+  <h3>8.3 Naïve Bayes Classifier — Full Derivation</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Naïve Bayes for Text Classification — Step by Step</div>
+    <div class="formula">
+      Document d = (w₁, w₂, ..., wₙ)  ← sequence of n words<br>
+      Classes: C = {c₁, c₂, ..., cₖ}<br><br>
+      Posterior by Bayes' theorem:<br>
+      P(c | d) = P(d | c) · P(c) / P(d)<br><br>
+      Apply naïve independence:<br>
+      P(d | c) = Πᵢ P(wᵢ | c)<br><br>
+      Classification rule:<br>
+      <span class="hl">c* = argmax_c P(c) · Πᵢ P(wᵢ | c)</span><br><br>
+      In log space (avoids numerical underflow for long documents):<br>
+      <span class="var">c* = argmax_c [ log P(c) + Σᵢ log P(wᵢ | c) ]</span><br><br>
+      Learning (estimating parameters from training data):<br>
+      <span class="gr">P(c)</span> = count(docs in class c) / count(total docs)    ← prior<br>
+      <span class="gr">P(w|c)</span> = count(w in class c docs) / count(all words in class c docs)  ← likelihood
+    </div>
+  </div>
+
+  <h3>8.4 Why Log Space? — Numerical Underflow</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The problem:</strong> P(w|c) for a single word is typically 0.001–0.00001. For a document of 100 words: Π P(wᵢ|c) ≈ 0.001^100 = 10^{-300} → underflows to 0.0 in floating point. We can't compare 0.0 to 0.0.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Log transformation:</strong> log(Π P(wᵢ|c)) = Σ log P(wᵢ|c). Log of probabilities is in range (−∞, 0). For 100 words: Σ log(0.001) = 100 × (−6.9) = −690. Perfectly representable as a float. argmax of logs = argmax of originals (log is monotone).</div></li>
+  </ul>
+
+  <h3>8.5 Laplace Smoothing — Handling Zero Probabilities</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Laplace (Add-1) Smoothing for Naïve Bayes</div>
+    <div class="formula">
+      Problem: A word not seen in training for class c gives P(w|c)=0<br>
+      → Entire product P(d|c) = 0 for any doc containing this word<br>
+      → Posterior P(c|d) = 0 regardless of other evidence. WRONG!<br><br>
+      Laplace (Add-1) smoothed estimate:<br>
+      <span class="hl">P(w | c) = (count(w, c) + 1) / (count(all words in c) + |V|)</span><br><br>
+      count(w, c) = times word w appeared in class c documents<br>
+      count(all, c) = total word tokens in class c documents<br>
+      |V| = vocabulary size (normalizes so probabilities sum to 1)<br><br>
+      Add-k smoothing (more general):<br>
+      <span class="var">P(w | c) = (count(w, c) + k) / (count(all, c) + k·|V|)</span><br>
+      k = 0.1–1.0; k&lt;1 adds less smoothing (useful when k=1 over-smooths)
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 9 ══ -->
+<div class="section" id="s9">
+  <div class="section-header sh-nb">
+    <div class="section-num">Section 9</div>
+    <h2>Naïve Bayes — Complete Worked Example</h2>
+  </div>
+
+  <h3>9.1 Training the Naïve Bayes Classifier</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Naïve Bayes Training — Spam Classifier (Worked Example)</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Training data</div><div class="ex-value">5 emails: 3 Spam, 2 Not-Spam</div></div>
+      <div class="ex-row"><div class="ex-label">Spam emails</div><div class="ex-value">S1:"win free money now" | S2:"free gift claim now" | S3:"win big money free"</div></div>
+      <div class="ex-row"><div class="ex-label">Not-Spam emails</div><div class="ex-value">H1:"meeting is scheduled tomorrow" | H2:"project update is ready"</div></div>
+      <div class="ex-row"><div class="ex-label">P(Spam)</div><div class="ex-value">3/5 = 0.600</div></div>
+      <div class="ex-row"><div class="ex-label">P(Ham)</div><div class="ex-value">2/5 = 0.400</div></div>
+      <div class="ex-row"><div class="ex-label">Words in Spam</div><div class="ex-value">win(2), free(3), money(2), now(2), gift(1), claim(1), big(1) → Total=12</div></div>
+      <div class="ex-row"><div class="ex-label">Words in Ham</div><div class="ex-value">meeting(1), is(2), scheduled(1), tomorrow(1), project(1), update(1), ready(1) → Total=8</div></div>
+      <div class="ex-row"><div class="ex-label">Vocabulary |V|</div><div class="ex-value">14 unique words (across all emails)</div></div>
+      <div class="ex-row"><div class="ex-label">P("free"|Spam)</div><div class="ex-value">(3+1)/(12+14) = 4/26 = 0.154  ← with Laplace smoothing</div></div>
+      <div class="ex-row"><div class="ex-label">P("free"|Ham)</div><div class="ex-value">(0+1)/(8+14) = 1/22 = 0.045  ← never appeared → smoothed</div></div>
+      <div class="ex-row"><div class="ex-label">P("win"|Spam)</div><div class="ex-value">(2+1)/(12+14) = 3/26 = 0.115</div></div>
+      <div class="ex-row"><div class="ex-label">P("win"|Ham)</div><div class="ex-value">(0+1)/(8+14) = 1/22 = 0.045</div></div>
+    </div>
+  </div>
+
+  <h3>9.2 Classifying a New Email</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Naïve Bayes Prediction — New email: "win free prize"</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">New email</div><div class="ex-value">"win free prize"  → tokens: [win, free, prize]</div></div>
+      <div class="ex-row"><div class="ex-label">P("prize"|Spam)</div><div class="ex-value">(0+1)/(12+14) = 1/26 = 0.038  ← unseen word, smoothed</div></div>
+      <div class="ex-row"><div class="ex-label">P("prize"|Ham)</div><div class="ex-value">(0+1)/(8+14) = 1/22 = 0.045</div></div>
+      <div class="ex-row"><div class="ex-label">Score(Spam)</div><div class="ex-value">log P(Spam) + log P("win"|Spam) + log P("free"|Spam) + log P("prize"|Spam)</div></div>
+      <div class="ex-row"><div class="ex-label"></div><div class="ex-value">= log(0.6) + log(0.115) + log(0.154) + log(0.038)</div></div>
+      <div class="ex-row"><div class="ex-label"></div><div class="ex-value">= −0.511 + (−2.161) + (−1.871) + (−3.270) = −7.813</div></div>
+      <div class="ex-row"><div class="ex-label">Score(Ham)</div><div class="ex-value">log(0.4) + log(0.045) + log(0.045) + log(0.045)</div></div>
+      <div class="ex-row"><div class="ex-label"></div><div class="ex-value">= −0.916 + (−3.101) + (−3.101) + (−3.101) = −10.219</div></div>
+      <div class="ex-row"><div class="ex-label">Decision</div><div class="ex-value">Score(Spam) = −7.813  &gt;  Score(Ham) = −10.219</div></div>
+      <div class="ex-row"><div class="ex-label">Prediction</div><div class="ex-value">SPAM ✓  (higher log-probability wins)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 10 ══ -->
+<div class="section" id="s10">
+  <div class="section-header sh-nb">
+    <div class="section-num">Section 10</div>
+    <h2>Naïve Bayes Variants</h2>
+  </div>
+
+  <h3>10.1 Three Main Variants</h3>
+
+  <div class="nb-grid">
+
+    <div class="nb-card nbc-green">
+      <div class="nb-tag">Variant 1 — Most Common for NLP</div>
+      <div class="nb-title">Multinomial Naïve Bayes</div>
+      <p><strong>Input features:</strong> Word count vectors (CountVectorizer output). Works with non-negative integer or float counts.</p>
+      <p><strong>Likelihood model:</strong> P(d|c) = multinomial distribution over word counts. Models the probability of generating a document with exactly the observed word frequencies from class c's word distribution.</p>
+      <p><strong>Best for:</strong> Text classification with bag-of-words features. Spam detection, topic classification, sentiment analysis. The standard choice for text.</p>
+      <div class="nb-note">sklearn: MultinomialNB(alpha=1.0). Use with CountVectorizer. alpha = Laplace smoothing parameter.</div>
+    </div>
+
+    <div class="nb-card nbc-blue">
+      <div class="nb-tag">Variant 2 — Binary Features</div>
+      <div class="nb-title">Bernoulli Naïve Bayes</div>
+      <p><strong>Input features:</strong> Binary word presence/absence vectors (1 if word in doc, 0 otherwise). Ignores frequency — only whether a word appears at all.</p>
+      <p><strong>Likelihood model:</strong> P(d|c) = Πᵢ [P(wᵢ|c)^bᵢ · (1−P(wᵢ|c))^(1−bᵢ)] where bᵢ = 1 if word wᵢ appears in d. Explicitly penalizes absence of words — missing a spam word counts as evidence against spam.</p>
+      <p><strong>Best for:</strong> Short documents (tweets, titles) where frequency is less informative than presence. Binary text features.</p>
+      <div class="nb-note">sklearn: BernoulliNB(). Use with CountVectorizer(binary=True) to convert counts to 0/1.</div>
+    </div>
+
+    <div class="nb-card nbc-red">
+      <div class="nb-tag">Variant 3 — Continuous Features</div>
+      <div class="nb-title">Gaussian Naïve Bayes</div>
+      <p><strong>Input features:</strong> Continuous-valued features. Assumes features follow a Gaussian (normal) distribution within each class.</p>
+      <p><strong>Likelihood model:</strong> P(xᵢ|c) = N(xᵢ; μᵢc, σᵢc²) — Gaussian with class-specific mean and variance per feature. Parameters (μᵢc, σᵢc²) estimated from training data.</p>
+      <p><strong>Best for:</strong> Non-text features — continuous measurements (temperature, height, sensor readings). Less common for NLP but used when features are TF-IDF float vectors.</p>
+      <div class="nb-note">sklearn: GaussianNB(). Does not use Laplace smoothing (variance takes care of zero-probability issues).</div>
+    </div>
+
+    <div class="nb-card nbc-purple">
+      <div class="nb-tag">Variant 4 — Modern NLP</div>
+      <div class="nb-title">Complement Naïve Bayes (CNB)</div>
+      <p><strong>Idea:</strong> Addresses Multinomial NB's bias toward majority class by training each class classifier using ALL OTHER classes' data as the "complement." Particularly useful for imbalanced datasets.</p>
+      <p><strong>How it works:</strong> P(w|c̄) = probability of word w across all classes EXCEPT c. The class whose complement least explains the document is chosen.</p>
+      <p><strong>Best for:</strong> Imbalanced text classification where MultinomialNB over-predicts the majority class. Often outperforms MultinomialNB on text benchmarks.</p>
+      <div class="nb-note">sklearn: ComplementNB(alpha=1.0). Usually better than MultinomialNB for unbalanced text classification.</div>
+    </div>
+
+  </div>
+
+  <h3>10.2 Naïve Bayes — Advantages and Disadvantages</h3>
+
+  <table class="compare-table">
+    <tr><th>Advantages</th><th>Disadvantages</th></tr>
+    <tr>
+      <td><strong>Extremely fast:</strong> O(|V| × k) training — just count word frequencies per class. No iterative optimization. Classifies millions of documents per second.</td>
+      <td><strong>Naïve independence assumption:</strong> Words are never truly independent — "machine" and "learning" co-occur. Violating this means probability estimates are often wrong (but classification decisions can still be correct).</td>
+    </tr>
+    <tr>
+      <td><strong>Works well with little data:</strong> Estimates are stable even with small training sets because parameters are simple counts, not gradient-descent solutions.</td>
+      <td><strong>Poor probability calibration:</strong> Posterior probabilities are systematically over-confident (0.999 when true probability is 0.70). Do not trust the magnitude of NB's probabilities — only the argmax decision.</td>
+    </tr>
+    <tr>
+      <td><strong>Handles high dimensions:</strong> No issues with |V| = 100,000 features. Linear in vocabulary size. Memory-efficient.</td>
+      <td><strong>Cannot learn feature interactions:</strong> "not good" = {not: negative, good: positive} → wrongly predicted positive. Feature independence prevents capturing negation, irony, and complex patterns.</td>
+    </tr>
+    <tr>
+      <td><strong>Robust to irrelevant features:</strong> Each feature's weight is estimated independently. Noisy/irrelevant features slightly hurt but rarely catastrophically.</td>
+      <td><strong>Sensitive to feature correlations:</strong> If two correlated features are both present, NB double-counts their evidence, leading to over-confident predictions.</td>
+    </tr>
+    <tr>
+      <td><strong>Online learning:</strong> New training examples update only the relevant count tables — no need to retrain from scratch.</td>
+      <td><strong>Continuous features:</strong> Multinomial NB requires non-negative counts. Gaussian NB for continuous features assumes normality which is often violated.</td>
+    </tr>
+  </table>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Naïve Bayes Classifier (Complete Example)</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.naive_bayes</span> <span class="kw">import</span> <span class="fn">MultinomialNB</span>, <span class="fn">BernoulliNB</span>, <span class="fn">ComplementNB</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">CountVectorizer</span>, <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+<span class="kw">from</span> <span class="va">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">cross_val_score</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">classification_report</span>, <span class="fn">confusion_matrix</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+
+<span class="cm"># Training corpus</span>
+<span class="va">train_texts</span> = [
+    <span class="st">"win free money gift claim prize"</span>,    <span class="cm"># SPAM</span>
+    <span class="st">"cheap medication buy now limited offer"</span>, <span class="cm"># SPAM</span>
+    <span class="st">"free click here link earn cash"</span>,       <span class="cm"># SPAM</span>
+    <span class="st">"meeting with team at 3pm tomorrow"</span>,   <span class="cm"># HAM</span>
+    <span class="st">"project deadline review needed soon"</span>,  <span class="cm"># HAM</span>
+    <span class="st">"lunch tomorrow cafeteria 12pm team"</span>,  <span class="cm"># HAM</span>
+]
+<span class="va">train_labels</span> = [<span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">1</span>, <span class="nm">0</span>, <span class="nm">0</span>, <span class="nm">0</span>]   <span class="cm"># 1=spam, 0=ham</span>
+
+<span class="cm"># Pipeline 1: Multinomial NB + CountVectorizer (standard)</span>
+<span class="va">mnb_pipeline</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'vect'</span>, <span class="fn">CountVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>))),
+    (<span class="st">'clf'</span>,  <span class="fn">MultinomialNB</span>(<span class="va">alpha</span>=<span class="nm">1.0</span>))  <span class="cm"># alpha = Laplace smoothing</span>
+])
+
+<span class="cm"># Pipeline 2: Bernoulli NB (binary features)</span>
+<span class="va">bnb_pipeline</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'vect'</span>, <span class="fn">CountVectorizer</span>(<span class="va">binary</span>=<span class="kw">True</span>)),  <span class="cm"># 0/1 only</span>
+    (<span class="st">'clf'</span>,  <span class="fn">BernoulliNB</span>(<span class="va">alpha</span>=<span class="nm">1.0</span>))
+])
+
+<span class="cm"># Pipeline 3: Complement NB (better for imbalanced)</span>
+<span class="va">cnb_pipeline</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'vect'</span>, <span class="fn">TfidfVectorizer</span>()),
+    (<span class="st">'clf'</span>,  <span class="fn">ComplementNB</span>(<span class="va">alpha</span>=<span class="nm">1.0</span>))
+])
+
+<span class="cm"># Train and evaluate</span>
+<span class="kw">for</span> <span class="va">name</span>, <span class="va">pipe</span> <span class="kw">in</span> [(<span class="st">"MultinomialNB"</span>, <span class="va">mnb_pipeline</span>),
+                   (<span class="st">"BernoulliNB"</span>,  <span class="va">bnb_pipeline</span>),
+                   (<span class="st">"ComplementNB"</span>, <span class="va">cnb_pipeline</span>)]:
+    <span class="va">pipe</span>.<span class="fn">fit</span>(<span class="va">train_texts</span>, <span class="va">train_labels</span>)
+    <span class="va">preds</span> = <span class="va">pipe</span>.<span class="fn">predict</span>(<span class="va">train_texts</span>)
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"\n{name}:"</span>)
+    <span class="fn">print</span>(<span class="fn">classification_report</span>(<span class="va">train_labels</span>, <span class="va">preds</span>))
+
+<span class="cm"># Predict new messages</span>
+<span class="va">test_msgs</span> = [<span class="st">"win a free gift today"</span>, <span class="st">"meeting at 2pm"</span>]
+<span class="fn">print</span>(<span class="va">mnb_pipeline</span>.<span class="fn">predict</span>(<span class="va">test_msgs</span>))       <span class="cm"># → [1, 0]</span>
+<span class="fn">print</span>(<span class="va">mnb_pipeline</span>.<span class="fn">predict_proba</span>(<span class="va">test_msgs</span>)) <span class="cm"># → class probabilities</span></code>
+  </div>
+</div>
+
+<!-- ████████ PART 4: SENTIMENT ANALYSIS ████████ -->
+<div class="part-banner pb-sent">Part 4 — Sentiment Analysis</div>
+
+<!-- ══ SECTION 11 ══ -->
+<div class="section" id="s11">
+  <div class="section-header sh-sent">
+    <div class="section-num">Section 11</div>
+    <h2>Sentiment Analysis — Overview and Levels</h2>
+  </div>
+
+  <h3>11.1 What is Sentiment Analysis?</h3>
+  <p><strong>Sentiment Analysis</strong> (also called Opinion Mining) is the computational study of opinions, sentiments, attitudes, and emotions expressed in text. It automates the task of determining whether text expresses a positive, negative, or neutral attitude toward a subject — at any level of granularity.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Business Motivation</div>
+    <p>A company launching a new product receives 50,000 reviews in the first week. Manually reading all of them would take weeks. Sentiment analysis extracts the overall sentiment, identifies specific product aspects that customers love or hate, tracks how sentiment changes over time, and benchmarks against competitors — in seconds. This "voice of the customer" at scale drives product decisions, marketing, and customer service strategy.</p>
+  </div>
+
+  <h3>11.2 Levels of Sentiment Analysis</h3>
+
+  <table class="compare-table">
+    <tr><th>Level</th><th>Granularity</th><th>Example</th><th>Output</th></tr>
+    <tr>
+      <td><strong>Document-level</strong></td>
+      <td>Entire review/document</td>
+      <td>"I love this camera. The battery life is excellent and photos are stunning."</td>
+      <td>Positive (overall)</td>
+    </tr>
+    <tr>
+      <td><strong>Sentence-level</strong></td>
+      <td>Individual sentence</td>
+      <td>S1: "The food was delicious." → Positive. S2: "The service was slow." → Negative.</td>
+      <td>Per-sentence polarity</td>
+    </tr>
+    <tr>
+      <td><strong>Aspect-level (ABSA)</strong></td>
+      <td>Specific aspects/features</td>
+      <td>"The food was great but service was terrible and prices were fair."</td>
+      <td>food:+, service:−, price:neutral</td>
+    </tr>
+    <tr>
+      <td><strong>Entity-level</strong></td>
+      <td>Named entities</td>
+      <td>"Apple released a great iPhone but Samsung's new model is better."</td>
+      <td>Apple:mixed, Samsung:positive</td>
+    </tr>
+    <tr>
+      <td><strong>Emotion detection</strong></td>
+      <td>Specific emotion categories</td>
+      <td>"I am so excited but also anxious about the exam."</td>
+      <td>{joy: 0.7, fear: 0.5, ...}</td>
+    </tr>
+  </table>
+
+  <h3>11.3 Challenges in Sentiment Analysis</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Negation:</strong> "This is NOT a good product" — the negation completely reverses "good"'s polarity. Simple BoW misses this. N-gram features help ("not good" as a bigram). Dependency parsing properly handles negation scope.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Sarcasm and irony:</strong> "Oh great, another software update that breaks everything!" — positive words, negative sentiment. Extremely hard — requires pragmatic understanding and world knowledge. State-of-the-art models still struggle (~70–75% accuracy).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Domain shift:</strong> "This laptop is sick!" — "sick" means excellent in tech slang, terrible in medical contexts. Sentiment lexicons from one domain may be misleading in another. Domain-specific training data and lexicons needed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Comparative sentences:</strong> "This phone is better than my old one" — positive about new phone, implies negative about the old. Standard sentiment classification doesn't capture comparisons.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Subjectivity detection:</strong> Before classifying sentiment, must determine if the text is even subjective (opinionated) or objective (factual). "The camera has 12MP resolution" is factual, not sentimental. Subjectivity classification precedes sentiment classification.</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 12 ══ -->
+<div class="section" id="s12">
+  <div class="section-header sh-sent">
+    <div class="section-num">Section 12</div>
+    <h2>Sentiment Analysis — Methods</h2>
+  </div>
+
+  <h3>12.1 Three Approaches to Sentiment Analysis</h3>
+
+  <div class="nb-grid">
+
+    <div class="nb-card nbc-green">
+      <div class="nb-tag">Approach 1 — Lexicon-Based</div>
+      <div class="nb-title">Dictionary / Lexicon Methods</div>
+      <p><strong>Idea:</strong> Maintain a dictionary of words pre-labeled with their sentiment polarity and intensity. Score a document by summing the sentiment values of its words.</p>
+      <p><strong>Popular lexicons:</strong> VADER (Valence Aware Dictionary for sEntiment Reasoning) — specifically tuned for social media. AFINN — 2477 words scored −5 to +5. SentiWordNet — WordNet synsets with positive/negative scores. Opinion Lexicon (Liu) — 6800 positive and negative words.</p>
+      <p><strong>VADER handling:</strong> Capitalisation (GREAT vs great), punctuation (!!! amplifies), degree modifiers (very good), negation (not good). Specifically designed for short social media text.</p>
+      <div class="nb-note">Pros: No training data needed, interpretable. Cons: Misses domain-specific slang, sarcasm; lexicons go stale.</div>
+    </div>
+
+    <div class="nb-card nbc-blue">
+      <div class="nb-tag">Approach 2 — Classical ML</div>
+      <div class="nb-title">ML-Based Sentiment Classification</div>
+      <p><strong>Pipeline:</strong> Labeled training data → TF-IDF features (with bigrams) → Naïve Bayes / Logistic Regression / SVM classifier. Same pipeline as general text classification.</p>
+      <p><strong>Key feature additions for sentiment:</strong> Negation handling (append _NEG suffix to words after negation: "not good" → "not good_NEG"). Intensifier detection ("very", "extremely"). Punctuation features (! count, ALL-CAPS ratio). Emoji conversion to text.</p>
+      <p><strong>Typical accuracy:</strong> Naïve Bayes: 82–87%. Logistic Regression + TF-IDF bigrams: 88–92% on standard benchmarks. LinearSVM: 89–93%.</div>
+      <div class="nb-note">Strong baseline. Requires labeled data. Fast training and inference. Often sufficient for production.</div>
+    </div>
+
+    <div class="nb-card nbc-red">
+      <div class="nb-tag">Approach 3 — Deep Learning</div>
+      <div class="nb-title">Neural and Transformer Methods</div>
+      <p><strong>Progression:</strong> CNN sentence classifier (Kim 2014) → BiLSTM with attention → BERT fine-tuned → sentiment-specific pre-trained models (SentimentBERT, RoBERTa-fine-tuned).</p>
+      <p><strong>BERT for sentiment:</strong> Fine-tune BERT on labeled sentiment data. [CLS] token output → Dense(2) + Softmax. 3–5 epochs. Achieves 93–96% on SST-2 (Stanford Sentiment Treebank). Captures context, negation, complex expressions that BoW misses.</p>
+      <p><strong>Aspect-based:</strong> Token-level BERT + aspect extraction + relation classification between aspect and sentiment span.</p>
+      <div class="nb-note">Best accuracy. Requires GPU. Slow inference. Worth it for high-stakes applications (brand monitoring, financial sentiment).</div>
+    </div>
+
+  </div>
+
+  <h3>12.2 Naïve Bayes for Sentiment — Implementation</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Sentiment Analysis (Naïve Bayes + VADER)</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.naive_bayes</span> <span class="kw">import</span> <span class="fn">MultinomialNB</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+<span class="kw">from</span> <span class="va">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">classification_report</span>
+
+<span class="cm"># ── 1. ML-based Sentiment with Naïve Bayes ──────────────────────────</span>
+<span class="va">reviews</span> = [
+    (<span class="st">"This product is absolutely amazing quality"</span>, <span class="st">"positive"</span>),
+    (<span class="st">"Terrible waste of money do not buy"</span>, <span class="st">"negative"</span>),
+    (<span class="st">"Highly recommend to everyone great value"</span>, <span class="st">"positive"</span>),
+    (<span class="st">"Broke after two days completely useless"</span>, <span class="st">"negative"</span>),
+    (<span class="st">"Not bad but could be better"</span>, <span class="st">"neutral"</span>),
+    (<span class="st">"Exceeded all my expectations love it"</span>, <span class="st">"positive"</span>),
+    (<span class="st">"Average product nothing special"</span>, <span class="st">"neutral"</span>),
+    (<span class="st">"Worst purchase I have made ever regret"</span>, <span class="st">"negative"</span>),
+]
+<span class="va">texts</span>  = [r[<span class="nm">0</span>] <span class="kw">for</span> <span class="va">r</span> <span class="kw">in</span> <span class="va">reviews</span>]
+<span class="va">labels</span> = [r[<span class="nm">1</span>] <span class="kw">for</span> <span class="va">r</span> <span class="kw">in</span> <span class="va">reviews</span>]
+
+<span class="va">X_train</span>, <span class="va">X_test</span>, <span class="va">y_train</span>, <span class="va">y_test</span> = <span class="fn">train_test_split</span>(
+    <span class="va">texts</span>, <span class="va">labels</span>, <span class="va">test_size</span>=<span class="nm">0.3</span>, <span class="va">random_state</span>=<span class="nm">42</span>)
+
+<span class="va">sentiment_pipe</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'tfidf'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">3</span>),  <span class="cm"># trigrams for "not very good"</span>
+                              <span class="va">sublinear_tf</span>=<span class="kw">True</span>,
+                              <span class="va">min_df</span>=<span class="nm">1</span>)),
+    (<span class="st">'nb'</span>,   <span class="fn">MultinomialNB</span>(<span class="va">alpha</span>=<span class="nm">0.1</span>))  <span class="cm"># lower alpha for less smoothing</span>
+])
+<span class="va">sentiment_pipe</span>.<span class="fn">fit</span>(<span class="va">X_train</span>, <span class="va">y_train</span>)
+<span class="fn">print</span>(<span class="fn">classification_report</span>(<span class="va">y_test</span>, <span class="va">sentiment_pipe</span>.<span class="fn">predict</span>(<span class="va">X_test</span>)))
+
+<span class="cm"># ── 2. Lexicon-based: VADER (no training data needed) ───────────────</span>
+<span class="kw">from</span> <span class="va">vaderSentiment.vaderSentiment</span> <span class="kw">import</span> <span class="fn">SentimentIntensityAnalyzer</span>
+<span class="va">sid</span> = <span class="fn">SentimentIntensityAnalyzer</span>()
+
+<span class="va">sample_texts</span> = [
+    <span class="st">"I LOVE this product!!!"</span>,
+    <span class="st">"This is not good at all"</span>,
+    <span class="st">"The movie was great but the ending was disappointing"</span>
+]
+<span class="kw">for</span> <span class="va">text</span> <span class="kw">in</span> <span class="va">sample_texts</span>:
+    <span class="va">scores</span> = <span class="va">sid</span>.<span class="fn">polarity_scores</span>(<span class="va">text</span>)
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{text[:40]}"</span>)
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"  → pos:{scores['pos']:.2f} neg:{scores['neg']:.2f} compound:{scores['compound']:.3f}"</span>)
+<span class="cm"># compound ≥ 0.05 → positive; ≤ −0.05 → negative; else neutral</span></code>
+  </div>
+</div>
+
+<!-- ████████ PART 5: CONFUSION MATRIX & EVALUATION ████████ -->
+<div class="part-banner pb-eval">Part 5 — Confusion Matrix and Evaluation</div>
+
+<!-- ══ SECTION 13 ══ -->
+<div class="section" id="s13">
+  <div class="section-header sh-eval">
+    <div class="section-num">Section 13</div>
+    <h2>Confusion Matrix for Text Classification</h2>
+  </div>
+
+  <h3>13.1 Binary Confusion Matrix — Recall</h3>
+  <p>A confusion matrix for binary text classification (e.g., spam vs ham, positive vs negative sentiment) shows the counts of correct and incorrect predictions for each class:</p>
+
+  <div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin:1.25rem 0;">
+    <div>
+      <table class="cm-table">
+        <tr>
+          <th class="cm-corner"></th>
+          <th class="cm-corner"></th>
+          <th colspan="2" style="text-align:center;color:var(--blue);font-family:'Inter',sans-serif;">Predicted</th>
+        </tr>
+        <tr>
+          <th class="cm-corner"></th>
+          <th class="cm-corner"></th>
+          <th style="color:var(--accent);">Spam (1)</th>
+          <th style="color:var(--teal);">Ham (0)</th>
+        </tr>
+        <tr>
+          <td class="cm-rl" rowspan="2" style="color:var(--blue);writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;">Actual</td>
+          <td class="cm-rl" style="color:var(--accent);">Spam (1)</td>
+          <td class="cm-tp">TP = 45<br><span style="font-family:'Inter',sans-serif;font-size:11px;">Spam correctly</span><br><span style="font-family:'Inter',sans-serif;font-size:11px;">caught</span></td>
+          <td class="cm-fn">FN = 5<br><span style="font-family:'Inter',sans-serif;font-size:11px;">Spam missed</span><br><span style="font-family:'Inter',sans-serif;font-size:11px;">(Type II Error)</span></td>
+        </tr>
+        <tr>
+          <td class="cm-rl" style="color:var(--teal);">Ham (0)</td>
+          <td class="cm-fp">FP = 8<br><span style="font-family:'Inter',sans-serif;font-size:11px;">Ham blocked</span><br><span style="font-family:'Inter',sans-serif;font-size:11px;">(Type I Error)</span></td>
+          <td class="cm-tn">TN = 142<br><span style="font-family:'Inter',sans-serif;font-size:11px;">Ham correctly</span><br><span style="font-family:'Inter',sans-serif;font-size:11px;">delivered</span></td>
+        </tr>
+      </table>
+    </div>
+    <div style="flex:1;min-width:200px;">
+      <ul class="point-list">
+        <li><span class="bullet" style="color:#0c3820;">TP=45</span><div><strong>True Positives:</strong> 45 spam emails correctly detected and blocked.</div></li>
+        <li><span class="bullet" style="color:#5c1010;">FN=5</span><div><strong>False Negatives (Misses):</strong> 5 spam emails slipped through to inbox. Annoying but tolerable.</div></li>
+        <li><span class="bullet" style="color:#5c2000;">FP=8</span><div><strong>False Positives (False Alarms):</strong> 8 legitimate emails blocked — user misses important emails. The more costly error!</div></li>
+        <li><span class="bullet" style="color:#102060;">TN=142</span><div><strong>True Negatives:</strong> 142 legitimate emails correctly delivered.</div></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>13.2 Multi-class Confusion Matrix — Sentiment (3 classes)</h3>
+
+  <div class="diagram">
+    <pre>
+  Sentiment Analysis — 3-class confusion matrix (Positive/Neutral/Negative):
+
+                    Pred: Pos   Pred: Neu   Pred: Neg
+  Actual: Positive │    85    │     8      │     7   │  row sum = 100
+  Actual: Neutral  │    12    │    60      │    18   │  row sum =  90
+  Actual: Negative │     5    │     7      │    88   │  row sum = 100
+
+  Total examples: 290
+
+  Reading the matrix:
+  • Diagonal (85, 60, 88) = correct predictions per class
+  • Row i, Column j ≠ i = class i mistaken for class j
+
+  Confusion analysis:
+  • Positive vs Neutral: 8 positives misclassified as neutral (ambiguous)
+  • Neutral vs Negative: 18 neutrals misclassified as negative (negativity bias)
+  • Negative vs Positive: Only 5 negatives called positive (good separation)
+  • Biggest confusion: Neutral is the hardest class (60/90 = 66.7% accuracy)
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — 3-class confusion matrix for sentiment analysis. Diagonal = correct. Off-diagonal reveals which classes are confused.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Confusion Matrix Visualization</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">confusion_matrix</span>, <span class="fn">ConfusionMatrixDisplay</span>
+<span class="kw">import</span> <span class="va">matplotlib.pyplot</span> <span class="kw">as</span> <span class="va">plt</span>
+
+<span class="va">y_true</span> = [<span class="st">'positive'</span>, <span class="st">'negative'</span>, <span class="st">'neutral'</span>, <span class="st">'positive'</span>, <span class="st">'negative'</span>]
+<span class="va">y_pred</span> = [<span class="st">'positive'</span>, <span class="st">'negative'</span>, <span class="st">'positive'</span>, <span class="st">'neutral'</span>,  <span class="st">'negative'</span>]
+
+<span class="va">cm</span> = <span class="fn">confusion_matrix</span>(<span class="va">y_true</span>, <span class="va">y_pred</span>,
+                       <span class="va">labels</span>=[<span class="st">'positive'</span>,<span class="st">'neutral'</span>,<span class="st">'negative'</span>])
+
+<span class="cm"># Display with labels</span>
+<span class="va">disp</span> = <span class="fn">ConfusionMatrixDisplay</span>(<span class="va">cm</span>, <span class="va">display_labels</span>=[<span class="st">'Pos'</span>,<span class="st">'Neu'</span>,<span class="st">'Neg'</span>])
+<span class="va">disp</span>.<span class="fn">plot</span>(<span class="va">cmap</span>=<span class="st">'Blues'</span>)
+<span class="va">plt</span>.<span class="fn">title</span>(<span class="st">'Sentiment Analysis Confusion Matrix'</span>)
+<span class="va">plt</span>.<span class="fn">show</span>()
+
+<span class="cm"># Per-class stats from CM</span>
+<span class="kw">for</span> <span class="va">i</span>, <span class="va">cls</span> <span class="kw">in</span> <span class="fn">enumerate</span>([<span class="st">'positive'</span>,<span class="st">'neutral'</span>,<span class="st">'negative'</span>]):
+    <span class="va">tp</span> = <span class="va">cm</span>[<span class="va">i</span>, <span class="va">i</span>]
+    <span class="va">fp</span> = <span class="va">cm</span>[:, <span class="va">i</span>].<span class="fn">sum</span>() - <span class="va">tp</span>
+    <span class="va">fn</span> = <span class="va">cm</span>[<span class="va">i</span>, :].<span class="fn">sum</span>() - <span class="va">tp</span>
+    <span class="va">prec</span> = <span class="va">tp</span>/(<span class="va">tp</span>+<span class="va">fp</span>) <span class="kw">if</span> (<span class="va">tp</span>+<span class="va">fp</span>) &gt; <span class="nm">0</span> <span class="kw">else</span> <span class="nm">0</span>
+    <span class="va">rec</span>  = <span class="va">tp</span>/(<span class="va">tp</span>+<span class="va">fn</span>) <span class="kw">if</span> (<span class="va">tp</span>+<span class="va">fn</span>) &gt; <span class="nm">0</span> <span class="kw">else</span> <span class="nm">0</span>
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{cls:10}: P={prec:.3f} R={rec:.3f}"</span>)</code>
+  </div>
+</div>
+
+<!-- ══ SECTION 14 ══ -->
+<div class="section" id="s14">
+  <div class="section-header sh-eval">
+    <div class="section-num">Section 14</div>
+    <h2>Evaluation Metrics for Text Classification</h2>
+  </div>
+
+  <h3>14.1 Complete Metrics Reference</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">All Key Classification Metrics</div>
+    <div class="formula">
+      <span class="hl">Accuracy</span>  = (TP + TN) / (TP + TN + FP + FN)<br>
+      <span class="comment">← proportion correct. Unreliable for imbalanced classes.</span><br><br>
+      <span class="var">Precision (P)</span>  = TP / (TP + FP)<br>
+      <span class="comment">← of all docs classified as class C, what fraction actually are C?</span><br><br>
+      <span class="gr">Recall (R)</span>     = TP / (TP + FN)<br>
+      <span class="comment">← of all docs actually in class C, what fraction did we correctly find?</span><br><br>
+      <span class="bl">F1-Score</span>       = 2 · P · R / (P + R)       ← harmonic mean<br>
+      <span class="or">Fβ-Score</span>       = (1+β²) · P · R / (β²·P + R)  ← β&gt;1 weights recall more<br><br>
+      Multi-class averaging:<br>
+      Macro    = (1/k) Σ_c metric(c)          ← equal weight per class<br>
+      Micro    = aggregate TP,FP,FN → metric  ← weight by class frequency<br>
+      Weighted = Σ_c support(c)/N × metric(c) ← weight by class count<br><br>
+      AUC-ROC: area under ROC (TPR vs FPR curve). Range [0,1]. &gt;0.9 = excellent.
+    </div>
+  </div>
+
+  <h3>14.2 Interpreting Classification Report</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Classification Report — Sentiment Classifier (3 classes, 290 examples)</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Class: Positive</div><div class="ex-value">Precision=0.84  Recall=0.85  F1=0.84  Support=100  → strong performance</div></div>
+      <div class="ex-row"><div class="ex-label">Class: Neutral</div><div class="ex-value">Precision=0.80  Recall=0.67  F1=0.73  Support=90   → hardest class (neutral ambiguous)</div></div>
+      <div class="ex-row"><div class="ex-label">Class: Negative</div><div class="ex-value">Precision=0.77  Recall=0.88  F1=0.82  Support=100  → good recall (catches negatives)</div></div>
+      <div class="ex-row"><div class="ex-label">Macro F1</div><div class="ex-value">(0.84+0.73+0.82)/3 = 0.796  ← equal weight: neutral hurts the average</div></div>
+      <div class="ex-row"><div class="ex-label">Weighted F1</div><div class="ex-value">100/290×0.84 + 90/290×0.73 + 100/290×0.82 = 0.801  ← weighted by support</div></div>
+      <div class="ex-row"><div class="ex-label">Accuracy</div><div class="ex-value">(85+60+88)/290 = 233/290 = 0.803  ← 80.3% overall correct</div></div>
+      <div class="ex-row"><div class="ex-label">Action items</div><div class="ex-value">Neutral class is weakest (Recall=0.67). Improve: more neutral training data, better neutral-specific features, threshold tuning.</div></div>
+    </div>
+  </div>
+
+  <h3>14.3 Special Considerations for Text Evaluation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Class imbalance is the norm:</strong> In spam: 5–20% spam, 80–95% ham. In sentiment: often fewer neutral examples. Always use macro-F1 or class-specific metrics alongside accuracy. Never report accuracy alone for text classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Cross-validation for small datasets:</strong> NLP datasets are often small (hundreds to thousands of labeled examples per class). Use stratified k-fold CV to get reliable performance estimates rather than a single train/test split.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Human baseline:</strong> For difficult text tasks (sarcasm detection, fine-grained emotion), humans achieve only 70–80% agreement. A model at 75% may be near-human performance even though it seems low.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Error analysis is essential:</strong> Always manually inspect 50–100 misclassified examples. Common patterns: model misses negations, misclassifies domain slang, fails on very short texts, struggles with code-mixed text. These insights guide targeted improvements.</div></li>
+  </ul>
+
+  <h3>14.4 Complete Text Classification Workflow</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Full Text Classification Pipeline with Evaluation</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.naive_bayes</span> <span class="kw">import</span> <span class="fn">MultinomialNB</span>
+<span class="kw">from</span> <span class="va">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LogisticRegression</span>
+<span class="kw">from</span> <span class="va">sklearn.svm</span> <span class="kw">import</span> <span class="fn">LinearSVC</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+<span class="kw">from</span> <span class="va">sklearn.model_selection</span> <span class="kw">import</span> <span class="fn">train_test_split</span>, <span class="fn">cross_val_score</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics</span> <span class="kw">import</span> <span class="fn">classification_report</span>, <span class="fn">ConfusionMatrixDisplay</span>
+
+<span class="cm"># Assume: texts, labels already loaded</span>
+<span class="va">X_train</span>, <span class="va">X_test</span>, <span class="va">y_train</span>, <span class="va">y_test</span> = <span class="fn">train_test_split</span>(
+    <span class="va">texts</span>, <span class="va">labels</span>, <span class="va">test_size</span>=<span class="nm">0.2</span>, <span class="va">stratify</span>=<span class="va">labels</span>, <span class="va">random_state</span>=<span class="nm">42</span>)
+
+<span class="cm"># Compare multiple classifiers</span>
+<span class="va">classifiers</span> = {
+    <span class="st">"Naïve Bayes"</span>: <span class="fn">MultinomialNB</span>(<span class="va">alpha</span>=<span class="nm">0.1</span>),
+    <span class="st">"Logistic Reg"</span>: <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">1.0</span>, <span class="va">max_iter</span>=<span class="nm">1000</span>),
+    <span class="st">"LinearSVC"</span>:   <span class="fn">LinearSVC</span>(<span class="va">C</span>=<span class="nm">1.0</span>),
+}
+
+<span class="kw">for</span> <span class="va">name</span>, <span class="va">clf</span> <span class="kw">in</span> <span class="va">classifiers</span>.<span class="fn">items</span>():
+    <span class="va">pipe</span> = <span class="fn">Pipeline</span>([
+        (<span class="st">'tfidf'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>), <span class="va">sublinear_tf</span>=<span class="kw">True</span>)),
+        (<span class="st">'clf'</span>,   <span class="va">clf</span>)
+    ])
+    <span class="cm"># 5-fold CV on training data</span>
+    <span class="va">cv_scores</span> = <span class="fn">cross_val_score</span>(<span class="va">pipe</span>, <span class="va">X_train</span>, <span class="va">y_train</span>, <span class="va">cv</span>=<span class="nm">5</span>, <span class="va">scoring</span>=<span class="st">'f1_macro'</span>)
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{name:15}: CV macro-F1 = {cv_scores.mean():.4f} ± {cv_scores.std():.4f}"</span>)
+
+<span class="cm"># Train best model and evaluate on test set</span>
+<span class="va">best_pipe</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'tfidf'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>), <span class="va">sublinear_tf</span>=<span class="kw">True</span>)),
+    (<span class="st">'clf'</span>,   <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">1.0</span>, <span class="va">max_iter</span>=<span class="nm">1000</span>))
+])
+<span class="va">best_pipe</span>.<span class="fn">fit</span>(<span class="va">X_train</span>, <span class="va">y_train</span>)
+<span class="va">y_pred</span> = <span class="va">best_pipe</span>.<span class="fn">predict</span>(<span class="va">X_test</span>)
+
+<span class="fn">print</span>(<span class="fn">classification_report</span>(<span class="va">y_test</span>, <span class="va">y_pred</span>))
+<span class="fn">ConfusionMatrixDisplay</span>.<span class="fn">from_predictions</span>(<span class="va">y_test</span>, <span class="va">y_pred</span>, <span class="va">cmap</span>=<span class="st">'Greens'</span>)
+
+<span class="cm"># Feature importance: top TF-IDF features per class</span>
+<span class="va">feature_names</span> = <span class="va">best_pipe</span>[<span class="st">'tfidf'</span>].<span class="fn">get_feature_names_out</span>()
+<span class="va">coef</span> = <span class="va">best_pipe</span>[<span class="st">'clf'</span>].<span class="va">coef_</span>
+<span class="kw">for</span> <span class="va">i</span>, <span class="va">cls</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">best_pipe</span>[<span class="st">'clf'</span>].<span class="va">classes_</span>):
+    <span class="va">top_idx</span> = <span class="va">coef</span>[<span class="va">i</span>].<span class="fn">argsort</span>()[-<span class="nm">5</span>:][::-<span class="nm">1</span>]
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{cls}: {list(feature_names[top_idx])}"</span>)</code>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Naïve Bayes for Text: Key Facts</div>
+    <p><strong>Why Naïve Bayes works for text despite the independence assumption:</strong> Even though words are not independent (co-occurrences are common), the argmax decision is often still correct. The ranking of class probabilities is often preserved even when the probability magnitudes are wrong. This is called "diagnostic accuracy without calibration."</p>
+    <p><strong>Multinomial vs Bernoulli NB:</strong> Multinomial uses word counts (how many times); Bernoulli uses word presence/absence (yes/no). For long documents: Multinomial generally better. For short documents: Bernoulli competitive because frequency is less informative than presence.</p>
+    <p><strong>CountVectorizer vs TfidfVectorizer with NB:</strong> MultinomialNB requires non-negative features — works directly with CountVectorizer (integer counts). TfidfVectorizer produces float features that are still non-negative so also works. For NB specifically, raw counts are often preferred over TF-IDF.</p>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 3 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Text Classification:</strong> Automatically assign predefined categories to text. Types: binary (spam/ham), multi-class (topic), multi-label (tags), hierarchical. ML pipeline: raw text → clean → tokenize → vectorize → model → evaluate.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Words &amp; Term Frequency:</strong> TF(t,d) = count of term t in doc d. Variants: raw count, relative frequency (÷total words), log normalization (1+log(count)), binary (0/1). Vocabulary V = all unique terms in training corpus; each term → one feature dimension.</div></li>
+      <li><span class="bullet">3.</span><div><strong>Bag-of-Words:</strong> Represent each document as a vector of term frequencies, ignoring word order. Extremely sparse matrix (most cells = 0). CountVectorizer handles: tokenization, lowercasing, stopwords, vocabulary building, ngram generation (ngram_range), vocabulary limits (max_features, min_df, max_df).</div></li>
+      <li><span class="bullet">4.</span><div><strong>IDF:</strong> IDF(t) = log(N/df(t)). Zero for words in all documents. Maximum for words in only one document. sklearn: IDF = log((N+1)/(df+1))+1. Purpose: down-weight common uninformative words, up-weight distinctive rare words.</div></li>
+      <li><span class="bullet">5.</span><div><strong>TF-IDF:</strong> TF-IDF(t,d) = TF(t,d) × IDF(t). High weight: frequent in THIS document, rare across ALL documents → most informative signal for the document's topic. L2 normalization makes documents length-comparable. Use TfidfVectorizer with sublinear_tf=True for large texts.</div></li>
+      <li><span class="bullet">6.</span><div><strong>Naïve Bayes:</strong> c* = argmax_c [log P(c) + Σᵢ log P(wᵢ|c)]. Prior P(c) = class frequency. Likelihood P(w|c) = (count(w,c)+1)/(total_in_c+|V|) with Laplace smoothing. Log space prevents underflow. Naïve assumption: words conditionally independent given class.</div></li>
+      <li><span class="bullet">7.</span><div><strong>NB Variants:</strong> MultinomialNB (word counts, standard text); BernoulliNB (binary presence, short texts); GaussianNB (continuous features); ComplementNB (imbalanced datasets). MultinomialNB is the go-to for NLP classification.</div></li>
+      <li><span class="bullet">8.</span><div><strong>Sentiment Analysis:</strong> Levels: document → sentence → aspect-based → entity → emotion. Methods: (1) Lexicon-based (VADER, AFINN, SentiWordNet) — no training data needed. (2) ML (TF-IDF + NB/LR/SVM) — standard production approach. (3) BERT fine-tuned — best accuracy for complex sentiment.</div></li>
+      <li><span class="bullet">9.</span><div><strong>Confusion Matrix:</strong> TP=correct positive, TN=correct negative, FP=false alarm (Type I), FN=miss (Type II). Multi-class: k×k matrix. Diagonal = correct. Off-diagonal = confusions between specific classes.</div></li>
+      <li><span class="bullet">10.</span><div><strong>Metrics:</strong> Precision=TP/(TP+FP). Recall=TP/(TP+FN). F1=2PR/(P+R). Multi-class: macro (equal weight), weighted (by support), micro (aggregate). Use macro-F1 for imbalanced classes. Prefer Recall when FN costly (e.g., hate speech missed); Precision when FP costly (e.g., legitimate email blocked).</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Natural Language Processing — Module 3</span>
+  <span>Text Classification · CountVectorizer · TF-IDF · Naïve Bayes · Sentiment Analysis · Confusion Matrix</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Language Processing – Module 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f6f8fc;
+    --surface: #ffffff;
+    --surface2: #edf0f8;
+    --border: #d4dae8;
+    --border2: #b4bcd8;
+    --text: #0e1220;
+    --text2: #323850;
+    --text3: #626880;
+    --accent: #1a3a8c;
+    --accent-bg: #eaeffc;
+    --accent-border: #a0b4e8;
+    --green: #145838;
+    --green-bg: #e8f5ee;
+    --green-border: #88cca8;
+    --amber: #7a4800;
+    --amber-bg: #fef8e8;
+    --amber-border: #e8c060;
+    --red: #8c1818;
+    --red-bg: #fdf0f0;
+    --red-border: #e8a8a8;
+    --purple: #481878;
+    --purple-bg: #f2eefa;
+    --purple-border: #c0a0e0;
+    --teal: #085450;
+    --teal-bg: #e4f4f2;
+    --teal-border: #80c8c0;
+    --orange: #7c3c00;
+    --orange-bg: #fdf2e4;
+    --orange-border: #e0b070;
+    --rose: #7c1a3c;
+    --rose-bg: #fdf0f5;
+    --rose-border: #e8a8c0;
+    --code-bg: #e8ecf5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Source Serif 4', Georgia, serif; background: var(--bg); color: var(--text); font-size: 17px; line-height: 1.75; }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, #080c1e 0%, #1a2460 55%, #080c1e 100%);
+    color: #eceffe; padding: 3rem 4rem 2.5rem; position: relative; overflow: hidden;
+  }
+  .doc-header .subject-tag { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#6880e8; margin-bottom:.75rem; }
+  .doc-header h1 { font-size:2.4rem; font-weight:300; letter-spacing:-.01em; line-height:1.2; color:#eceffe; margin-bottom:.5rem; }
+  .doc-header h1 span { font-weight:600; }
+  .doc-header .subtitle { font-family:'Inter',sans-serif; font-size:14px; color:#4050b8; margin-top:1rem; }
+
+  /* ── PART BANNER ── */
+  .part-banner { padding:.7rem 4rem; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#fff; }
+  .pb-mine { background:#1a2460; }
+  .pb-tok  { background:#1a5838; }
+  .pb-norm { background:#481878; }
+  .pb-ngr  { background:#7c3c00; }
+  .pb-ner  { background:#7c1a3c; }
+
+  /* ── TOC ── */
+  .toc { background:var(--surface2); border-bottom:1px solid var(--border); padding:1.5rem 4rem; }
+  .toc h2 { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:.75rem; }
+  .toc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:4px 2rem; }
+  .toc a { font-family:'Inter',sans-serif; font-size:13px; color:var(--accent); text-decoration:none; display:flex; align-items:center; gap:6px; padding:2px 0; }
+  .toc a:hover { text-decoration:underline; }
+  .toc a .num { font-weight:600; color:var(--text3); min-width:22px; }
+
+  /* ── CONTENT ── */
+  .content { padding:3rem 4rem; max-width:980px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom:4rem; }
+  .section-header { padding-left:1.25rem; margin-bottom:2rem; }
+  .sh-mine { border-left:4px solid #1a2460; }
+  .sh-tok  { border-left:4px solid #1a5838; }
+  .sh-norm { border-left:4px solid #481878; }
+  .sh-ngr  { border-left:4px solid #7c3c00; }
+  .sh-ner  { border-left:4px solid #7c1a3c; }
+  .section-header .section-num { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:.25rem; }
+  .section-header h2 { font-size:1.8rem; font-weight:600; line-height:1.2; }
+
+  h3 { font-size:1.15rem; font-weight:600; color:var(--text); margin:2rem 0 .75rem; padding-bottom:.35rem; border-bottom:1px solid var(--border); }
+  h4 { font-family:'Inter',sans-serif; font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); margin:1.5rem 0 .5rem; }
+
+  p { margin-bottom:1rem; color:var(--text2); }
+  p:last-child { margin-bottom:0; }
+
+  /* ── CALLOUTS ── */
+  .callout { border-radius:8px; padding:1rem 1.25rem; margin:1.25rem 0; border-left:3px solid; }
+  .callout-title { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:.4rem; }
+  .callout p { margin-bottom:.4rem; font-size:15.5px; }
+  .callout p:last-child { margin-bottom:0; }
+  .callout-key     { background:var(--accent-bg);  border-color:var(--accent);  } .callout-key .callout-title     { color:var(--accent);  } .callout-key p   { color:#102060; }
+  .callout-tip     { background:var(--green-bg);   border-color:var(--green);   } .callout-tip .callout-title     { color:var(--green);   } .callout-tip p   { color:#0c3828; }
+  .callout-warn    { background:var(--amber-bg);   border-color:var(--amber);   } .callout-warn .callout-title    { color:var(--amber);   } .callout-warn p  { color:#5a3400; }
+  .callout-exam    { background:var(--red-bg);     border-color:var(--red);     } .callout-exam .callout-title    { color:var(--red);     } .callout-exam p  { color:#6a1010; }
+  .callout-formula { background:var(--purple-bg);  border-color:var(--purple);  } .callout-formula .callout-title { color:var(--purple);  } .callout-formula p { color:#340c54; }
+  .callout-teal    { background:var(--teal-bg);    border-color:var(--teal);    } .callout-teal .callout-title    { color:var(--teal);    } .callout-teal p  { color:#063434; }
+  .callout-orange  { background:var(--orange-bg);  border-color:var(--orange);  } .callout-orange .callout-title  { color:var(--orange);  } .callout-orange p { color:#4a2000; }
+
+  /* ── POINT LIST ── */
+  .point-list { list-style:none; padding:0; margin:.75rem 0 1.25rem; }
+  .point-list li { display:flex; gap:.75rem; padding:.5rem 0; border-bottom:1px solid var(--border); color:var(--text2); font-size:16px; line-height:1.65; align-items:flex-start; }
+  .point-list li:last-child { border-bottom:none; }
+  .point-list li .bullet { font-family:'Inter',sans-serif; font-weight:600; font-size:12px; color:var(--text3); min-width:22px; padding-top:3px; }
+  .point-list li strong { color:var(--text); font-weight:600; }
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block { background:var(--code-bg); border:1px solid var(--border2); border-radius:8px; padding:1rem 1.5rem; margin:1rem 0; overflow-x:auto; }
+  .formula-block .formula-label { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:.5rem; }
+  .formula { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); line-height:2; }
+  .formula .comment { font-size:12.5px; color:var(--text3); margin-left:.75rem; }
+  .formula .var { color:var(--purple); font-weight:500; }
+  .formula .hl  { color:var(--accent); font-weight:500; }
+  .formula .gr  { color:var(--green);  font-weight:500; }
+  .formula .rd  { color:var(--red);    font-weight:500; }
+  .formula .or  { color:var(--orange); font-weight:500; }
+
+  /* ── DIAGRAM ── */
+  .diagram { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1.25rem 1.5rem; margin:1.25rem 0; overflow-x:auto; }
+  .diagram pre { font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--text2); line-height:1.7; white-space:pre; }
+  .diagram-caption { font-family:'Inter',sans-serif; font-size:12px; color:var(--text3); margin-top:.5rem; font-style:italic; }
+
+  /* ── COMPARE TABLE ── */
+  .compare-table { width:100%; border-collapse:collapse; margin:1.25rem 0; font-size:15px; }
+  .compare-table th { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; background:var(--surface2); padding:.75rem 1rem; text-align:left; border:1px solid var(--border); color:var(--text2); }
+  .compare-table td { padding:.7rem 1rem; border:1px solid var(--border); vertical-align:top; color:var(--text2); line-height:1.6; }
+  .compare-table tr:nth-child(even) td { background:var(--surface2); }
+  .compare-table td strong { color:var(--text); }
+
+  /* ── CODE BLOCK ── */
+  .code-block { background:#1a1e2e; border-radius:8px; padding:1rem 1.5rem; margin:1rem 0; overflow-x:auto; }
+  .code-block .code-lang { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#6070a0; margin-bottom:.5rem; }
+  .code-block code { font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.8; white-space:pre; display:block; }
+  .code-block .kw  { color:#c090e8; }
+  .code-block .fn  { color:#80c8f0; }
+  .code-block .st  { color:#90e0a0; }
+  .code-block .cm  { color:#506070; }
+  .code-block .nm  { color:#f0c060; }
+  .code-block .op  { color:#d0d8f0; }
+  .code-block .va  { color:#e0e8ff; }
+
+  /* ── CARD GRID ── */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:12px; margin:1.25rem 0; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; }
+  .card .card-title { font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:var(--text); margin-bottom:.4rem; }
+  .card p { font-size:14px; line-height:1.6; }
+
+  /* ── WORKED EXAMPLE BOX ── */
+  .example-box { background:var(--surface); border:1.5px solid var(--border2); border-radius:10px; margin:1.5rem 0; overflow:hidden; }
+  .example-box .ex-header { background:#1a2460; color:#c8d4f8; padding:.6rem 1.25rem; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; letter-spacing:.04em; }
+  .example-box .ex-body { padding:1rem 1.25rem; }
+  .example-box .ex-row { display:flex; gap:1rem; padding:.4rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .example-box .ex-row:last-child { border-bottom:none; }
+  .example-box .ex-label { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--text3); min-width:140px; padding-top:2px; }
+  .example-box .ex-value { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); line-height:1.7; }
+
+  /* ── TOKEN TAG ── */
+  .token-row { display:flex; flex-wrap:wrap; gap:6px; margin:.75rem 0; }
+  .token { display:inline-flex; flex-direction:column; align-items:center; }
+  .token .tok-word { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:500; padding:3px 8px; border-radius:5px 5px 0 0; border:1px solid; border-bottom:none; }
+  .token .tok-tag  { font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; padding:2px 6px; border-radius:0 0 5px 5px; border:1px solid; border-top:none; }
+  .tok-nn   { color:#1a2460; background:#dde5fc; border-color:#a0b4e8; }
+  .tok-nn-t { color:#fff; background:#1a2460; border-color:#1a2460; }
+  .tok-vb   { color:#145838; background:#d8f0e4; border-color:#88cca8; }
+  .tok-vb-t { color:#fff; background:#145838; border-color:#145838; }
+  .tok-jj   { color:#481878; background:#ede0f8; border-color:#c0a0e0; }
+  .tok-jj-t { color:#fff; background:#481878; border-color:#481878; }
+  .tok-in   { color:#7c3c00; background:#fce8d0; border-color:#e0b070; }
+  .tok-in-t { color:#fff; background:#7c3c00; border-color:#7c3c00; }
+  .tok-dt   { color:#085450; background:#d8f0ee; border-color:#80c8c0; }
+  .tok-dt-t { color:#fff; background:#085450; border-color:#085450; }
+  .tok-cd   { color:#7c1a3c; background:#fce0ec; border-color:#e8a8c0; }
+  .tok-cd-t { color:#fff; background:#7c1a3c; border-color:#7c1a3c; }
+
+  /* ── FREQ BAR ── */
+  .freq-table { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:1rem 1.25rem; margin:1.25rem 0; }
+  .freq-row { display:flex; align-items:center; gap:.75rem; margin:.3rem 0; }
+  .freq-word { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--accent); min-width:100px; }
+  .freq-bar  { height:18px; background:var(--accent); border-radius:3px; opacity:.7; }
+  .freq-count { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text3); min-width:30px; }
+
+  /* ── NER TAG ── */
+  .ner-sentence { font-family:'Source Serif 4',serif; font-size:16px; line-height:2.2; margin:1rem 0; }
+  .ner-tag { display:inline; background:var(--surface2); border-radius:4px; padding:1px 4px; position:relative; }
+  .ner-tag .ner-label { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:.06em; padding:1px 5px; border-radius:3px; margin-left:4px; vertical-align:middle; text-transform:uppercase; }
+  .ner-per { background:#dde8fc; } .ner-per .ner-label { background:#1a2460; color:#fff; }
+  .ner-org { background:#fce8d0; } .ner-org .ner-label { background:#7c3c00; color:#fff; }
+  .ner-loc { background:#d8f0e4; } .ner-loc .ner-label { background:#145838; color:#fff; }
+  .ner-dat { background:#ede0f8; } .ner-dat .ner-label { background:#481878; color:#fff; }
+  .ner-mon { background:#fce0ec; } .ner-mon .ner-label { background:#7c1a3c; color:#fff; }
+
+  /* ── STEP LIST ── */
+  .step-list { counter-reset:steps; list-style:none; padding:0; margin:.75rem 0 1.25rem; }
+  .step-list li { counter-increment:steps; display:flex; gap:1rem; padding:.75rem 0; border-bottom:1px solid var(--border); align-items:flex-start; font-size:16px; color:var(--text2); line-height:1.65; }
+  .step-list li:last-child { border-bottom:none; }
+  .step-list li::before { content:counter(steps); font-family:'Inter',sans-serif; font-weight:600; font-size:13px; color:var(--surface); background:#080c1e; border-radius:50%; min-width:24px; height:24px; display:flex; align-items:center; justify-content:center; margin-top:2px; }
+  .step-list li strong { color:var(--text); }
+
+  /* ── SUMMARY BOX ── */
+  .summary-box { background:var(--surface); border:1.5px solid var(--border2); border-radius:10px; padding:1.5rem 2rem; margin:2rem 0; }
+  .summary-box h4 { margin-top:0; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--text3); margin-bottom:1rem; }
+
+  code { font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--code-bg); border-radius:3px; padding:1px 5px; color:var(--purple); }
+  hr   { border:none; border-top:1px solid var(--border); margin:3rem 0; }
+  .doc-footer { background:var(--surface2); border-top:1px solid var(--border); padding:1.5rem 4rem; font-family:'Inter',sans-serif; font-size:13px; color:var(--text3); display:flex; justify-content:space-between; align-items:center; }
+
+  @media(max-width:700px){
+    .doc-header,.toc,.content { padding-left:1.5rem; padding-right:1.5rem; }
+    .doc-header h1 { font-size:1.8rem; }
+    .part-banner { padding-left:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Natural Language Processing — Module 2</div>
+  <h1><span>Module 2:</span> Text Mining, Cleaning &amp; Pre-processing</h1>
+  <div class="subtitle">Text Mining · Cleaning · Tokenization · Frequency Distribution · Stemming · POS Tagging · Lemmatization · N-grams · Named Entity Recognition</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Text Mining — Concepts</a>
+    <a href="#s2"><span class="num">2.</span> Text Cleaning Pipeline</a>
+    <a href="#s3"><span class="num">3.</span> Tokenization — Concepts</a>
+    <a href="#s4"><span class="num">4.</span> Various Tokenizers</a>
+    <a href="#s5"><span class="num">5.</span> Frequency Distribution</a>
+    <a href="#s6"><span class="num">6.</span> Stopwords &amp; Normalization</a>
+    <a href="#s7"><span class="num">7.</span> Stemming</a>
+    <a href="#s8"><span class="num">8.</span> Lemmatization</a>
+    <a href="#s9"><span class="num">9.</span> Stemming vs Lemmatization</a>
+    <a href="#s10"><span class="num">10.</span> POS Tagging</a>
+    <a href="#s11"><span class="num">11.</span> Bigrams, Trigrams &amp; N-grams</a>
+    <a href="#s12"><span class="num">12.</span> N-gram Language Models</a>
+    <a href="#s13"><span class="num">13.</span> Named Entity Recognition (NER)</a>
+    <a href="#s14"><span class="num">14.</span> Full Pipeline Summary</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████ PART 1: TEXT MINING ████████ -->
+<div class="part-banner pb-mine">Part 1 — Text Mining and Cleaning</div>
+
+<!-- ══════════ SECTION 1 ══════════ -->
+<div class="section" id="s1">
+  <div class="section-header sh-mine">
+    <div class="section-num">Section 1</div>
+    <h2>Text Mining — What, Why and How</h2>
+  </div>
+
+  <h3>1.1 What is Text Mining?</h3>
+  <p><strong>Text Mining</strong> (also called Text Analytics or Knowledge Discovery from Text — KDT) is the process of deriving high-quality, structured information and patterns from large volumes of unstructured or semi-structured text data through a combination of NLP, statistical analysis, and machine learning techniques.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Text Mining vs Traditional Data Mining</div>
+    <p>Traditional data mining operates on structured, tabular data (rows and columns with defined types). Text mining operates on <em>unstructured</em> raw text where structure must first be discovered or imposed. The core challenge: convert free-flowing human language into a form that algorithms can process and extract patterns from.</p>
+  </div>
+
+  <h3>1.2 Text Mining Tasks</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Information Extraction:</strong> Extract structured facts — entities (people, organizations, places), relationships between them, events. Turn "Apple Inc. acquired Beats in 2014 for $3B" into a structured triple: (Apple Inc., acquired, Beats, 2014, $3B).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Text Classification:</strong> Assign predefined labels to documents — spam/not-spam, sentiment polarity, topic category, language identification. Requires a labeled training corpus and a learned classifier.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Text Clustering:</strong> Group similar documents without predefined labels — unsupervised discovery of topics or themes. K-means on TF-IDF vectors, Latent Dirichlet Allocation (LDA) for topic modeling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Summarization:</strong> Produce a concise summary of one or many documents, retaining the most important information. Extractive (select key sentences) or abstractive (generate new text).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Question Answering:</strong> Given a corpus and a natural language question, locate or generate the answer from the corpus. Requires understanding both the question and documents.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Opinion Mining (Sentiment Analysis):</strong> Detect opinions, sentiments, and subjectivity in text. Particularly valuable for product reviews, social media monitoring, and brand analytics.</div></li>
+  </ul>
+
+  <h3>1.3 Text Mining Process — End to End</h3>
+
+  <div class="diagram">
+    <pre>
+  RAW TEXT SOURCES
+  (Web pages, PDFs, Emails, Social media,
+   Scientific papers, News articles, Reviews)
+        │
+        ▼
+  ┌──────────────────────────────────┐
+  │  TEXT ACQUISITION                │ ← Web scraping, APIs, database dumps,
+  │                                  │   OCR for scanned docs, speech-to-text
+  └──────────────┬───────────────────┘
+                 │
+        ▼
+  ┌──────────────────────────────────┐
+  │  TEXT PRE-PROCESSING             │ ← Cleaning, tokenization, normalization,
+  │  (This entire module)            │   stemming/lemmatization, POS tagging
+  └──────────────┬───────────────────┘
+                 │
+        ▼
+  ┌──────────────────────────────────┐
+  │  FEATURE EXTRACTION / REPR.      │ ← TF-IDF, BoW, Word2Vec, BERT embeddings
+  └──────────────┬───────────────────┘
+                 │
+        ▼
+  ┌──────────────────────────────────┐
+  │  PATTERN DISCOVERY / MODELLING   │ ← Classification, clustering, NER, IE
+  └──────────────┬───────────────────┘
+                 │
+        ▼
+  ┌──────────────────────────────────┐
+  │  EVALUATION &amp; INTERPRETATION     │ ← Precision, Recall, F1, human review
+  └──────────────┬───────────────────┘
+                 │
+        ▼
+  ACTIONABLE KNOWLEDGE (insights, labels, knowledge graphs)
+    </pre>
+    <div class="diagram-caption">Figure 1.1 — End-to-end text mining pipeline. Pre-processing (this module) is foundational to every downstream task.</div>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 2 ══════════ -->
+<div class="section" id="s2">
+  <div class="section-header sh-mine">
+    <div class="section-num">Section 2</div>
+    <h2>Text Cleaning Pipeline</h2>
+  </div>
+
+  <h3>2.1 Why Cleaning is Critical</h3>
+  <p>Raw text from real-world sources is messy — it contains HTML tags, special characters, inconsistent encoding, URLs, numbers, extra whitespace, typos, and noise specific to the source (emojis in tweets, code in Stack Overflow posts, headers in legal documents). Models trained on noisy text learn noise as signal.</p>
+
+  <h3>2.2 Text Cleaning Steps — In Order</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Worked Example — Cleaning a Raw Tweet</div>
+    <div class="ex-body">
+      <div class="ex-row">
+        <div class="ex-label">Raw input</div>
+        <div class="ex-value">"&lt;p&gt;I LOVE this product!! 😍😍 Visit https://t.co/xyz #BestEver @john123 it's AMAZING!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">1. HTML strip</div>
+        <div class="ex-value">"I LOVE this product!! 😍😍 Visit https://t.co/xyz #BestEver @john123 it's AMAZING!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">2. URL removal</div>
+        <div class="ex-value">"I LOVE this product!! 😍😍 #BestEver @john123 it's AMAZING!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">3. Mention/hashtag</div>
+        <div class="ex-value">"I LOVE this product!! 😍😍  it's AMAZING!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">4. Emoji handling</div>
+        <div class="ex-value">"I LOVE this product!! [heart_eyes] [heart_eyes]  it's AMAZING!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">5. Lowercasing</div>
+        <div class="ex-value">"i love this product!! [heart_eyes] [heart_eyes]  it's amazing!!!! 100%"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">6. Punctuation clean</div>
+        <div class="ex-value">"i love this product  heart_eyes heart_eyes  its amazing  100"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">7. Whitespace normalize</div>
+        <div class="ex-value">"i love this product heart_eyes heart_eyes its amazing 100"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">8. Contraction expand</div>
+        <div class="ex-value">"i love this product heart_eyes heart_eyes it is amazing 100"</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>2.3 Cleaning Operations — Detailed</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>HTML/XML tag removal:</strong> Use regex or BeautifulSoup. <code>&lt;b&gt;Important&lt;/b&gt;</code> → "Important". Web-scraped text is full of tags — must be stripped before any linguistic processing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>URL and email removal:</strong> URLs carry no semantic content for most NLP tasks (unless the task is about URLs). Replace with a placeholder <code>[URL]</code> or remove entirely. Regex: <code>https?://\S+</code>.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Encoding normalization:</strong> Convert to UTF-8. Handle smart quotes (" " → "), en/em dashes, accented characters (café → cafe, or keep as-is). Unicode normalization (NFC/NFD) ensures consistent byte representations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Lowercasing:</strong> Convert all text to lowercase. "Apple" and "apple" should map to the same token in most tasks. <em>Exception:</em> For NER, case carries information — "Apple" (company) vs "apple" (fruit). For deep learning models, avoid lowercasing — the model handles it.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Number handling:</strong> Depending on the task: remove numbers (sentiment, topic classification), replace with placeholder <code>[NUM]</code> (general NLP), normalize to word form (one, two, three), or keep (financial text, date extraction).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Punctuation removal:</strong> For Bag-of-Words/TF-IDF: remove punctuation with <code>string.punctuation</code>. For sequence models (BERT, LSTM): keep punctuation — it carries syntactic and semantic information (question marks, commas, ellipses all matter).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Contraction expansion:</strong> "can't" → "cannot", "it's" → "it is", "won't" → "will not". Important for consistent tokenization. Libraries: contractions (Python), pycontractions.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Emoji handling:</strong> For social media tasks: convert to text description using emoji library (<code>😍</code> → "heart_eyes") — emojis carry strong sentiment signals. For formal text: remove. Never ignore silently — they may dominate the signal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Extra whitespace:</strong> Multiple spaces, tabs, newlines collapse to a single space. Use <code>re.sub(r'\s+', ' ', text).strip()</code>.</div></li>
+  </ul>
+
+  <div class="callout callout-warn">
+    <div class="callout-title">Task-Dependent Cleaning — No One-Size-Fits-All</div>
+    <p>Cleaning decisions must be task-specific. For a legal contract NER system: preserve case (entities are capitalized), keep numbers (dates, amounts), keep punctuation (clause boundaries). For a spam classifier: remove URLs and numbers. For a social media sentiment model: convert emojis to text, expand slang. Never apply the same cleaning pipeline to every task blindly.</p>
+  </div>
+
+  <h3>2.4 Text Cleaning with Python — Code</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Text Cleaning Utilities</div>
+    <code><span class="kw">import</span> <span class="va">re</span>, <span class="va">unicodedata</span>, <span class="va">string</span>
+<span class="kw">from</span> <span class="va">contractions</span> <span class="kw">import</span> <span class="fn">fix</span>
+
+<span class="kw">def</span> <span class="fn">clean_text</span>(<span class="va">text</span>):
+    <span class="cm"># 1. Decode and normalize Unicode</span>
+    <span class="va">text</span> = <span class="fn">unicodedata.normalize</span>(<span class="st">'NFKD'</span>, <span class="va">text</span>)
+
+    <span class="cm"># 2. Remove HTML tags</span>
+    <span class="va">text</span> = <span class="va">re</span>.<span class="fn">sub</span>(<span class="st">r'&lt;[^&gt;]+&gt;'</span>, <span class="st">''</span>, <span class="va">text</span>)
+
+    <span class="cm"># 3. Remove URLs</span>
+    <span class="va">text</span> = <span class="va">re</span>.<span class="fn">sub</span>(<span class="st">r'https?://\S+|www\.\S+'</span>, <span class="st">''</span>, <span class="va">text</span>)
+
+    <span class="cm"># 4. Expand contractions</span>
+    <span class="va">text</span> = <span class="fn">fix</span>(<span class="va">text</span>)
+
+    <span class="cm"># 5. Lowercase</span>
+    <span class="va">text</span> = <span class="va">text</span>.<span class="fn">lower</span>()
+
+    <span class="cm"># 6. Remove punctuation (task-dependent)</span>
+    <span class="va">text</span> = <span class="va">text</span>.<span class="fn">translate</span>(<span class="fn">str.maketrans</span>(<span class="st">''</span>, <span class="st">''</span>, <span class="va">string.punctuation</span>))
+
+    <span class="cm"># 7. Remove extra whitespace</span>
+    <span class="va">text</span> = <span class="va">re</span>.<span class="fn">sub</span>(<span class="st">r'\s+'</span>, <span class="st">' '</span>, <span class="va">text</span>).<span class="fn">strip</span>()
+
+    <span class="kw">return</span> <span class="va">text</span></code>
+  </div>
+</div>
+
+<!-- ████████ PART 2: TOKENIZATION ████████ -->
+<div class="part-banner pb-tok">Part 2 — Tokenization</div>
+
+<!-- ══════════ SECTION 3 ══════════ -->
+<div class="section" id="s3">
+  <div class="section-header sh-tok">
+    <div class="section-num">Section 3</div>
+    <h2>Tokenization — Concepts and Importance</h2>
+  </div>
+
+  <h3>3.1 What is Tokenization?</h3>
+  <p><strong>Tokenization</strong> is the process of splitting raw text into smaller units called <strong>tokens</strong>, which serve as the fundamental units of processing in any NLP pipeline. A token can be a word, subword, character, sentence, or any other meaningful linguistic unit depending on the tokenization strategy.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Why Tokenization is Foundational</div>
+    <p>Every downstream NLP operation — frequency analysis, stemming, POS tagging, NER, embedding lookup, language model training — operates on tokens. The quality and granularity of tokenization directly determines what patterns the model can learn. A poor tokenization choice can prevent a model from learning even the simplest patterns correctly.</p>
+  </div>
+
+  <h3>3.2 Levels of Tokenization</h3>
+
+  <table class="compare-table">
+    <tr><th>Level</th><th>Token Unit</th><th>Example</th><th>Use Case</th><th>Pros / Cons</th></tr>
+    <tr>
+      <td><strong>Sentence</strong></td>
+      <td>Complete sentence</td>
+      <td>"I love NLP." → ["I love NLP.", "It's fascinating."]</td>
+      <td>Summarization, sentence embeddings, discourse</td>
+      <td>+ Simple. − Sentence boundary detection is non-trivial (Dr. Smith vs end-of-sentence ".")</td>
+    </tr>
+    <tr>
+      <td><strong>Word</strong></td>
+      <td>Whitespace/punctuation-separated word</td>
+      <td>"I love NLP" → ["I", "love", "NLP"]</td>
+      <td>Classical NLP, BoW, TF-IDF, Word2Vec</td>
+      <td>+ Intuitive. − Large vocabulary; OOV problem; fails on compound words, contractions</td>
+    </tr>
+    <tr>
+      <td><strong>Subword</strong></td>
+      <td>Frequent subword units (BPE/WP/SP)</td>
+      <td>"unhappiness" → ["un", "##happi", "##ness"]</td>
+      <td>BERT, GPT, modern Transformers — universal standard</td>
+      <td>+ No OOV; handles morphology, multilingual. − Less intuitive; tokens ≠ words</td>
+    </tr>
+    <tr>
+      <td><strong>Character</strong></td>
+      <td>Individual character</td>
+      <td>"NLP" → ["N", "L", "P"]</td>
+      <td>Spelling correction, morphology, low-resource languages</td>
+      <td>+ No OOV, handles typos. − Very long sequences; harder to learn semantic units</td>
+    </tr>
+    <tr>
+      <td><strong>Byte</strong></td>
+      <td>UTF-8 byte</td>
+      <td>All text → 256-token vocabulary</td>
+      <td>ByT5, byte-level models</td>
+      <td>+ Universal, no tokenizer needed. − Longest sequences; limited semantic unit</td>
+    </tr>
+  </table>
+
+  <h3>3.3 Tokenization Challenges</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Contractions:</strong> "don't" — one word or two ("do", "n't" or "do", "not")? Different tokenizers handle this differently. The choice affects downstream tasks like POS tagging.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hyphenated words:</strong> "state-of-the-art" — one token or four? Domain-dependent: keep as one in technical text, split for general purposes.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Abbreviations and periods:</strong> "Dr. Smith went to Washington, D.C." — periods are both sentence-ending and part of abbreviations. Must distinguish sentence boundaries from abbreviation dots.</div></li>
+    <li><span class="bullet">▸</span><div><strong>URLs and Emails:</strong> Should not be split on punctuation — "user@email.com" is one token, not five.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-Western languages:</strong> Chinese, Japanese, Korean, Thai have no spaces between words — word boundary detection requires a segmentation model, not just whitespace splitting.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Special characters:</strong> "@user", "#hashtag", "$100.50", ":)" — all need special handling depending on domain.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 4 ══════════ -->
+<div class="section" id="s4">
+  <div class="section-header sh-tok">
+    <div class="section-num">Section 4</div>
+    <h2>Various Tokenizers — Types and Algorithms</h2>
+  </div>
+
+  <h3>4.1 Rule-Based / Whitespace Tokenizers</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Whitespace tokenizer:</strong> Split on any whitespace. Simplest possible. Fails on punctuation ("word." becomes ["word."] not ["word", "."]). Only suitable for very clean, pre-processed text.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Punctuation + whitespace tokenizer:</strong> Split on whitespace and punctuation. Fast, deterministic. Handles most simple cases. Still fails on contractions, abbreviations, domain-specific terms.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Penn Treebank Tokenizer (NLTK's word_tokenize):</strong> Rule-based tokenizer designed for English following Penn Treebank conventions. Splits contractions ("don't" → ["do", "n't"]), handles punctuation intelligently, respects some abbreviations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Regex tokenizer:</strong> Define a pattern for what constitutes a token using regular expressions. Highly flexible for specialized text (e.g., keep hashtags and @mentions intact for social media).</div></li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Rule-Based Tokenizers (NLTK)</div>
+    <code><span class="kw">from</span> <span class="va">nltk.tokenize</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>, <span class="fn">sent_tokenize</span>, <span class="fn">RegexpTokenizer</span>
+
+<span class="va">text</span> = <span class="st">"Dr. Smith can't visit Washington D.C. today!"</span>
+
+<span class="cm"># NLTK word tokenizer (Penn Treebank style)</span>
+<span class="fn">word_tokenize</span>(<span class="va">text</span>)
+<span class="cm"># → ['Dr.', 'Smith', 'ca', "n't", 'visit', 'Washington', 'D.C.', 'today', '!']</span>
+
+<span class="cm"># Sentence tokenizer (Punkt algorithm)</span>
+<span class="fn">sent_tokenize</span>(<span class="st">"Hello Dr. Smith. How are you? I am fine."</span>)
+<span class="cm"># → ['Hello Dr. Smith.', 'How are you?', 'I am fine.']</span>
+
+<span class="cm"># Regex tokenizer — keep only alphanumeric words</span>
+<span class="va">tok</span> = <span class="fn">RegexpTokenizer</span>(<span class="st">r'\w+'</span>)
+<span class="va">tok</span>.<span class="fn">tokenize</span>(<span class="va">text</span>)
+<span class="cm"># → ['Dr', 'Smith', 'can', 't', 'visit', 'Washington', 'D', 'C', 'today']</span></code>
+  </div>
+
+  <h3>4.2 Statistical / ML-Based Tokenizers</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Punkt Sentence Tokenizer (NLTK):</strong> Unsupervised algorithm that learns from text to distinguish sentence-ending periods from abbreviation periods. Trained on a corpus, then applied. Much better than simple period-splitting.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SpaCy tokenizer:</strong> Rules + exception dictionary. Handles contractions, punctuation, URLs intelligently per language. Fast (C extension). Used for production English NLP pipelines.</div></li>
+  </ul>
+
+  <h3>4.3 Subword Tokenizers — The Modern Standard</h3>
+  <p>Subword tokenizers address two key problems with word-level tokenization: (1) <strong>OOV (Out-of-Vocabulary)</strong> — words not in the vocabulary have no representation. (2) <strong>Vocabulary explosion</strong> — morphologically rich languages or domain text may need millions of word types. Subword tokenizers find a middle ground between characters and words.</p>
+
+  <h4>A. BPE — Byte Pair Encoding (GPT, RoBERTa)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Origin:</strong> Adapted from a data compression algorithm by Sennrich et al. (2016) for machine translation. Now the backbone of GPT-2, GPT-3, GPT-4, RoBERTa.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Learning algorithm:</strong> Start with character vocabulary. Count all adjacent character/token pairs. Merge the most frequent pair into a new token. Repeat for a fixed number of merges (vocabulary size). The final vocabulary contains both characters and frequent subwords/words.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Encoding text:</strong> Apply learned merge rules in the same order. Rare or unseen words decompose into known subwords. "unhappiness" → ["un", "happiness"] (if "happiness" was merged) or further ["un", "happy", "ness"].</div></li>
+  </ul>
+
+  <div class="example-box">
+    <div class="ex-header">BPE Learning — Step by Step</div>
+    <div class="ex-body">
+      <div class="ex-row">
+        <div class="ex-label">Training corpus</div>
+        <div class="ex-value">"low low low lower lower newest newest widest"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Initial vocab</div>
+        <div class="ex-value">l, o, w, e, r, n, s, t, i, d &lt;/w&gt;  (chars + end-of-word)</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Merge 1 (most freq pair)</div>
+        <div class="ex-value">('e', 's') → 'es'  (appears in "newest" ×2, "widest" ×1)</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Merge 2</div>
+        <div class="ex-value">('es', 't') → 'est'  (now "est" is a subword)</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Merge 3</div>
+        <div class="ex-value">('l', 'o') → 'lo'  (frequent in "low", "lower")</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">After N merges</div>
+        <div class="ex-value">"lower" → ["low", "er"]  |  "newest" → ["new", "est"]  |  "widest" → ["wid", "est"]</div>
+      </div>
+    </div>
+  </div>
+
+  <h4>B. WordPiece (BERT)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Algorithm:</strong> Similar to BPE but uses likelihood-based merging — merge the pair that maximizes the likelihood of the training data under a language model, not just raw frequency. This tends to produce more linguistically meaningful subwords.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Notation convention:</strong> Tokens that are the start of a word have no prefix. Continuation tokens are prefixed with <code>##</code>. "playing" → ["play", "##ing"]. This distinguishes word-initial from continuation subwords.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Used in:</strong> BERT, DistilBERT, ALBERT, ELECTRA. Vocabulary size 30,000 for BERT-base English.</div></li>
+  </ul>
+
+  <h4>C. SentencePiece (T5, LLaMA, mT5)</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Key difference:</strong> Language-agnostic. Treats text as a raw stream of Unicode characters — no language-specific preprocessing or whitespace assumption. Works directly on raw text. Perfect for multilingual models or languages without spaces (Chinese, Japanese).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Algorithm:</strong> Uses BPE or Unigram Language Model under the hood. Unigram LM: starts with a large vocabulary, iteratively prunes tokens that least reduce the likelihood of the corpus.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Whitespace as character:</strong> SentencePiece uses <code>▁</code> (underscore) to represent a word-initial space, encoding position information within the token itself. "Hello world" → ["▁Hello", "▁world"].</div></li>
+    <li><span class="bullet">▸</span><div><strong>Used in:</strong> T5, mT5, LLaMA (1/2/3), Mistral, Falcon, Google's multilingual models.</div></li>
+  </ul>
+
+  <h3>4.4 Tokenizer Comparison</h3>
+
+  <table class="compare-table">
+    <tr><th>Tokenizer</th><th>Algorithm</th><th>OOV handling</th><th>Language</th><th>Used in</th></tr>
+    <tr><td><strong>NLTK word_tokenize</strong></td><td>Rules (Penn Treebank)</td><td>Keeps as single token</td><td>English-only</td><td>Classical NLP, teaching</td></tr>
+    <tr><td><strong>SpaCy</strong></td><td>Rules + exceptions dict</td><td>Keeps as single token</td><td>Multi-language</td><td>Production NLP pipelines</td></tr>
+    <tr><td><strong>BPE</strong></td><td>Greedy frequency merge</td><td>Splits into subwords</td><td>Multilingual</td><td>GPT-2/3/4, RoBERTa</td></tr>
+    <tr><td><strong>WordPiece</strong></td><td>Likelihood-based merge</td><td>Splits into ##subwords</td><td>Multilingual</td><td>BERT, ALBERT, ELECTRA</td></tr>
+    <tr><td><strong>SentencePiece+BPE</strong></td><td>Raw-text BPE, ▁ for space</td><td>Splits into subwords</td><td>Any language</td><td>T5, LLaMA, mT5, Falcon</td></tr>
+    <tr><td><strong>Character</strong></td><td>Split into single chars</td><td>None (finite char set)</td><td>Any language</td><td>Spelling, morphology models</td></tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — BPE vs WordPiece vs SentencePiece</div>
+    <p><strong>BPE:</strong> Greedy frequency-based merging. Most common. GPT family. <strong>WordPiece:</strong> Likelihood-based merging, ## prefix for continuation. BERT family. <strong>SentencePiece:</strong> Language-agnostic raw-text tokenization using ▁ for space. Used for multilingual and non-English models. All three are subword tokenizers solving the OOV problem — they differ in the merge criterion and language assumptions.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 5 ══════════ -->
+<div class="section" id="s5">
+  <div class="section-header sh-tok">
+    <div class="section-num">Section 5</div>
+    <h2>Frequency Distribution</h2>
+  </div>
+
+  <h3>5.1 What is Frequency Distribution?</h3>
+  <p>A <strong>frequency distribution</strong> is a count of how often each unique token appears in a corpus. It is the most fundamental descriptive statistic for text and provides the foundation for bag-of-words models, TF-IDF, n-gram models, and vocabulary construction.</p>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Frequency Distribution with NLTK</div>
+    <code><span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">FreqDist</span>
+<span class="kw">from</span> <span class="va">nltk.tokenize</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>
+
+<span class="va">text</span> = <span class="st">"the cat sat on the mat the cat ate the rat"</span>
+<span class="va">tokens</span> = <span class="fn">word_tokenize</span>(<span class="va">text</span>)
+<span class="va">fdist</span> = <span class="fn">FreqDist</span>(<span class="va">tokens</span>)
+
+<span class="fn">print</span>(<span class="va">fdist</span>.<span class="fn">most_common</span>(<span class="nm">5</span>))
+<span class="cm"># → [('the', 4), ('cat', 2), ('sat', 1), ('on', 1), ('mat', 1)]</span>
+
+<span class="fn">print</span>(<span class="va">fdist</span>[<span class="st">'cat'</span>])   <span class="cm"># → 2</span>
+<span class="fn">print</span>(<span class="va">fdist</span>.<span class="fn">freq</span>(<span class="st">'cat'</span>)) <span class="cm"># → 0.182 (relative frequency)</span>
+<span class="fn">print</span>(<span class="va">fdist</span>.<span class="fn">N</span>())       <span class="cm"># → 11 (total tokens)</span>
+<span class="fn">print</span>(<span class="va">fdist</span>.<span class="fn">B</span>())       <span class="cm"># → 8  (unique token types)</span></code>
+  </div>
+
+  <h3>5.2 Visualizing Frequency Distribution</h3>
+
+  <div class="freq-table">
+    <p style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:.75rem;">Token Frequency — "the cat sat on the mat the cat ate the rat"</p>
+    <div class="freq-row"><span class="freq-word">the</span><div class="freq-bar" style="width:160px"></div><span class="freq-count">4</span></div>
+    <div class="freq-row"><span class="freq-word">cat</span><div class="freq-bar" style="width:80px"></div><span class="freq-count">2</span></div>
+    <div class="freq-row"><span class="freq-word">sat</span><div class="freq-bar" style="width:40px"></div><span class="freq-count">1</span></div>
+    <div class="freq-row"><span class="freq-word">on</span><div class="freq-bar" style="width:40px"></div><span class="freq-count">1</span></div>
+    <div class="freq-row"><span class="freq-word">mat</span><div class="freq-bar" style="width:40px"></div><span class="freq-count">1</span></div>
+    <div class="freq-row"><span class="freq-word">ate</span><div class="freq-bar" style="width:40px"></div><span class="freq-count">1</span></div>
+    <div class="freq-row"><span class="freq-word">rat</span><div class="freq-bar" style="width:40px"></div><span class="freq-count">1</span></div>
+  </div>
+
+  <h3>5.3 Zipf's Law</h3>
+  <p>A fundamental empirical law observed in all natural languages:</p>
+
+  <div class="callout callout-formula">
+    <div class="callout-title">Zipf's Law</div>
+    <p>If words are ranked by frequency (rank 1 = most frequent), then the frequency of a word is inversely proportional to its rank:</p>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:14px;margin:.5rem 0;"><strong>f(word) ∝ 1/rank</strong></p>
+    <p>The most frequent word appears ~twice as often as the 2nd most frequent, ~3× the 3rd, etc. In English: "the" (rank 1) ≈ 7% of all tokens. "of" (rank 2) ≈ 3.5%. "and" (rank 3) ≈ 2.3%.</p>
+    <p><strong>Implication for NLP:</strong> A small number of very frequent words (stopwords) dominate raw counts. A huge number of rare words each appear very rarely. This "long tail" distribution shapes every frequency-based NLP method.</p>
+  </div>
+
+  <h3>5.4 TF-IDF — Term Frequency — Inverse Document Frequency</h3>
+  <p>Raw frequency counts are dominated by common words (the, a, is) that carry little discriminative information. TF-IDF weights each term by how distinctive it is across documents:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">TF-IDF Formula</div>
+    <div class="formula">
+      <span class="hl">TF(t, d)</span>    = count(t in d) / total tokens in d   <span class="comment">← term frequency in doc d</span><br>
+      <span class="var">IDF(t, D)</span>   = log( |D| / |{d ∈ D : t ∈ d}| )     <span class="comment">← inverse doc frequency</span><br>
+      <span class="gr">TF-IDF(t,d,D)</span> = TF(t,d) × IDF(t,D)<br><br>
+      |D| = total documents in corpus<br>
+      |{d : t ∈ d}| = number of documents containing term t<br><br>
+      High TF-IDF: word frequent in THIS doc but rare across all docs → discriminative<br>
+      Low TF-IDF:  word frequent in MANY docs (stopwords) → not discriminative
+    </div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Intuition:</strong> "machine" appearing often in one document about engineering has high TF. If "machine" also appears in most documents in the corpus, IDF is low → TF-IDF penalizes it. "hydraulic" appearing in only 2 of 10,000 documents has high IDF → given high TF it gets high TF-IDF.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Smoothing:</strong> Add 1 inside the log to avoid division by zero for terms appearing in all documents: IDF = log(|D|/(1+df)) + 1. Standard in sklearn's TfidfVectorizer.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Applications:</strong> Document retrieval (return documents with highest TF-IDF score for query terms), keyword extraction (top TF-IDF words in a document), feature vectors for text classification.</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 3: NORMALIZATION ████████ -->
+<div class="part-banner pb-norm">Part 3 — Text Normalization: Stopwords, Stemming, Lemmatization, POS</div>
+
+<!-- ══════════ SECTION 6 ══════════ -->
+<div class="section" id="s6">
+  <div class="section-header sh-norm">
+    <div class="section-num">Section 6</div>
+    <h2>Stopwords and Text Normalization</h2>
+  </div>
+
+  <h3>6.1 Stopwords</h3>
+  <p><strong>Stopwords</strong> are high-frequency function words (the, a, is, in, on, and, but, of...) that appear in almost every document and carry little discriminative meaning. In Bag-of-Words and TF-IDF approaches, removing them reduces vocabulary size, speeds up processing, and often improves model performance.</p>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>NLTK English stopwords:</strong> 179 words including: "i, me, my, myself, we, our, you, he, she, it, the, a, an, is, are, was, were, be, been, have, has, do, does, did, will, would, can, could, should, may, might, shall, to, of, in, for, on, with, at, by, from..."</div></li>
+    <li><span class="bullet">▸</span><div><strong>When to remove:</strong> BOW/TF-IDF features for topic classification, clustering, information retrieval. Removes noise from frequency analysis.</div></li>
+    <li><span class="bullet">▸</span><div><strong>When NOT to remove:</strong> Sentiment analysis ("not good" — "not" is a stopword but critical). Any task where grammatical function words carry meaning. Deep learning models (BERT) — the model learns which words are important; don't remove anything.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Custom stopwords:</strong> Domain-specific — in a medical corpus, "patient" may be so ubiquitous it's uninformative. Add domain stopwords to the standard list.</div></li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Stopword Removal (NLTK)</div>
+    <code><span class="kw">from</span> <span class="va">nltk.corpus</span> <span class="kw">import</span> <span class="va">stopwords</span>
+<span class="kw">from</span> <span class="va">nltk.tokenize</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>
+
+<span class="va">stop_words</span> = <span class="fn">set</span>(<span class="va">stopwords</span>.<span class="fn">words</span>(<span class="st">'english'</span>))
+<span class="va">tokens</span> = <span class="fn">word_tokenize</span>(<span class="st">"the quick brown fox jumps over the lazy dog"</span>)
+<span class="va">filtered</span> = [<span class="va">w</span> <span class="kw">for</span> <span class="va">w</span> <span class="kw">in</span> <span class="va">tokens</span> <span class="kw">if</span> <span class="va">w</span>.<span class="fn">lower</span>() <span class="kw">not in</span> <span class="va">stop_words</span>]
+<span class="fn">print</span>(<span class="va">filtered</span>)
+<span class="cm"># → ['quick', 'brown', 'fox', 'jumps', 'lazy', 'dog']</span></code>
+  </div>
+
+  <h3>6.2 Case Normalization</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Lowercase all:</strong> Standard for most NLP tasks. "Apple", "APPLE", "apple" → same token. Reduces vocabulary size significantly.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Preserve case when needed:</strong> NER (Named Entity Recognition) uses case as a signal — "Apple Inc." is an entity partly because it's capitalized. Sentiment analysis may use ALL-CAPS as a strong sentiment signal.</div></li>
+    <li><span class="bullet">▸</span><div><strong>True-case models:</strong> Models that predict the original casing given lowercase input. Used as a post-processing step in MT and ASR.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 7 ══════════ -->
+<div class="section" id="s7">
+  <div class="section-header sh-norm">
+    <div class="section-num">Section 7</div>
+    <h2>Stemming</h2>
+  </div>
+
+  <h3>7.1 What is Stemming?</h3>
+  <p><strong>Stemming</strong> is a heuristic rule-based process that reduces a word to its base or root form (called the <strong>stem</strong>) by removing suffixes and prefixes. The stem need not be a real word — it is simply a common base form that groups morphologically related words together.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Purpose of Stemming</div>
+    <p>Words like "run", "running", "runs", "runner" all refer to the same core concept. Without stemming, a BOW or TF-IDF model treats them as four completely different features. Stemming collapses them to one — "run" — reducing vocabulary size and allowing the model to generalize across word forms.</p>
+  </div>
+
+  <h3>7.2 Porter Stemmer (1980) — Most Widely Used</h3>
+  <p>The Porter Stemmer applies a cascade of rules in 5 steps, progressively removing common English suffixes:</p>
+
+  <div class="example-box">
+    <div class="ex-header">Porter Stemmer — Rule Steps (Simplified)</div>
+    <div class="ex-body">
+      <div class="ex-row">
+        <div class="ex-label">Step 1a — Plurals</div>
+        <div class="ex-value">SSES → SS: "caresses" → "caress" | IES → I: "ponies" → "poni" | SS → SS | S → ∅: "cats" → "cat"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Step 1b — -ed, -ing</div>
+        <div class="ex-value">EED → EE: "agreed" → "agree" | (v*) ED → ∅: "plastered" → "plaster" | (v*) ING → ∅: "running" → "run"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Step 2 — derivations</div>
+        <div class="ex-value">ATIONAL → ATE: "relational" → "relate" | IZATION → IZE: "digitization" → "digitize"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Step 3–5 — more suffix removal</div>
+        <div class="ex-value">ICATE → IC: "triplicate" → "triplic" | AL → ∅: "revival" → "reviv"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Porter, Snowball, Lancaster Stemmers</div>
+    <code><span class="kw">from</span> <span class="va">nltk.stem</span> <span class="kw">import</span> <span class="fn">PorterStemmer</span>, <span class="fn">SnowballStemmer</span>, <span class="fn">LancasterStemmer</span>
+
+<span class="va">words</span> = [<span class="st">"running"</span>, <span class="st">"runs"</span>, <span class="st">"easily"</span>, <span class="st">"fairly"</span>, <span class="st">"generously"</span>, <span class="st">"relational"</span>]
+
+<span class="va">porter</span>  = <span class="fn">PorterStemmer</span>()
+<span class="va">snow</span>    = <span class="fn">SnowballStemmer</span>(<span class="st">"english"</span>)
+<span class="va">lanc</span>    = <span class="fn">LancasterStemmer</span>()
+
+<span class="kw">for</span> <span class="va">w</span> <span class="kw">in</span> <span class="va">words</span>:
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{w:15} | Porter: {porter.stem(w):10} | Snowball: {snow.stem(w):10} | Lancaster: {lanc.stem(w)}"</span>)
+
+<span class="cm"># running         | Porter: run        | Snowball: run        | Lancaster: run</span>
+<span class="cm"># easily          | Porter: easili     | Snowball: easili     | Lancaster: eas</span>
+<span class="cm"># generously      | Porter: generous   | Snowball: generous   | Lancaster: gen</span>
+<span class="cm"># relational      | Porter: relat      | Snowball: relat      | Lancaster: rel</span></code>
+  </div>
+
+  <h3>7.3 Stemming Algorithms Compared</h3>
+
+  <table class="compare-table">
+    <tr><th>Stemmer</th><th>Aggressiveness</th><th>Speed</th><th>Languages</th><th>Key Property</th></tr>
+    <tr>
+      <td><strong>Porter (1980)</strong></td>
+      <td>Moderate</td>
+      <td>Fast</td>
+      <td>English only</td>
+      <td>Most common, well-studied. Good balance of accuracy and simplicity. Classic 5-step rule cascade.</td>
+    </tr>
+    <tr>
+      <td><strong>Porter2 / Snowball (2001)</strong></td>
+      <td>Moderate–aggressive</td>
+      <td>Fast</td>
+      <td>15+ languages</td>
+      <td>Improved Porter. Handles more edge cases. Multilingual via "Snowball" framework. Recommended over Porter.</td>
+    </tr>
+    <tr>
+      <td><strong>Lancaster / Paice (1990)</strong></td>
+      <td>Very aggressive</td>
+      <td>Fastest</td>
+      <td>English only</td>
+      <td>Most aggressive — can over-stem. "general" → "gen". High error rate. Rarely preferred.</td>
+    </tr>
+    <tr>
+      <td><strong>Lovins (1968)</strong></td>
+      <td>Aggressive</td>
+      <td>Moderate</td>
+      <td>English only</td>
+      <td>First published stemmer. Single-pass, largest suffix removal list.</td>
+    </tr>
+    <tr>
+      <td><strong>Krovetz (1993)</strong></td>
+      <td>Light</td>
+      <td>Slower</td>
+      <td>English only</td>
+      <td>Dictionary-based. Always produces real words. Used in IR tasks where readable output needed.</td>
+    </tr>
+  </table>
+
+  <h3>7.4 Stemming Errors</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Over-stemming:</strong> Different words incorrectly stem to the same base. "university" and "universe" both stem to "univers" — they are semantically very different! This conflates distinct concepts.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Under-stemming:</strong> Words that should have the same base get different stems. "alumnus", "alumni", "alumna" should all stem to the same base but may not with all stemmers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Non-words:</strong> Stems are often not real English words — "easily" → "easili", "running" → "run" (ok), "relational" → "relat". This makes output hard to read or interpret for downstream tasks that need real words.</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 8 ══════════ -->
+<div class="section" id="s8">
+  <div class="section-header sh-norm">
+    <div class="section-num">Section 8</div>
+    <h2>Lemmatization</h2>
+  </div>
+
+  <h3>8.1 What is Lemmatization?</h3>
+  <p><strong>Lemmatization</strong> reduces a word to its canonical dictionary form — the <strong>lemma</strong>. Unlike stemming, lemmatization uses a vocabulary and morphological analysis to ensure the output is always a real, valid word. It considers the word's part of speech to determine the correct base form.</p>
+
+  <div class="example-box">
+    <div class="ex-header">Lemmatization Examples (WordNet Lemmatizer)</div>
+    <div class="ex-body">
+      <div class="ex-row">
+        <div class="ex-label">Verb forms</div>
+        <div class="ex-value">"running" (VBG) → "run" | "ran" (VBD) → "run" | "runs" (VBZ) → "run"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Noun forms</div>
+        <div class="ex-value">"cats" → "cat" | "children" → "child" | "mice" → "mouse" | "feet" → "foot"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Adjective forms</div>
+        <div class="ex-value">"better" (JJR) → "good" | "worst" (JJS) → "bad" | "bigger" → "big"</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">POS-dependent</div>
+        <div class="ex-value">"meeting" as NOUN → "meeting" (a noun, base form is the same) | "meeting" as VERB → "meet"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — WordNetLemmatizer (NLTK)</div>
+    <code><span class="kw">from</span> <span class="va">nltk.stem</span> <span class="kw">import</span> <span class="fn">WordNetLemmatizer</span>
+<span class="kw">from</span> <span class="va">nltk.corpus</span> <span class="kw">import</span> <span class="va">wordnet</span>
+
+<span class="va">lem</span> = <span class="fn">WordNetLemmatizer</span>()
+
+<span class="cm"># Must provide POS tag for correct lemmatization</span>
+<span class="fn">print</span>(<span class="va">lem</span>.<span class="fn">lemmatize</span>(<span class="st">"running"</span>, <span class="va">pos</span>=<span class="st">'v'</span>))  <span class="cm"># → "run"</span>
+<span class="fn">print</span>(<span class="va">lem</span>.<span class="fn">lemmatize</span>(<span class="st">"running"</span>, <span class="va">pos</span>=<span class="st">'n'</span>))  <span class="cm"># → "running" (noun, already base form)</span>
+<span class="fn">print</span>(<span class="va">lem</span>.<span class="fn">lemmatize</span>(<span class="st">"better"</span>,  <span class="va">pos</span>=<span class="st">'a'</span>))  <span class="cm"># → "good"</span>
+<span class="fn">print</span>(<span class="va">lem</span>.<span class="fn">lemmatize</span>(<span class="st">"mice"</span>))              <span class="cm"># → "mouse" (default: noun)</span>
+<span class="fn">print</span>(<span class="va">lem</span>.<span class="fn">lemmatize</span>(<span class="st">"children"</span>))          <span class="cm"># → "child"</span>
+
+<span class="cm"># Helper function: map NLTK POS tags to WordNet POS</span>
+<span class="kw">def</span> <span class="fn">get_wordnet_pos</span>(<span class="va">tag</span>):
+    <span class="kw">if</span> <span class="va">tag</span>.<span class="fn">startswith</span>(<span class="st">'J'</span>): <span class="kw">return</span> <span class="va">wordnet</span>.ADJ
+    <span class="kw">if</span> <span class="va">tag</span>.<span class="fn">startswith</span>(<span class="st">'V'</span>): <span class="kw">return</span> <span class="va">wordnet</span>.VERB
+    <span class="kw">if</span> <span class="va">tag</span>.<span class="fn">startswith</span>(<span class="st">'R'</span>): <span class="kw">return</span> <span class="va">wordnet</span>.ADV
+    <span class="kw">return</span> <span class="va">wordnet</span>.NOUN  <span class="cm"># default</span></code>
+  </div>
+
+  <h3>8.2 SpaCy Lemmatization (Modern Approach)</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — SpaCy Lemmatization (Preferred for Production)</div>
+    <code><span class="kw">import</span> <span class="va">spacy</span>
+<span class="va">nlp</span> = <span class="fn">spacy.load</span>(<span class="st">"en_core_web_sm"</span>)
+
+<span class="va">doc</span> = <span class="fn">nlp</span>(<span class="st">"The geese were running across the frozen ponds"</span>)
+<span class="kw">for</span> <span class="va">token</span> <span class="kw">in</span> <span class="va">doc</span>:
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{token.text:12} | Lemma: {token.lemma_:10} | POS: {token.pos_}"</span>)
+
+<span class="cm"># The          | Lemma: the        | POS: DET</span>
+<span class="cm"># geese        | Lemma: goose      | POS: NOUN</span>
+<span class="cm"># were         | Lemma: be         | POS: AUX</span>
+<span class="cm"># running      | Lemma: run        | POS: VERB</span>
+<span class="cm"># across       | Lemma: across     | POS: ADP</span>
+<span class="cm"># frozen       | Lemma: freeze     | POS: VERB</span>
+<span class="cm"># ponds        | Lemma: pond       | POS: NOUN</span></code>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 9 ══════════ -->
+<div class="section" id="s9">
+  <div class="section-header sh-norm">
+    <div class="section-num">Section 9</div>
+    <h2>Stemming vs Lemmatization — Complete Comparison</h2>
+  </div>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Stemming</th><th>Lemmatization</th></tr>
+    <tr><td><strong>Method</strong></td><td>Heuristic rule-based suffix stripping</td><td>Vocabulary + morphological analysis (dictionary lookup)</td></tr>
+    <tr><td><strong>Output</strong></td><td>Stem (may not be a real word): "easily" → "easili"</td><td>Lemma (always a real, valid dictionary word): "easily" → "easy"</td></tr>
+    <tr><td><strong>POS awareness</strong></td><td>No — same rules applied regardless of POS</td><td>Yes — "meeting" (noun) → "meeting" but "meeting" (verb) → "meet"</td></tr>
+    <tr><td><strong>Speed</strong></td><td>Very fast (O(len) per word, no lookup)</td><td>Slower (dictionary lookup, morphological analysis)</td></tr>
+    <tr><td><strong>Accuracy</strong></td><td>Lower — over-stemming and under-stemming common</td><td>Higher — linguistically correct, handles irregular forms</td></tr>
+    <tr><td><strong>Irregular forms</strong></td><td>Fails: "ran" ≠ stem of "run", "children" ≠ stem of "child"</td><td>Handles: "ran" → "run", "children" → "child", "better" → "good"</td></tr>
+    <tr><td><strong>Requires POS?</strong></td><td>No</td><td>Yes for best results (POS-dependent lemmas)</td></tr>
+    <tr><td><strong>Interpretability</strong></td><td>Output often uninterpretable ("relat", "univers")</td><td>Output is human-readable ("relate", "universe")</td></tr>
+    <tr><td><strong>Best for</strong></td><td>IR/search where speed matters, BOW features, large corpora</td><td>Any task requiring accurate word representation, NER, QA, semantics</td></tr>
+    <tr><td><strong>Tool</strong></td><td>NLTK PorterStemmer, SnowballStemmer</td><td>NLTK WordNetLemmatizer, SpaCy, Stanford CoreNLP</td></tr>
+  </table>
+
+  <div class="example-box">
+    <div class="ex-header">Side-by-Side — "The dogs were studying harder than ever before"</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Original tokens</div><div class="ex-value">The | dogs | were | studying | harder | than | ever | before</div></div>
+      <div class="ex-row"><div class="ex-label">Porter Stemming</div><div class="ex-value">the | dog | were | studi | harder | than | ever | befor</div></div>
+      <div class="ex-row"><div class="ex-label">Lemmatization</div><div class="ex-value">the | dog | be | study | hard | than | ever | before</div></div>
+    </div>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — When to Use Which</div>
+    <p><strong>Use Stemming when:</strong> Speed is critical, interpretability doesn't matter, task is information retrieval/BOW classification, working with large English corpora. <strong>Use Lemmatization when:</strong> Linguistic accuracy matters, you need real words in output (knowledge bases, chatbots), working with irregular morphology, using POS information. <strong>Use neither for deep learning:</strong> BERT/GPT handle morphology internally through attention — neither stemming nor lemmatization is applied to input text for Transformer-based models.</p>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 10 ══════════ -->
+<div class="section" id="s10">
+  <div class="section-header sh-norm">
+    <div class="section-num">Section 10</div>
+    <h2>POS Tagging — Part-of-Speech Tagging</h2>
+  </div>
+
+  <h3>10.1 What is POS Tagging?</h3>
+  <p><strong>Part-of-Speech (POS) Tagging</strong> assigns a grammatical category (noun, verb, adjective, adverb, preposition, etc.) to each token in a sentence. The process disambiguates the grammatical function of each word based on its context, since many English words can serve multiple grammatical roles.</p>
+
+  <h3>10.2 Penn Treebank POS Tagset (45 tags)</h3>
+
+  <table class="compare-table">
+    <tr><th>Tag</th><th>Description</th><th>Example</th><th>Tag</th><th>Description</th><th>Example</th></tr>
+    <tr><td><strong>NN</strong></td><td>Noun, singular</td><td>cat, dog, city</td><td><strong>VB</strong></td><td>Verb, base form</td><td>run, eat, go</td></tr>
+    <tr><td><strong>NNS</strong></td><td>Noun, plural</td><td>cats, dogs</td><td><strong>VBD</strong></td><td>Verb, past tense</td><td>ran, ate, went</td></tr>
+    <tr><td><strong>NNP</strong></td><td>Proper noun, singular</td><td>London, Alice</td><td><strong>VBG</strong></td><td>Verb, gerund/-ing</td><td>running, eating</td></tr>
+    <tr><td><strong>NNPS</strong></td><td>Proper noun, plural</td><td>Vikings, Alps</td><td><strong>VBN</strong></td><td>Verb, past participle</td><td>run, eaten</td></tr>
+    <tr><td><strong>JJ</strong></td><td>Adjective</td><td>big, fast, red</td><td><strong>VBP</strong></td><td>Verb, non-3rd sg present</td><td>run, eat</td></tr>
+    <tr><td><strong>JJR</strong></td><td>Adj, comparative</td><td>bigger, faster</td><td><strong>VBZ</strong></td><td>Verb, 3rd sg present</td><td>runs, eats</td></tr>
+    <tr><td><strong>JJS</strong></td><td>Adj, superlative</td><td>biggest, fastest</td><td><strong>IN</strong></td><td>Preposition/conjunction</td><td>in, on, at, by</td></tr>
+    <tr><td><strong>RB</strong></td><td>Adverb</td><td>quickly, very</td><td><strong>DT</strong></td><td>Determiner</td><td>the, a, an, this</td></tr>
+    <tr><td><strong>PRP</strong></td><td>Personal pronoun</td><td>I, he, she, they</td><td><strong>CD</strong></td><td>Cardinal number</td><td>1, 42, three</td></tr>
+    <tr><td><strong>CC</strong></td><td>Coordinating conj.</td><td>and, but, or</td><td><strong>.</strong></td><td>Sentence-ending punct.</td><td>. ! ?</td></tr>
+  </table>
+
+  <h3>10.3 POS Tagging — Visual Example</h3>
+
+  <p style="margin-bottom:.5rem;color:var(--text2);">Sentence: <em>"The quick brown fox jumps over 3 lazy dogs."</em></p>
+  <div class="token-row">
+    <div class="token"><span class="tok-word tok-dt">The</span><span class="tok-tag tok-dt-t">DT</span></div>
+    <div class="token"><span class="tok-word tok-jj">quick</span><span class="tok-tag tok-jj-t">JJ</span></div>
+    <div class="token"><span class="tok-word tok-jj">brown</span><span class="tok-tag tok-jj-t">JJ</span></div>
+    <div class="token"><span class="tok-word tok-nn">fox</span><span class="tok-tag tok-nn-t">NN</span></div>
+    <div class="token"><span class="tok-word tok-vb">jumps</span><span class="tok-tag tok-vb-t">VBZ</span></div>
+    <div class="token"><span class="tok-word tok-in">over</span><span class="tok-tag tok-in-t">IN</span></div>
+    <div class="token"><span class="tok-word tok-cd">3</span><span class="tok-tag tok-cd-t">CD</span></div>
+    <div class="token"><span class="tok-word tok-jj">lazy</span><span class="tok-tag tok-jj-t">JJ</span></div>
+    <div class="token"><span class="tok-word tok-nn">dogs</span><span class="tok-tag tok-nn-t">NNS</span></div>
+  </div>
+
+  <h3>10.4 POS Tagging Approaches</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Rule-based:</strong> Hand-written morphological and contextual rules. Brill tagger (1992) — transformation-based learning. Starts with high-frequency tag for each word, applies ordered rules to correct errors. Fast but limited coverage.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Hidden Markov Model (HMM):</strong> Models tag sequences as a Markov chain. Emission probability P(word|tag) and transition probability P(tag_i|tag_{i-1}). Viterbi decoding finds the most likely tag sequence. Accuracy ~95% on standard English but trained separately from the rest of the pipeline.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Maximum Entropy Markov Model (MEMM):</strong> Log-linear model that conditions on arbitrary features (not just previous tag). Overcomes limited features of HMM. Suffers from label bias problem (solved by CRF).</div></li>
+    <li><span class="bullet">▸</span><div><strong>CRF (Conditional Random Field):</strong> Undirected graphical model. Models the joint probability of the entire tag sequence given the entire word sequence. Addresses label bias. BiLSTM-CRF was the gold standard before Transformers.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transformer-based (Current SOTA):</strong> Fine-tune BERT/RoBERTa with a token classification head. Each token's output → linear layer → softmax over POS tags. Accuracy ~97–98% on Wall Street Journal Penn Treebank. SpaCy's modern pipeline uses transformer-based taggers.</div></li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-lang">Python — POS Tagging (NLTK + SpaCy)</div>
+    <code><span class="kw">import</span> <span class="va">nltk</span>, <span class="va">spacy</span>
+
+<span class="va">text</span> = <span class="st">"The quick brown fox jumps over the lazy dog"</span>
+
+<span class="cm"># NLTK POS tagging</span>
+<span class="va">tokens</span> = <span class="va">nltk</span>.<span class="fn">word_tokenize</span>(<span class="va">text</span>)
+<span class="va">tags</span>   = <span class="va">nltk</span>.<span class="fn">pos_tag</span>(<span class="va">tokens</span>)
+<span class="cm"># → [('The','DT'),('quick','JJ'),('brown','JJ'),('fox','NN'),('jumps','VBZ'),...]</span>
+
+<span class="cm"># SpaCy POS tagging (fine-grained + universal)</span>
+<span class="va">nlp</span> = <span class="fn">spacy.load</span>(<span class="st">"en_core_web_sm"</span>)
+<span class="va">doc</span> = <span class="fn">nlp</span>(<span class="va">text</span>)
+<span class="kw">for</span> <span class="va">token</span> <span class="kw">in</span> <span class="va">doc</span>:
+    <span class="fn">print</span>(<span class="va">token</span>.<span class="va">text</span>, <span class="va">token</span>.<span class="va">pos_</span>, <span class="va">token</span>.<span class="va">tag_</span>)
+<span class="cm"># quick    ADJ  JJ     ← universal + fine-grained</span>
+<span class="cm"># jumps    VERB VBZ</span></code>
+  </div>
+
+  <h3>10.5 Applications of POS Tagging</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Lemmatization:</strong> POS tag determines correct lemma — "better" as adjective → "good"; as verb → "better". Without POS, lemmatization is often wrong.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Named Entity Recognition:</strong> Entities are typically noun phrases (NNP, NNS). POS filters candidate entity spans. Reduces search space dramatically.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Dependency parsing:</strong> POS tags are features for dependency parsers — knowing "jumps" is VBZ helps predict it is the head of the verb phrase.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Keyword extraction:</strong> Extract nouns and proper nouns as candidate keywords/topics from documents (noun phrases carry the content).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Syntactic disambiguation:</strong> Resolve word sense ambiguity — "bank" tagged as NN (noun) vs VB (verb) changes its meaning completely. POS is a key feature for word sense disambiguation.</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 4: N-GRAMS ████████ -->
+<div class="part-banner pb-ngr">Part 4 — Bigrams, Trigrams and N-grams</div>
+
+<!-- ══════════ SECTION 11 ══════════ -->
+<div class="section" id="s11">
+  <div class="section-header sh-ngr">
+    <div class="section-num">Section 11</div>
+    <h2>Bigrams, Trigrams and N-grams</h2>
+  </div>
+
+  <h3>11.1 What are N-grams?</h3>
+  <p>An <strong>N-gram</strong> is a contiguous sequence of N items from a text. Items can be characters, words, syllables, or any other tokens. N-grams capture local context — the co-occurrence patterns of adjacent tokens — which a bag-of-words model ignores.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Why N-grams Matter</div>
+    <p>The phrase "not good" has the opposite sentiment to "good." A unigram (1-gram) bag-of-words model sees {"not", "good"} — two separate positive signals. A bigram model sees "not_good" as a single feature capturing the negation. N-grams preserve local word order and context that unigrams discard, significantly improving many NLP tasks.</p>
+  </div>
+
+  <h3>11.2 N-gram Types</h3>
+
+  <div class="example-box">
+    <div class="ex-header">All N-gram Types — "I love natural language processing"</div>
+    <div class="ex-body">
+      <div class="ex-row">
+        <div class="ex-label">Unigrams (1-grams)</div>
+        <div class="ex-value">["I", "love", "natural", "language", "processing"]</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Bigrams (2-grams)</div>
+        <div class="ex-value">["I love", "love natural", "natural language", "language processing"]</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Trigrams (3-grams)</div>
+        <div class="ex-value">["I love natural", "love natural language", "natural language processing"]</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">4-grams</div>
+        <div class="ex-value">["I love natural language", "love natural language processing"]</div>
+      </div>
+      <div class="ex-row">
+        <div class="ex-label">Character bigrams</div>
+        <div class="ex-value">["I ", " l", "lo", "ov", "ve", "e ", " n", "na", "at", ...]</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>11.3 Generating N-grams in Python</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — N-gram Generation (NLTK + Manual)</div>
+    <code><span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">bigrams</span>, <span class="fn">trigrams</span>, <span class="fn">ngrams</span>
+<span class="kw">from</span> <span class="va">nltk.tokenize</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>
+
+<span class="va">text</span>   = <span class="st">"I love natural language processing"</span>
+<span class="va">tokens</span> = <span class="fn">word_tokenize</span>(<span class="va">text</span>)
+
+<span class="cm"># Bigrams</span>
+<span class="fn">list</span>(<span class="fn">bigrams</span>(<span class="va">tokens</span>))
+<span class="cm"># → [('I','love'), ('love','natural'), ('natural','language'), ('language','processing')]</span>
+
+<span class="cm"># Trigrams</span>
+<span class="fn">list</span>(<span class="fn">trigrams</span>(<span class="va">tokens</span>))
+<span class="cm"># → [('I','love','natural'), ('love','natural','language'), ('natural','language','processing')]</span>
+
+<span class="cm"># General N-grams (n=4)</span>
+<span class="fn">list</span>(<span class="fn">ngrams</span>(<span class="va">tokens</span>, <span class="nm">4</span>))
+<span class="cm"># → [('I','love','natural','language'), ('love','natural','language','processing')]</span>
+
+<span class="cm"># N-gram frequency distribution</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">FreqDist</span>
+<span class="va">bg_freq</span> = <span class="fn">FreqDist</span>(<span class="fn">bigrams</span>(<span class="va">tokens</span>))
+<span class="va">bg_freq</span>.<span class="fn">most_common</span>(<span class="nm">5</span>)  <span class="cm"># → top 5 most frequent bigrams</span></code>
+  </div>
+
+  <h3>11.4 N-gram Count — Formula</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Number of N-grams from a sequence of T tokens</div>
+    <div class="formula">
+      Number of N-grams = T − N + 1<br><br>
+      Example: "I love natural language processing"  (T = 5 tokens)<br>
+      Unigrams (N=1): 5 − 1 + 1 = <span class="hl">5</span><br>
+      Bigrams  (N=2): 5 − 2 + 1 = <span class="var">4</span><br>
+      Trigrams (N=3): 5 − 3 + 1 = <span class="gr">3</span><br>
+      4-grams  (N=4): 5 − 4 + 1 = <span class="or">2</span><br>
+      5-grams  (N=5): 5 − 5 + 1 = <span class="rd">1</span>
+    </div>
+  </div>
+
+  <h3>11.5 Applications of N-grams</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Language modeling:</strong> N-gram language models estimate P(word_n | word_{n-1}, ..., word_{n-N+1}) — probability of next word given N-1 preceding words. Foundation of early NLP before neural models. Still used in speech recognition, OCR, spelling correction.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Text classification features:</strong> Adding bigrams and trigrams to TF-IDF feature vectors significantly improves sentiment analysis and topic classification — captures negation, multi-word expressions, domain jargon ("not good", "machine learning", "credit card").</div></li>
+    <li><span class="bullet">▸</span><div><strong>Spell checking:</strong> Character N-grams create a word's "fingerprint." Words with many overlapping character N-grams are likely corrections (edit distance proxy).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Plagiarism detection:</strong> Documents sharing many distinctive N-grams are likely plagiarized. N-gram fingerprinting (shingling) is used by Turnitin and similar systems.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Machine translation evaluation (BLEU):</strong> BLEU score measures n-gram precision of MT output against reference translations for N=1,2,3,4. Standard automatic MT evaluation metric.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Collocation detection:</strong> Bigrams/trigrams with unusually high frequencies are collocations — multi-word expressions that function as a unit ("New York", "kick the bucket", "machine learning").</div></li>
+  </ul>
+</div>
+
+<!-- ══════════ SECTION 12 ══════════ -->
+<div class="section" id="s12">
+  <div class="section-header sh-ngr">
+    <div class="section-num">Section 12</div>
+    <h2>N-gram Language Models</h2>
+  </div>
+
+  <h3>12.1 N-gram Language Model Definition</h3>
+  <p>An N-gram language model estimates the probability of a sequence of words by decomposing it into conditional probabilities, where each word's probability depends only on the preceding N-1 words (Markov assumption):</p>
+
+  <div class="formula-block">
+    <div class="formula-label">N-gram Language Model — Probability Estimation</div>
+    <div class="formula">
+      Chain rule: P(w₁w₂...wₘ) = P(w₁)·P(w₂|w₁)·P(w₃|w₁w₂)...P(wₘ|w₁...wₘ₋₁)<br><br>
+      Bigram model (Markov order-1 approximation):<br>
+      <span class="hl">P(wₙ|wₙ₋₁) ≈ C(wₙ₋₁, wₙ) / C(wₙ₋₁)</span><br><br>
+      C(wₙ₋₁, wₙ) = count of bigram "wₙ₋₁ wₙ" in corpus<br>
+      C(wₙ₋₁)     = count of unigram "wₙ₋₁" in corpus<br><br>
+      Trigram model (Markov order-2):<br>
+      <span class="var">P(wₙ|wₙ₋₂,wₙ₋₁) ≈ C(wₙ₋₂,wₙ₋₁,wₙ) / C(wₙ₋₂,wₙ₋₁)</span><br><br>
+      Full sentence probability (bigram):<br>
+      P(I love NLP) = P(I) × P(love|I) × P(NLP|love)
+    </div>
+  </div>
+
+  <h3>12.2 Smoothing — Handling Zero Counts</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>The zero-count problem:</strong> If a bigram (w_{n-1}, w_n) never appeared in training data, P(w_n|w_{n-1}) = 0 → the entire sentence probability = 0. This is the data sparsity problem — most N-grams in a large vocabulary never appear in any finite training corpus.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Laplace (Add-1) smoothing:</strong> Add 1 to all counts: P(wₙ|wₙ₋₁) = (C(wₙ₋₁,wₙ)+1) / (C(wₙ₋₁)+V) where V = vocabulary size. Simple but often over-smooths — transfers too much probability mass to unseen events.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Add-k smoothing:</strong> Add k (0 &lt; k &lt; 1) instead of 1. Reduces over-smoothing. k is a tunable hyperparameter.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Kneser-Ney smoothing:</strong> State-of-the-art N-gram smoothing. Uses absolute discounting + a novel continuation probability: P_KN(w|context) based on how many unique contexts w appears in (not just its raw frequency). Much better than Laplace for language modeling perplexity.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Stupid Backoff:</strong> Used by Google for very large N-gram models. If C(wₙ₋₁,wₙ) = 0, back off to (N-1)-gram with a score penalty (multiply by 0.4). Simple, scalable, effective.</div></li>
+  </ul>
+
+  <h3>12.3 Perplexity — Evaluating Language Models</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Perplexity — Language Model Evaluation Metric</div>
+    <div class="formula">
+      PP(W) = P(w₁w₂...wₙ)^{-1/N}<br>
+            = ⁿ√( 1 / P(w₁w₂...wₙ) )<br><br>
+      Equivalently: PP(W) = 2^{-l}  where  l = (1/N) Σ log₂ P(wᵢ|context)<br><br>
+      Lower perplexity = better language model (more confident, less "perplexed")<br><br>
+      Example:<br>
+      Uniform model (V=50,000 words): PP = 50,000 (maximally perplexed)<br>
+      Bigram model on WSJ:            PP ≈ 137<br>
+      Trigram model on WSJ:           PP ≈ 74<br>
+      Large neural LM:                PP &lt; 20 (on same test set)
+    </div>
+  </div>
+</div>
+
+<!-- ████████ PART 5: NER ████████ -->
+<div class="part-banner pb-ner">Part 5 — Named Entity Recognition (NER)</div>
+
+<!-- ══════════ SECTION 13 ══════════ -->
+<div class="section" id="s13">
+  <div class="section-header sh-ner">
+    <div class="section-num">Section 13</div>
+    <h2>Named Entity Recognition (NER)</h2>
+  </div>
+
+  <h3>13.1 What is NER?</h3>
+  <p><strong>Named Entity Recognition (NER)</strong> is the NLP task of identifying and classifying <em>named entities</em> — specific real-world objects referred to by name — in text. NER is a fundamental information extraction task that assigns entity type labels to spans of text.</p>
+
+  <h3>13.2 NER in Action — Annotated Example</h3>
+
+  <div class="ner-sentence">
+    <span class="ner-tag ner-per">Barack Obama<span class="ner-label">PER</span></span>
+    was born in
+    <span class="ner-tag ner-loc">Honolulu<span class="ner-label">LOC</span></span>
+    on
+    <span class="ner-tag ner-dat">August 4, 1961<span class="ner-label">DATE</span></span>.
+    He served as President of
+    <span class="ner-tag ner-org">the United States<span class="ner-label">ORG</span></span>
+    and received the
+    <span class="ner-tag ner-org">Nobel Peace Prize<span class="ner-label">ORG</span></span>
+    worth
+    <span class="ner-tag ner-mon">$1.4 million<span class="ner-label">MONEY</span></span>.
+  </div>
+
+  <h3>13.3 Standard NER Entity Types</h3>
+
+  <table class="compare-table">
+    <tr><th>Tag</th><th>Entity Type</th><th>Examples</th></tr>
+    <tr><td><strong>PER / PERSON</strong></td><td>People and characters</td><td>Barack Obama, Mahatma Gandhi, Harry Potter</td></tr>
+    <tr><td><strong>ORG / ORGANIZATION</strong></td><td>Companies, institutions, agencies</td><td>Apple Inc., WHO, Harvard University, FBI</td></tr>
+    <tr><td><strong>LOC / LOCATION</strong></td><td>Geopolitical entities, places</td><td>Mumbai, Himalaya, Pacific Ocean, Mars</td></tr>
+    <tr><td><strong>DATE</strong></td><td>Absolute or relative dates</td><td>January 15, 2020; last Tuesday; the 1990s</td></tr>
+    <tr><td><strong>TIME</strong></td><td>Times of day</td><td>3:00 PM, midnight, dawn</td></tr>
+    <tr><td><strong>MONEY</strong></td><td>Monetary values</td><td>$3 billion, ₹500, fifty euros</td></tr>
+    <tr><td><strong>PERCENT</strong></td><td>Percentages</td><td>75%, nearly half, a third</td></tr>
+    <tr><td><strong>GPE</strong></td><td>Geo-political entity</td><td>India, USA, Delhi (SpaCy distinction)</td></tr>
+    <tr><td><strong>PRODUCT</strong></td><td>Branded products</td><td>iPhone 15, Tesla Model S, Windows 11</td></tr>
+    <tr><td><strong>EVENT</strong></td><td>Named events</td><td>World War II, Olympics 2024, Diwali</td></tr>
+    <tr><td><strong>LANGUAGE</strong></td><td>Named languages</td><td>English, Mandarin, Tamil, Python</td></tr>
+    <tr><td><strong>LAW</strong></td><td>Laws and regulations</td><td>GDPR, Article 370, HIPAA</td></tr>
+  </table>
+
+  <h3>13.4 BIO Tagging Scheme</h3>
+  <p>NER is formulated as a sequence labeling problem. Each token receives a label encoding both whether it's part of an entity AND its position within the entity span:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">BIO / IOB Tagging Scheme</div>
+    <div class="formula">
+      <span class="hl">B-TYPE</span>: Beginning of an entity of TYPE         ← first token of the entity<br>
+      <span class="var">I-TYPE</span>: Inside/continuation of entity of TYPE  ← subsequent tokens<br>
+      <span class="rd">O</span>:       Outside — not part of any entity<br><br>
+      Example: "Barack Obama visited New York City"<br>
+      Barack   → <span class="hl">B-PER</span><br>
+      Obama    → <span class="var">I-PER</span><br>
+      visited  → <span class="rd">O</span><br>
+      New      → <span class="hl">B-LOC</span><br>
+      York     → <span class="var">I-LOC</span><br>
+      City     → <span class="var">I-LOC</span><br><br>
+      BIOES extends BIO with:<br>
+      S-TYPE: Single-token entity ("London" → S-LOC)<br>
+      E-TYPE: End of multi-token entity ("Obama" → E-PER if end)
+    </div>
+  </div>
+
+  <h3>13.5 NER Approaches</h3>
+
+  <h4>A. Rule-Based NER</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Gazetteers (lookup lists):</strong> Maintain dictionaries of known entities — list of all countries, capital cities, company names, person names. Fast, 100% precision for known entities. Misses novel/unlisted entities.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Regular expressions:</strong> Pattern-based extraction for structured entities. Dates, money values, phone numbers, IDs are well-captured by regex. Example: <code>\$[\d,]+(?:\.\d{2})?</code> matches money amounts.</div></li>
+    <li><span class="bullet">▸</span><div><strong>SpaCy EntityRuler:</strong> Add custom rule-based patterns alongside statistical model. Useful for domain-specific entities (drug names, product codes) that don't appear in training data.</div></li>
+  </ul>
+
+  <h4>B. Statistical NER — CRF</h4>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Feature engineering for CRF:</strong> Word form, lowercase, POS tag, suffix (last 2–3 chars), prefix, is_capitalized, is_digit, is_in_gazetteer, word shape (X = capital, x = lowercase, d = digit: "Obama" → "Xxxxx"). Context features: same for surrounding ±2 tokens.</div></li>
+    <li><span class="bullet">▸</span><div><strong>CRF decoding:</strong> Viterbi algorithm finds the most likely label sequence considering all label-to-label transition scores plus per-token emission scores. Outperforms greedy classification by respecting label dependencies (I-PER cannot follow B-ORG).</div></li>
+  </ul>
+
+  <h4>C. Deep Learning NER — BiLSTM-CRF and BERT</h4>
+
+  <div class="diagram">
+    <pre>
+  BERT-based NER Architecture:
+
+  Input:  ["Barack", "Obama", "visited", "Delhi"]
+
+  [CLS] Barack Obama visited Delhi [SEP]
+    │      │      │       │       │
+  BERT Encoder (12 transformer layers)
+    │      │      │       │       │
+  hidden states per token (768-dim each)
+    │      │      │       │       │
+  Linear classifier (768 → num_labels)
+    │      │      │       │       │
+  [ignore] B-PER  I-PER    O    B-GPE    ← predicted BIO labels
+
+  Loss: Cross-entropy on BIO labels (ignore CLS/SEP tokens)
+  Decoding: Viterbi (with CRF layer) or greedy argmax
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — BERT-based NER. Each subword token gets a BIO label prediction. Multi-subword words: take the label of the first subword.</div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>BiLSTM-CRF (2015–2018 standard):</strong> Bidirectional LSTM generates context-aware token representations. CRF layer on top models label transitions. Character CNN captures morphological features (capitalization, prefixes, suffixes). ~91% F1 on CoNLL-2003 English NER.</div></li>
+    <li><span class="bullet">▸</span><div><strong>BERT fine-tuned (2018–present standard):</strong> BERT contextual embeddings encode rich bidirectional context. Linear classification head. No CRF needed (BERT's contextual representations are so rich). ~93% F1 on CoNLL-2003. Domain-specific BERT (BioBERT, LegalBERT) exceeds 90% F1 on medical/legal NER.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Subword token handling:</strong> BERT splits words into subwords. For NER, only the first subword of each word contributes a label. Subsequent subwords get a special label (X or -100 in loss computation) and are ignored during evaluation.</div></li>
+  </ul>
+
+  <h3>13.6 NER Evaluation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Entity-level F1 (strict):</strong> A predicted entity is correct only if BOTH the span boundaries AND the entity type match the ground truth exactly. Partial matches don't count. This is the standard CoNLL evaluation metric.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Token-level F1:</strong> Evaluate BIO labels at token level. Simpler but inflated — can get partial credit for getting the boundary wrong.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Macro vs Micro F1:</strong> Macro F1: average F1 equally across entity types (treats rare entities equally). Micro F1: weight by entity frequency (common entities dominate). Report both for imbalanced NER datasets.</div></li>
+    <li><span class="bullet">▸</span><div><strong>seqeval library:</strong> The standard Python library for NER evaluation. Computes precision, recall, F1 for each entity type plus overall, using entity-level strict matching.</div></li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-lang">Python — NER with SpaCy</div>
+    <code><span class="kw">import</span> <span class="va">spacy</span>
+<span class="va">nlp</span> = <span class="fn">spacy.load</span>(<span class="st">"en_core_web_sm"</span>)
+
+<span class="va">text</span> = <span class="st">"Apple Inc. acquired Beats Electronics for $3 billion in Cupertino in 2014."</span>
+<span class="va">doc</span>  = <span class="fn">nlp</span>(<span class="va">text</span>)
+
+<span class="kw">for</span> <span class="va">ent</span> <span class="kw">in</span> <span class="va">doc</span>.<span class="va">ents</span>:
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{ent.text:25} | {ent.label_:10} | start:{ent.start_char} end:{ent.end_char}"</span>)
+
+<span class="cm"># Apple Inc.               | ORG        | start:0   end:10</span>
+<span class="cm"># Beats Electronics        | ORG        | start:20  end:37</span>
+<span class="cm"># $3 billion               | MONEY      | start:42  end:52</span>
+<span class="cm"># Cupertino                | GPE        | start:56  end:65</span>
+<span class="cm"># 2014                     | DATE       | start:69  end:73</span></code>
+  </div>
+</div>
+
+<!-- ══════════ SECTION 14 ══════════ -->
+<div class="section" id="s14">
+  <div class="section-header sh-ner">
+    <div class="section-num">Section 14</div>
+    <h2>Full NLP Pre-processing Pipeline — End-to-End</h2>
+  </div>
+
+  <h3>14.1 Complete Pipeline Code</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Full NLP Pre-processing Pipeline</div>
+    <code><span class="kw">import</span> <span class="va">re</span>, <span class="va">string</span>
+<span class="kw">import</span> <span class="va">spacy</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">FreqDist</span>, <span class="fn">ngrams</span>
+<span class="kw">from</span> <span class="va">nltk.corpus</span> <span class="kw">import</span> <span class="va">stopwords</span>
+<span class="kw">from</span> <span class="va">nltk.stem</span> <span class="kw">import</span> <span class="fn">PorterStemmer</span>
+
+<span class="va">nlp</span>        = <span class="fn">spacy.load</span>(<span class="st">"en_core_web_sm"</span>)
+<span class="va">STOPWORDS</span>  = <span class="fn">set</span>(<span class="va">stopwords</span>.<span class="fn">words</span>(<span class="st">'english'</span>))
+<span class="va">stemmer</span>    = <span class="fn">PorterStemmer</span>()
+
+<span class="va">raw_text</span> = <span class="st">"Apple Inc. announced quarterly earnings of $3.2 billion. Tim Cook, CEO, said it was amazing!"</span>
+
+<span class="cm"># ── Step 1: Clean ──────────────────────────────────────────────</span>
+<span class="va">text</span> = <span class="va">re</span>.<span class="fn">sub</span>(<span class="st">r'https?://\S+'</span>, <span class="st">''</span>, <span class="va">raw_text</span>)
+<span class="va">text</span> = <span class="va">re</span>.<span class="fn">sub</span>(<span class="st">r'\s+'</span>, <span class="st">' '</span>, <span class="va">text</span>).<span class="fn">strip</span>()
+
+<span class="cm"># ── Step 2: SpaCy pipeline (tokenize + POS + NER + lemmatize) ──</span>
+<span class="va">doc</span> = <span class="fn">nlp</span>(<span class="va">text</span>)
+
+<span class="cm"># ── Step 3: Tokens with POS + Lemma ────────────────────────────</span>
+<span class="va">tokens_info</span> = [(t.<span class="va">text</span>, t.<span class="va">pos_</span>, t.<span class="va">lemma_</span>) <span class="kw">for</span> <span class="va">t</span> <span class="kw">in</span> <span class="va">doc</span>]
+
+<span class="cm"># ── Step 4: Remove stopwords + punctuation ─────────────────────</span>
+<span class="va">clean_tokens</span> = [t.<span class="va">lemma_</span>.<span class="fn">lower</span>() <span class="kw">for</span> <span class="va">t</span> <span class="kw">in</span> <span class="va">doc</span>
+                <span class="kw">if</span> <span class="kw">not</span> t.<span class="va">is_stop</span> <span class="kw">and</span> <span class="kw">not</span> t.<span class="va">is_punct</span>]
+<span class="cm"># → ['apple', 'inc.', 'announce', 'quarterly', 'earning',</span>
+<span class="cm">#    '3.2', 'billion', 'tim', 'cook', 'ceo', 'say', 'amazing']</span>
+
+<span class="cm"># ── Step 5: Frequency Distribution ─────────────────────────────</span>
+<span class="va">fdist</span> = <span class="fn">FreqDist</span>(<span class="va">clean_tokens</span>)
+
+<span class="cm"># ── Step 6: N-grams ─────────────────────────────────────────────</span>
+<span class="va">bigram_list</span>  = <span class="fn">list</span>(<span class="fn">ngrams</span>(<span class="va">clean_tokens</span>, <span class="nm">2</span>))
+<span class="va">trigram_list</span> = <span class="fn">list</span>(<span class="fn">ngrams</span>(<span class="va">clean_tokens</span>, <span class="nm">3</span>))
+
+<span class="cm"># ── Step 7: Named Entities ──────────────────────────────────────</span>
+<span class="va">entities</span> = [(e.<span class="va">text</span>, e.<span class="va">label_</span>) <span class="kw">for</span> <span class="va">e</span> <span class="kw">in</span> <span class="va">doc</span>.<span class="va">ents</span>]
+<span class="cm"># → [('Apple Inc.','ORG'), ('3.2 billion','MONEY'), ('Tim Cook','PERSON')]</span>
+
+<span class="fn">print</span>(<span class="st">"Tokens+POS+Lemma:"</span>, <span class="va">tokens_info</span>[:5])
+<span class="fn">print</span>(<span class="st">"Clean tokens:"</span>,     <span class="va">clean_tokens</span>)
+<span class="fn">print</span>(<span class="st">"Top freqs:"</span>,        <span class="va">fdist</span>.<span class="fn">most_common</span>(<span class="nm">5</span>))
+<span class="fn">print</span>(<span class="st">"Bigrams:"</span>,          <span class="va">bigram_list</span>)
+<span class="fn">print</span>(<span class="st">"Entities:"</span>,         <span class="va">entities</span>)</code>
+  </div>
+
+  <h3>14.2 Pipeline Decision Guide</h3>
+
+  <table class="compare-table">
+    <tr><th>Task</th><th>Tokenizer</th><th>Stopwords</th><th>Stemming</th><th>Lemmatization</th><th>POS</th><th>NER</th></tr>
+    <tr><td><strong>BOW Classification</strong></td><td>Word</td><td>Remove</td><td>✓ (optional)</td><td>✓ better</td><td>Optional</td><td>No</td></tr>
+    <tr><td><strong>Sentiment Analysis</strong></td><td>Word/Subword</td><td>Keep "not"</td><td>✗</td><td>Optional</td><td>Optional</td><td>No</td></tr>
+    <tr><td><strong>Information Retrieval</strong></td><td>Word</td><td>Remove</td><td>✓ fast</td><td>Optional</td><td>No</td><td>Optional</td></tr>
+    <tr><td><strong>NER</strong></td><td>Word/SpaCy</td><td>Keep ALL</td><td>✗</td><td>No</td><td>✓ needed</td><td>✓ output</td></tr>
+    <tr><td><strong>BERT Fine-tuning</strong></td><td>Subword (BPE/WP)</td><td>Keep ALL</td><td>✗</td><td>✗</td><td>No</td><td>If needed</td></tr>
+    <tr><td><strong>Topic Modeling</strong></td><td>Word</td><td>Remove</td><td>Optional</td><td>✓ better</td><td>Optional</td><td>No</td></tr>
+    <tr><td><strong>N-gram Language Model</strong></td><td>Word + sentence</td><td>Keep ALL</td><td>✗</td><td>✗</td><td>No</td><td>No</td></tr>
+  </table>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 2 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Text Mining:</strong> Deriving structured knowledge from unstructured text. Pipeline: Acquisition → Pre-processing → Feature Extraction → Pattern Discovery → Evaluation. Pre-processing quality determines everything downstream.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Text Cleaning:</strong> HTML strip → URL removal → encoding normalization → lowercasing → number/punctuation handling → contraction expansion → whitespace normalization. Task-dependent — no universal cleaning pipeline. Deep learning models: minimal cleaning only.</div></li>
+      <li><span class="bullet">3.</span><div><strong>Tokenization:</strong> Split text into processing units. Levels: sentence, word, subword, character, byte. Challenges: contractions, abbreviations, languages without spaces. Word tokenization → OOV problem. Subword tokenization solves OOV.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Tokenizer Types:</strong> Rule-based (NLTK word_tokenize, SpaCy). Subword: BPE (greedy frequency merge, GPT), WordPiece (likelihood merge + ## prefix, BERT), SentencePiece (raw-text, ▁ space marker, T5/LLaMA). All subword tokenizers eliminate the OOV problem.</div></li>
+      <li><span class="bullet">5.</span><div><strong>Frequency Distribution:</strong> Count of each token. FreqDist(tokens). Zipf's Law: f ∝ 1/rank. TF-IDF = TF × IDF(= log(N/df)) — weights words by how distinctive they are per document. Foundation of information retrieval.</div></li>
+      <li><span class="bullet">6.</span><div><strong>Stemming:</strong> Heuristic suffix removal → stem (may not be a real word). Porter: 5-step rules. Snowball: multilingual improvement. Lancaster: most aggressive. Fast, no dictionary. Errors: over-stemming ("university"/"universe" → "univers"), under-stemming.</div></li>
+      <li><span class="bullet">7.</span><div><strong>Lemmatization:</strong> Dictionary + morphological analysis → lemma (always a real word). POS-aware: "better" (adj) → "good"; "running" (verb) → "run"; "running" (noun) → "running". Handles irregular forms: "ran"→"run", "mice"→"mouse", "children"→"child". Slower but more accurate than stemming.</div></li>
+      <li><span class="bullet">8.</span><div><strong>POS Tagging:</strong> Assign grammatical category (NN, VB, JJ, RB, DT, IN...) to each token using context. Penn Treebank: 45 tags. Approaches: Rule-based → HMM → MEMM → CRF → BiLSTM-CRF → BERT (~97–98%). Critical for lemmatization, NER, parsing, keyword extraction.</div></li>
+      <li><span class="bullet">9.</span><div><strong>N-grams:</strong> Contiguous N-token sequences. Number of N-grams = T−N+1. Bigrams capture local context (negation: "not good"). Uses: language modeling, text classification features, spell checking, plagiarism detection, BLEU evaluation. N-gram LM: P(wₙ|context) = count(N-gram)/count(context). Smoothing (Laplace, Kneser-Ney) handles zero counts.</div></li>
+      <li><span class="bullet">10.</span><div><strong>Named Entity Recognition:</strong> Identify and classify named entity spans — PER, ORG, LOC, DATE, MONEY, etc. BIO tagging: B=beginning, I=inside, O=outside entity spans. Approaches: Gazetteer/rules → CRF (hand-crafted features) → BiLSTM-CRF → BERT fine-tuned (~93% F1 CoNLL-2003). Evaluated by entity-level F1 using seqeval.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Natural Language Processing — Module 2</span>
+  <span>Text Mining · Tokenization · TF-IDF · Stemming · Lemmatization · POS · N-grams · NER</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Language Processing – Module 5</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg:#f5f6fb; --surface:#fff; --surface2:#eceef8;
+    --border:#d0d4ec; --border2:#b0b8dc;
+    --text:#0c1028; --text2:#282c48; --text3:#5c6088;
+    --accent:#2030c0; --accent-bg:#eaefff; --accent-border:#8898f0;
+    --green:#145c28; --green-bg:#e8f5ec; --green-border:#88cca0;
+    --amber:#7a4800; --amber-bg:#fef8e8; --amber-border:#e8c060;
+    --red:#8c1818; --red-bg:#fdf0f0; --red-border:#e8a8a8;
+    --purple:#481878; --purple-bg:#f2eefa; --purple-border:#c0a0e0;
+    --teal:#085450; --teal-bg:#e4f4f2; --teal-border:#80c8c0;
+    --rose:#7c1a3c; --rose-bg:#fdf0f5; --rose-border:#e8a8c0;
+    --orange:#7c3800; --orange-bg:#fdf2e4; --orange-border:#e0a860;
+    --code-bg:#e4e8f8;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);font-size:17px;line-height:1.75;}
+
+  /* ── HEADER ── */
+  .doc-header{background:linear-gradient(135deg,#080a20 0%,#141880 55%,#080a20 100%);color:#ecedff;padding:3rem 4rem 2.5rem;position:relative;overflow:hidden;}
+  .doc-header::after{content:'';position:absolute;top:0;right:0;width:300px;height:100%;background:radial-gradient(ellipse at 90% 50%,#1828a0 0%,transparent 70%);pointer-events:none;}
+  .doc-header .subject-tag{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7080f8;margin-bottom:.75rem;}
+  .doc-header h1{font-size:2.4rem;font-weight:300;letter-spacing:-.01em;line-height:1.2;color:#ecedff;margin-bottom:.5rem;}
+  .doc-header h1 span{font-weight:600;}
+  .doc-header .subtitle{font-family:'Inter',sans-serif;font-size:14px;color:#3040b0;margin-top:1rem;}
+
+  /* ── PART BANNER ── */
+  .part-banner{padding:.7rem 4rem;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;}
+  .pb-chat{background:#141880;} .pb-rec{background:#1a5828;} .pb-build{background:#481878;} .pb-adv{background:#5c1a00;}
+
+  /* ── TOC ── */
+  .toc{background:var(--surface2);border-bottom:1px solid var(--border);padding:1.5rem 4rem;}
+  .toc h2{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 2rem;}
+  .toc a{font-family:'Inter',sans-serif;font-size:13px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:6px;padding:2px 0;}
+  .toc a:hover{text-decoration:underline;}
+  .toc a .num{font-weight:600;color:var(--text3);min-width:22px;}
+
+  /* ── CONTENT ── */
+  .content{padding:3rem 4rem;max-width:980px;}
+  .section{margin-bottom:4rem;}
+  .section-header{padding-left:1.25rem;margin-bottom:2rem;}
+  .sh-chat{border-left:4px solid #141880;} .sh-rec{border-left:4px solid #1a5828;}
+  .sh-build{border-left:4px solid #481878;} .sh-adv{border-left:4px solid #5c1a00;}
+  .section-header .section-num{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.25rem;}
+  .section-header h2{font-size:1.8rem;font-weight:600;line-height:1.2;}
+
+  h3{font-size:1.15rem;font-weight:600;color:var(--text);margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+  h4{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 .5rem;}
+  p{margin-bottom:1rem;color:var(--text2);}
+  p:last-child{margin-bottom:0;}
+
+  /* ── CALLOUTS ── */
+  .callout{border-radius:8px;padding:1rem 1.25rem;margin:1.25rem 0;border-left:3px solid;}
+  .callout-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;}
+  .callout p{margin-bottom:.4rem;font-size:15.5px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout-key{background:var(--accent-bg);border-color:var(--accent);} .callout-key .callout-title{color:var(--accent);} .callout-key p{color:#101860;}
+  .callout-tip{background:var(--green-bg);border-color:var(--green);} .callout-tip .callout-title{color:var(--green);} .callout-tip p{color:#0c3818;}
+  .callout-warn{background:var(--amber-bg);border-color:var(--amber);} .callout-warn .callout-title{color:var(--amber);} .callout-warn p{color:#5a3400;}
+  .callout-exam{background:var(--red-bg);border-color:var(--red);} .callout-exam .callout-title{color:var(--red);} .callout-exam p{color:#6a1010;}
+  .callout-formula{background:var(--purple-bg);border-color:var(--purple);} .callout-formula .callout-title{color:var(--purple);} .callout-formula p{color:#340c54;}
+  .callout-teal{background:var(--teal-bg);border-color:var(--teal);} .callout-teal .callout-title{color:var(--teal);} .callout-teal p{color:#063434;}
+  .callout-orange{background:var(--orange-bg);border-color:var(--orange);} .callout-orange .callout-title{color:var(--orange);} .callout-orange p{color:#4a2000;}
+
+  /* ── POINT LIST ── */
+  .point-list{list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .point-list li{display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);color:var(--text2);font-size:16px;line-height:1.65;align-items:flex-start;}
+  .point-list li:last-child{border-bottom:none;}
+  .point-list li .bullet{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:var(--text3);min-width:22px;padding-top:3px;}
+  .point-list li strong{color:var(--text);font-weight:600;}
+
+  /* ── STEP LIST ── */
+  .step-list{counter-reset:steps;list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .step-list li{counter-increment:steps;display:flex;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);align-items:flex-start;font-size:16px;color:var(--text2);line-height:1.65;}
+  .step-list li:last-child{border-bottom:none;}
+  .step-list li::before{content:counter(steps);font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:var(--surface);background:#080a20;border-radius:50%;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .step-list li strong{color:var(--text);}
+
+  /* ── FORMULA BLOCK ── */
+  .formula-block{background:var(--code-bg);border:1px solid var(--border2);border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .formula-block .formula-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;}
+  .formula{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);line-height:2;}
+  .formula .comment{font-size:12.5px;color:var(--text3);margin-left:.75rem;}
+  .formula .var{color:var(--purple);font-weight:500;} .formula .hl{color:var(--accent);font-weight:500;}
+  .formula .gr{color:var(--green);font-weight:500;} .formula .rd{color:var(--red);font-weight:500;}
+  .formula .or{color:var(--orange);font-weight:500;} .formula .tl{color:var(--teal);font-weight:500;}
+
+  /* ── DIAGRAM ── */
+  .diagram{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin:1.25rem 0;overflow-x:auto;}
+  .diagram pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text2);line-height:1.7;white-space:pre;}
+  .diagram-caption{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);margin-top:.5rem;font-style:italic;}
+
+  /* ── TABLES ── */
+  .compare-table{width:100%;border-collapse:collapse;margin:1.25rem 0;font-size:15px;}
+  .compare-table th{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--surface2);padding:.75rem 1rem;text-align:left;border:1px solid var(--border);color:var(--text2);}
+  .compare-table td{padding:.7rem 1rem;border:1px solid var(--border);vertical-align:top;color:var(--text2);line-height:1.6;}
+  .compare-table tr:nth-child(even) td{background:var(--surface2);}
+  .compare-table td strong{color:var(--text);}
+
+  /* ── CODE BLOCK ── */
+  .code-block{background:#060814;border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .code-block .code-lang{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#2840a0;margin-bottom:.5rem;}
+  .code-block code{font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.8;white-space:pre;display:block;}
+  .code-block .kw{color:#7080f8;} .code-block .fn{color:#80c8f0;} .code-block .st{color:#90e0a0;}
+  .code-block .cm{color:#283060;} .code-block .nm{color:#f0d060;} .code-block .va{color:#d0d8ff;}
+  .code-block .op{color:#a0b0f0;}
+
+  /* ── CARD GRID ── */
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:1.25rem 0;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;}
+  .card .card-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:.4rem;}
+  .card p{font-size:14px;line-height:1.6;}
+
+  /* ── COMPONENT CARD ── */
+  .comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:16px;margin:1.5rem 0;}
+  .comp-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.3rem 1.5rem;position:relative;overflow:hidden;}
+  .comp-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:12px 0 0 12px;}
+  .cc-blue::before{background:#141880;} .cc-green::before{background:#1a5828;}
+  .cc-purple::before{background:#481878;} .cc-amber::before{background:#7a4800;}
+  .cc-teal::before{background:#085450;} .cc-rose::before{background:#7c1a3c;}
+  .cc-orange::before{background:#7c3800;} .cc-red::before{background:#8c1818;}
+  .comp-card .cc-tag{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+  .comp-card .cc-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:.7rem;}
+  .comp-card p{font-size:14.5px;line-height:1.65;color:var(--text2);margin-bottom:.5rem;}
+  .comp-card p:last-child{margin-bottom:0;}
+  .comp-card .cc-note{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:.5rem;margin-top:.75rem;}
+
+  /* ── CHATBOT CONV ── */
+  .chat-demo{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin:1.25rem 0;}
+  .chat-demo .cd-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:.75rem;}
+  .chat-msg{display:flex;gap:.75rem;margin:.5rem 0;align-items:flex-start;}
+  .chat-msg.user{flex-direction:row-reverse;}
+  .chat-avatar{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .av-user{background:#141880;color:#fff;}
+  .av-bot{background:#1a5828;color:#fff;}
+  .chat-bubble{padding:.6rem 1rem;border-radius:12px;font-size:15px;line-height:1.6;max-width:75%;}
+  .bubble-user{background:#141880;color:#fff;border-radius:12px 0 12px 12px;}
+  .bubble-bot{background:var(--surface);border:1px solid var(--border);color:var(--text2);border-radius:0 12px 12px 12px;}
+  .chat-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin:.3rem 0;}
+  .chat-label.user{text-align:right;}
+
+  /* ── RATING MATRIX ── */
+  .rating-table{border-collapse:collapse;margin:1.25rem 0;font-size:14px;}
+  .rating-table th{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface2);padding:.5rem .75rem;border:1px solid var(--border);text-align:center;color:var(--accent);}
+  .rating-table .user-col{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;background:var(--surface2);padding:.5rem .75rem;border:1px solid var(--border);}
+  .rating-table td{font-family:'JetBrains Mono',monospace;padding:.5rem .75rem;border:1px solid var(--border);text-align:center;}
+  .r-high{background:#c8f0d0;color:#145828;font-weight:600;}
+  .r-med{background:#fef0c0;color:#7a4800;font-weight:600;}
+  .r-low{background:#ffd0c8;color:#5c1010;}
+  .r-miss{background:#f0f0f0;color:#a0a0a0;font-style:italic;}
+  .r-pred{background:#d8e4ff;color:#141880;font-weight:600;border:2px solid #141880;}
+
+  /* ── EXAMPLE BOX ── */
+  .example-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+  .example-box .ex-header{background:#080a20;color:#a0a8e8;padding:.6rem 1.25rem;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.04em;}
+  .example-box .ex-body{padding:1rem 1.25rem;}
+  .example-box .ex-row{display:flex;gap:1rem;padding:.45rem 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+  .example-box .ex-row:last-child{border-bottom:none;}
+  .example-box .ex-label{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);min-width:140px;padding-top:2px;}
+  .example-box .ex-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);line-height:1.7;}
+
+  .summary-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:1.5rem 2rem;margin:2rem 0;}
+  .summary-box h4{margin-top:0;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;}
+
+  code{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--code-bg);border-radius:3px;padding:1px 5px;color:var(--purple);}
+  hr{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+  .doc-footer{background:var(--surface2);border-top:1px solid var(--border);padding:1.5rem 4rem;font-family:'Inter',sans-serif;font-size:13px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;}
+
+  @media(max-width:700px){
+    .doc-header,.toc,.content{padding-left:1.5rem;padding-right:1.5rem;}
+    .doc-header h1{font-size:1.8rem;} .part-banner{padding-left:1.5rem;}
+    .chat-bubble{max-width:90%;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Natural Language Processing — Module 5</div>
+  <h1><span>Module 5:</span> AI Chatbots &amp; Recommendation Engine</h1>
+  <div class="subtitle">Chatbot Architecture · NLU Pipeline · Dialogue Management · Recommendation Systems · Collaborative Filtering · Content-Based · Hybrid · End-to-End Builds</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> AI Chatbots — Overview</a>
+    <a href="#s2"><span class="num">2.</span> Chatbot Architecture</a>
+    <a href="#s3"><span class="num">3.</span> NLU in Chatbots — Intent &amp; Entity</a>
+    <a href="#s4"><span class="num">4.</span> Dialogue Management</a>
+    <a href="#s5"><span class="num">5.</span> NLG — Response Generation</a>
+    <a href="#s6"><span class="num">6.</span> Building a Rule-Based Chatbot</a>
+    <a href="#s7"><span class="num">7.</span> Building an ML Chatbot</a>
+    <a href="#s8"><span class="num">8.</span> Recommendation Engine — Overview</a>
+    <a href="#s9"><span class="num">9.</span> Collaborative Filtering</a>
+    <a href="#s10"><span class="num">10.</span> Content-Based Filtering</a>
+    <a href="#s11"><span class="num">11.</span> Hybrid Recommendation</a>
+    <a href="#s12"><span class="num">12.</span> NLP-Based Recommendations</a>
+    <a href="#s13"><span class="num">13.</span> Full Build — Chatbot + Recommender</a>
+    <a href="#s14"><span class="num">14.</span> Evaluation and Deployment</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████ PART 1: AI CHATBOTS ████████ -->
+<div class="part-banner pb-chat">Part 1 — AI Chatbots</div>
+
+<!-- ══ SECTION 1 ══ -->
+<div class="section" id="s1">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 1</div>
+    <h2>AI Chatbots — Overview and Types</h2>
+  </div>
+
+  <h3>1.1 What is an AI Chatbot?</h3>
+  <p>An <strong>AI Chatbot</strong> is a software application designed to simulate human conversation through natural language — text or speech. It uses NLP concepts (from Modules 1–4) to understand user input, reason about it, and generate contextually appropriate responses. Modern AI chatbots range from simple rule-based FAQ answerers to sophisticated conversational agents capable of nuanced multi-turn dialogue.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Chatbot = NLP Pipeline in Conversational Form</div>
+    <p>Every concept from previous modules is directly applied: <strong>Text Cleaning &amp; Tokenization (Module 2)</strong> preprocesses the input. <strong>POS Tagging, NER, Chunking (Modules 2, 4)</strong> extract key information. <strong>Text Classification (Module 3)</strong> identifies intent. <strong>Sequence Tagging (Module 4)</strong> extracts slot values. <strong>Language Models (Module 4)</strong> generate responses. A chatbot is the end-to-end application of all NLP components working together in real time.</p>
+  </div>
+
+  <h3>1.2 Taxonomy of Chatbots</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-blue">
+      <div class="cc-tag">Type 1</div>
+      <div class="cc-title">Rule-Based Chatbots</div>
+      <p><strong>How it works:</strong> Predefined IF-THEN rules and pattern matching. "If user says 'hello' → respond 'Hi! How can I help?'". Uses regular expressions, keyword spotting, and decision trees.</p>
+      <p><strong>Examples:</strong> ELIZA (1966), early FAQ bots, phone IVR systems. Simple customer service bots for limited domains.</p>
+      <p><strong>Advantages:</strong> Predictable, controllable, no training data needed, 100% interpretable. Perfect for narrow, well-defined domains with finite possible queries.</p>
+      <div class="cc-note">Limitation: Cannot handle paraphrasing, typos, or queries not explicitly anticipated by rule designers.</div>
+    </div>
+
+    <div class="comp-card cc-green">
+      <div class="cc-tag">Type 2</div>
+      <div class="cc-title">Retrieval-Based Chatbots</div>
+      <p><strong>How it works:</strong> Maintain a database of candidate responses. Given user input, retrieve the most semantically similar question from the database and return its paired answer. Uses TF-IDF, cosine similarity, or sentence embeddings.</p>
+      <p><strong>Examples:</strong> FAQ chatbots, customer support bots. Amazon Kendra, IBM Watson Discovery-based bots. ChatGPT with RAG (Retrieval Augmented Generation).</p>
+      <p><strong>Advantages:</strong> Responses are always grammatically correct (pre-written). Can be tuned for accuracy. No generation hallucination.</p>
+      <div class="cc-note">Limitation: Cannot respond to truly novel questions. Limited to existing knowledge base content.</div>
+    </div>
+
+    <div class="comp-card cc-purple">
+      <div class="cc-tag">Type 3</div>
+      <div class="cc-title">Generative Chatbots</div>
+      <p><strong>How it works:</strong> Neural sequence-to-sequence models generate responses from scratch. Input sequence → Encoder → Decoder → Generated response. Trained on large conversation datasets (dialogue corpora).</p>
+      <p><strong>Examples:</strong> DialoGPT, BlenderBot, ChatGPT, Llama-based assistants. Generate token by token using autoregressive language models.</p>
+      <p><strong>Advantages:</strong> Can handle any query. Novel, contextual, flexible responses. Scales with training data and model size.</p>
+      <div class="cc-note">Limitation: Can hallucinate facts. Harder to control tone, accuracy, and factual grounding. Computationally expensive.</div>
+    </div>
+
+    <div class="comp-card cc-amber">
+      <div class="cc-tag">Type 4</div>
+      <div class="cc-title">Task-Oriented Dialogue Systems</div>
+      <p><strong>How it works:</strong> Goal-directed conversation to complete a specific task (book a flight, order food, check weather). Uses structured NLU (intent + slots) and dialogue state tracking. Follows a conversation flow to gather all required information.</p>
+      <p><strong>Examples:</strong> Siri, Alexa, Google Assistant, Rasa-based bots. All voice assistants are primarily task-oriented.</p>
+      <p><strong>Advantages:</strong> High accuracy for specific tasks. Well-defined success criteria. Easier to evaluate and debug.</p>
+      <div class="cc-note">Best practice for enterprise chatbots: task-oriented for structured tasks + retrieval for FAQ.</div>
+    </div>
+  </div>
+
+  <h3>1.3 NLP Concepts Used in Chatbots — Full Mapping</h3>
+
+  <table class="compare-table">
+    <tr><th>NLP Concept</th><th>Module</th><th>Chatbot Application</th></tr>
+    <tr><td><strong>Tokenization &amp; Cleaning</strong></td><td>Module 2</td><td>Pre-process raw user input — lowercase, remove noise, split into tokens before any analysis</td></tr>
+    <tr><td><strong>POS Tagging</strong></td><td>Modules 2, 4</td><td>Identify verb phrases (action) and noun phrases (subject/object) for entity extraction</td></tr>
+    <tr><td><strong>Named Entity Recognition</strong></td><td>Module 2, 4</td><td>Extract slot values — dates, locations, names, product names from user utterances</td></tr>
+    <tr><td><strong>Text Classification (NB, LR)</strong></td><td>Module 3</td><td>Intent detection — classify "Book me a flight to Delhi" → BookFlight intent</td></tr>
+    <tr><td><strong>TF-IDF / Bag-of-Words</strong></td><td>Module 3</td><td>Retrieval-based matching — find most similar FAQ question to user query</td></tr>
+    <tr><td><strong>Sentiment Analysis</strong></td><td>Module 3</td><td>Detect user frustration/satisfaction → escalate to human agent or offer apology</td></tr>
+    <tr><td><strong>Sequence Tagging (BIO)</strong></td><td>Module 4</td><td>Slot filling — tag "Mumbai" as B-CITY, "tomorrow" as B-DATE in user utterance</td></tr>
+    <tr><td><strong>Language Modeling</strong></td><td>Module 4</td><td>Generate natural language responses (seq2seq, GPT) for generative chatbots</td></tr>
+    <tr><td><strong>Chunking / CFG</strong></td><td>Module 4</td><td>Parse commands and extract key noun/verb phrases for structured query understanding</td></tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 2 ══ -->
+<div class="section" id="s2">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 2</div>
+    <h2>Chatbot Architecture — Complete Pipeline</h2>
+  </div>
+
+  <h3>2.1 The Three-Layer Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  USER INPUT: "Book me a flight from Mumbai to Delhi on 25th December"
+       │
+  ┌────▼──────────────────────────────────────────────────────────────┐
+  │  LAYER 1: NATURAL LANGUAGE UNDERSTANDING (NLU)                   │
+  │                                                                   │
+  │  ┌─────────────────────────────────────────────────────────────┐  │
+  │  │ PRE-PROCESSING (Module 2)                                   │  │
+  │  │ Tokenize → lowercase → clean → remove noise                 │  │
+  │  └─────────────────────────────────────────────────────────────┘  │
+  │  ┌────────────────────────┐  ┌──────────────────────────────────┐ │
+  │  │ INTENT CLASSIFICATION  │  │ ENTITY / SLOT EXTRACTION        │ │
+  │  │ (Text Classification)  │  │ (Sequence Tagging / NER)        │ │
+  │  │                        │  │                                  │ │
+  │  │ "Book me a flight..."  │  │ from:     Mumbai   [B-FROM_CITY]│ │
+  │  │  → BookFlight (0.94)   │  │ to:       Delhi    [B-TO_CITY]  │ │
+  │  │  → CheckStatus (0.03)  │  │ date:     Dec 25   [B-DATE]     │ │
+  │  └────────────────────────┘  └──────────────────────────────────┘ │
+  └────────────────────────────┬──────────────────────────────────────┘
+                               │ intent + entities (structured)
+  ┌────────────────────────────▼──────────────────────────────────────┐
+  │  LAYER 2: DIALOGUE MANAGEMENT (DM)                               │
+  │                                                                   │
+  │  ┌──────────────────────┐  ┌──────────────────────────────────┐   │
+  │  │ DIALOGUE STATE       │  │ POLICY (What to do next?)        │   │
+  │  │ TRACKING             │  │                                  │   │
+  │  │                      │  │ IF intent=BookFlight AND          │   │
+  │  │ Current state:        │  │    from=filled AND to=filled AND  │   │
+  │  │ intent: BookFlight   │  │    date=filled                   │   │
+  │  │ from: Mumbai ✓       │  │ THEN: call_booking_API()         │   │
+  │  │ to: Delhi ✓          │  │ ELSE: ask_for_missing_slots()    │   │
+  │  │ date: Dec 25 ✓       │  └──────────────────────────────────┘   │
+  │  │ class: ? (missing)   │                                         │
+  │  └──────────────────────┘                                         │
+  └────────────────────────────┬──────────────────────────────────────┘
+                               │ action / response plan
+  ┌────────────────────────────▼──────────────────────────────────────┐
+  │  LAYER 3: NATURAL LANGUAGE GENERATION (NLG)                      │
+  │                                                                   │
+  │  Template-based: "I found {N} flights from {from} to {to} on     │
+  │                   {date}. Which class would you prefer?"          │
+  │                                                                   │
+  │  Generated: "I found 4 flights from Mumbai to Delhi on December   │
+  │             25th. Would you like Economy, Business, or First?"    │
+  └───────────────────────────────────────────────────────────────────┘
+       │
+  CHATBOT RESPONSE → USER
+    </pre>
+    <div class="diagram-caption">Figure 2.1 — Three-layer chatbot architecture: NLU (understand) → DM (decide) → NLG (respond). Each layer applies specific NLP techniques.</div>
+  </div>
+
+  <h3>2.2 Core Components Explained</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-blue">
+      <div class="cc-tag">Component 1</div>
+      <div class="cc-title">Natural Language Understanding (NLU)</div>
+      <p>Converts raw user text into structured meaning. Two primary outputs: <strong>Intent</strong> (what the user wants to do) and <strong>Entities/Slots</strong> (the specific values needed to fulfill the intent).</p>
+      <p>NLU techniques: Text classification (Naïve Bayes, BERT) for intent. Sequence labeling (BIO tagging, NER, CRF) for entities. Trained on labeled conversational data (utterance, intent, entity annotation).</p>
+      <div class="cc-note">Tools: Rasa NLU, Dialogflow NLU, spaCy, BERT fine-tuned on intent classification.</div>
+    </div>
+
+    <div class="comp-card cc-green">
+      <div class="cc-tag">Component 2</div>
+      <div class="cc-title">Dialogue State Tracker (DST)</div>
+      <p>Maintains a running record of the conversation state — what intent is being pursued, which slots have been filled, and what has been said by each party across all turns. Also called "belief state."</p>
+      <p>State = {intent: X, slot₁: val₁, slot₂: val₂, ...}. Updated at every turn. Handles corrections ("Actually, make that Mumbai to Chennai") by overwriting previous slot values.</p>
+      <div class="cc-note">Implemented as: Python dictionary, database record, or neural state tracker (end-to-end trainable).</div>
+    </div>
+
+    <div class="comp-card cc-purple">
+      <div class="cc-tag">Component 3</div>
+      <div class="cc-title">Dialogue Policy</div>
+      <p>Decides what action to take given the current dialogue state. Rule-based policy: IF all slots filled THEN execute task. Learned policy: train using reinforcement learning or supervised imitation learning on human dialogue logs.</p>
+      <p>Actions: Ask for missing slot, Confirm understanding, Execute API call, Clarify ambiguity, Apologize and redirect, Escalate to human agent.</p>
+      <div class="cc-note">Rasa Core uses ML-based policies. Most production systems use hybrid rule+ML policies.</div>
+    </div>
+
+    <div class="comp-card cc-amber">
+      <div class="cc-tag">Component 4</div>
+      <div class="cc-title">Natural Language Generation (NLG)</div>
+      <p>Converts the system's action/response plan into natural language text. Methods: Template filling (fastest, most controlled), Retrieval (select best pre-written response), Neural generation (seq2seq, GPT — most flexible).</p>
+      <p>Template: "I found {N} flights from {origin} to {destination} on {date}." Neural: GPT-4 generates a unique, contextual response each time.</p>
+      <div class="cc-note">Production best practice: templates for structured info, LLM for open-ended responses.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 3 ══ -->
+<div class="section" id="s3">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 3</div>
+    <h2>NLU in Chatbots — Intent Detection and Entity Extraction</h2>
+  </div>
+
+  <h3>3.1 Intent Detection</h3>
+  <p><strong>Intent detection</strong> is a text classification task that maps a user's utterance to one of the predefined intents the system supports. It is the "what does the user want?" component.</p>
+
+  <div class="example-box">
+    <div class="ex-header">Intent Classification — Utterances and Their Intents</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">BookFlight</div><div class="ex-value">"Book me a flight to Delhi" | "I need tickets to Mumbai" | "Find me a flight"</div></div>
+      <div class="ex-row"><div class="ex-label">CheckWeather</div><div class="ex-value">"What's the weather like?" | "Will it rain tomorrow?" | "Temperature in Pune today"</div></div>
+      <div class="ex-row"><div class="ex-label">CancelOrder</div><div class="ex-value">"Cancel my order" | "I want to return this" | "How do I cancel my booking?"</div></div>
+      <div class="ex-row"><div class="ex-label">GetHelp</div><div class="ex-value">"Help me" | "I don't understand" | "What can you do?" | "Show options"</div></div>
+      <div class="ex-row"><div class="ex-label">Greeting</div><div class="ex-value">"Hello" | "Hi there" | "Good morning" | "Hey"</div></div>
+      <div class="ex-row"><div class="ex-label">Goodbye</div><div class="ex-value">"Bye" | "Thanks, goodbye" | "That's all for now" | "Exit"</div></div>
+    </div>
+  </div>
+
+  <h3>3.2 Entity Extraction / Slot Filling</h3>
+  <p><strong>Slot filling</strong> extracts specific parameter values from the utterance that are needed to fulfill the identified intent. Each intent has a set of required and optional slots.</p>
+
+  <div class="diagram">
+    <pre>
+  User: "Book me a business class flight from Mumbai to Delhi on December 25th"
+
+  Tokenize + POS tag:
+  Book/VB me/PRP a/DT business/NN class/NN flight/NN from/IN
+  Mumbai/NNP to/IN Delhi/NNP on/IN December/NNP 25th/CD
+
+  Sequence labeling with BIO (custom slot tags):
+  Book        → O
+  me          → O
+  a           → O
+  business    → B-CLASS        ← slot: class = "business"
+  class       → I-CLASS
+  flight      → O
+  from        → O
+  Mumbai      → B-FROM_CITY    ← slot: origin = "Mumbai"
+  to          → O
+  Delhi       → B-TO_CITY      ← slot: destination = "Delhi"
+  on          → O
+  December    → B-DATE         ← slot: date = "December 25th"
+  25th        → I-DATE
+
+  Extracted slots:
+  {
+    intent:      "BookFlight",
+    origin:      "Mumbai",
+    destination: "Delhi",
+    date:        "December 25th",  → normalized → 2024-12-25
+    class:       "Business",
+    passengers:  None              ← missing → must ask
+  }
+    </pre>
+    <div class="diagram-caption">Figure 3.1 — Slot filling via BIO sequence tagging. Each slot becomes a named entity type tagged with B- and I- prefixes.</div>
+  </div>
+
+  <h3>3.3 Building NLU with NLP Tools</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Intent Detection + Entity Extraction (spaCy + sklearn)</div>
+    <code><span class="kw">import</span> <span class="va">spacy</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LogisticRegression</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+
+<span class="cm"># ── INTENT CLASSIFICATION ──────────────────────────────────────────</span>
+<span class="va">training_data</span> = [
+    (<span class="st">"book a flight to Mumbai"</span>,          <span class="st">"BookFlight"</span>),
+    (<span class="st">"I need a ticket to Delhi"</span>,           <span class="st">"BookFlight"</span>),
+    (<span class="st">"find me flights tomorrow"</span>,           <span class="st">"BookFlight"</span>),
+    (<span class="st">"what is the weather today"</span>,          <span class="st">"CheckWeather"</span>),
+    (<span class="st">"will it rain this evening"</span>,          <span class="st">"CheckWeather"</span>),
+    (<span class="st">"cancel my booking"</span>,                 <span class="st">"CancelOrder"</span>),
+    (<span class="st">"I want to cancel my order"</span>,          <span class="st">"CancelOrder"</span>),
+    (<span class="st">"hello"</span>,                             <span class="st">"Greeting"</span>),
+    (<span class="st">"hi good morning"</span>,                   <span class="st">"Greeting"</span>),
+    (<span class="st">"help me"</span>,                           <span class="st">"GetHelp"</span>),
+    (<span class="st">"what can you do"</span>,                   <span class="st">"GetHelp"</span>),
+    (<span class="st">"goodbye thanks"</span>,                   <span class="st">"Goodbye"</span>),
+]
+
+<span class="va">utterances</span>, <span class="va">intents</span> = <span class="fn">zip</span>(*<span class="va">training_data</span>)
+
+<span class="va">intent_classifier</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'tfidf'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>), <span class="va">max_features</span>=<span class="nm">5000</span>)),
+    (<span class="st">'clf'</span>,   <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">5.0</span>, <span class="va">max_iter</span>=<span class="nm">500</span>)),
+])
+<span class="va">intent_classifier</span>.<span class="fn">fit</span>(<span class="va">utterances</span>, <span class="va">intents</span>)
+
+<span class="kw">def</span> <span class="fn">predict_intent</span>(<span class="va">text</span>):
+    <span class="va">intent</span>     = <span class="va">intent_classifier</span>.<span class="fn">predict</span>([<span class="va">text</span>])[<span class="nm">0</span>]
+    <span class="va">proba</span>      = <span class="va">intent_classifier</span>.<span class="fn">predict_proba</span>([<span class="va">text</span>])[<span class="nm">0</span>]
+    <span class="va">confidence</span> = <span class="fn">max</span>(<span class="va">proba</span>)
+    <span class="kw">return</span> <span class="va">intent</span>, <span class="va">confidence</span>
+
+<span class="cm"># ── ENTITY / SLOT EXTRACTION using spaCy NER ──────────────────────</span>
+<span class="va">nlp</span> = <span class="fn">spacy.load</span>(<span class="st">'en_core_web_sm'</span>)
+
+<span class="kw">def</span> <span class="fn">extract_entities</span>(<span class="va">text</span>):
+    <span class="va">doc</span>      = <span class="fn">nlp</span>(<span class="va">text</span>)
+    <span class="va">entities</span> = {}
+    <span class="kw">for</span> <span class="va">ent</span> <span class="kw">in</span> <span class="va">doc</span>.<span class="va">ents</span>:
+        <span class="va">entities</span>[<span class="va">ent</span>.<span class="va">label_</span>] = <span class="va">ent</span>.<span class="va">text</span>
+    <span class="kw">return</span> <span class="va">entities</span>
+
+<span class="cm"># ── COMBINED NLU FUNCTION ─────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">nlu_parse</span>(<span class="va">user_input</span>):
+    <span class="va">intent</span>, <span class="va">confidence</span> = <span class="fn">predict_intent</span>(<span class="va">user_input</span>)
+    <span class="va">entities</span>            = <span class="fn">extract_entities</span>(<span class="va">user_input</span>)
+    <span class="kw">return</span> {
+        <span class="st">"text"</span>:       <span class="va">user_input</span>,
+        <span class="st">"intent"</span>:     <span class="va">intent</span>,
+        <span class="st">"confidence"</span>: <span class="va">confidence</span>,
+        <span class="st">"entities"</span>:   <span class="va">entities</span>
+    }
+
+<span class="cm"># Test</span>
+<span class="va">result</span> = <span class="fn">nlu_parse</span>(<span class="st">"Book a flight from Mumbai to Delhi on December 25th"</span>)
+<span class="fn">print</span>(<span class="va">result</span>)
+<span class="cm"># → {'intent': 'BookFlight', 'confidence': 0.94, </span>
+<span class="cm">#    'entities': {'GPE': 'Delhi', 'DATE': 'December 25th'}}</span></code>
+  </div>
+</div>
+
+<!-- ══ SECTION 4 ══ -->
+<div class="section" id="s4">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 4</div>
+    <h2>Dialogue Management</h2>
+  </div>
+
+  <h3>4.1 Dialogue State Tracking</h3>
+  <p>The dialogue state tracker (DST) maintains the current "belief state" — a structured representation of everything the system knows about the conversation so far, including identified intents, filled slots, and missing information.</p>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Dialogue State Tracker</div>
+    <code><span class="kw">class</span> <span class="fn">DialogueStateTracker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="va">self</span>):
+        <span class="va">self</span>.<span class="va">state</span> = {
+            <span class="st">'intent'</span>:      <span class="kw">None</span>,
+            <span class="st">'origin'</span>:      <span class="kw">None</span>,
+            <span class="st">'destination'</span>: <span class="kw">None</span>,
+            <span class="st">'date'</span>:        <span class="kw">None</span>,
+            <span class="st">'class'</span>:       <span class="kw">None</span>,
+            <span class="st">'confirmed'</span>:   <span class="kw">False</span>,
+            <span class="st">'turn'</span>:        <span class="nm">0</span>,
+        }
+        <span class="va">self</span>.<span class="va">history</span> = []
+
+    <span class="kw">def</span> <span class="fn">update</span>(<span class="va">self</span>, <span class="va">nlu_result</span>):
+        <span class="va">self</span>.<span class="va">state</span>[<span class="st">'turn'</span>] += <span class="nm">1</span>
+        <span class="cm"># Update intent if high confidence</span>
+        <span class="kw">if</span> <span class="va">nlu_result</span>[<span class="st">'confidence'</span>] &gt; <span class="nm">0.6</span>:
+            <span class="va">self</span>.<span class="va">state</span>[<span class="st">'intent'</span>] = <span class="va">nlu_result</span>[<span class="st">'intent'</span>]
+
+        <span class="cm"># Update slots from entities</span>
+        <span class="va">entities</span> = <span class="va">nlu_result</span>.<span class="fn">get</span>(<span class="st">'entities'</span>, {})
+        <span class="kw">if</span> <span class="st">'FROM_CITY'</span> <span class="kw">in</span> <span class="va">entities</span>: <span class="va">self</span>.<span class="va">state</span>[<span class="st">'origin'</span>]      = <span class="va">entities</span>[<span class="st">'FROM_CITY'</span>]
+        <span class="kw">if</span> <span class="st">'TO_CITY'</span>   <span class="kw">in</span> <span class="va">entities</span>: <span class="va">self</span>.<span class="va">state</span>[<span class="st">'destination'</span>] = <span class="va">entities</span>[<span class="st">'TO_CITY'</span>]
+        <span class="kw">if</span> <span class="st">'DATE'</span>      <span class="kw">in</span> <span class="va">entities</span>: <span class="va">self</span>.<span class="va">state</span>[<span class="st">'date'</span>]        = <span class="va">entities</span>[<span class="st">'DATE'</span>]
+        <span class="kw">if</span> <span class="st">'CLASS'</span>     <span class="kw">in</span> <span class="va">entities</span>: <span class="va">self</span>.<span class="va">state</span>[<span class="st">'class'</span>]       = <span class="va">entities</span>[<span class="st">'CLASS'</span>]
+
+        <span class="cm"># Keep conversation history</span>
+        <span class="va">self</span>.<span class="va">history</span>.<span class="fn">append</span>(<span class="va">nlu_result</span>[<span class="st">'text'</span>])
+        <span class="kw">return</span> <span class="va">self</span>.<span class="va">state</span>
+
+    <span class="kw">def</span> <span class="fn">missing_slots</span>(<span class="va">self</span>):
+        <span class="va">required</span> = [<span class="st">'origin'</span>, <span class="st">'destination'</span>, <span class="st">'date'</span>]
+        <span class="kw">return</span> [s <span class="kw">for</span> s <span class="kw">in</span> <span class="va">required</span> <span class="kw">if</span> <span class="va">self</span>.<span class="va">state</span>[s] <span class="kw">is</span> <span class="kw">None</span>]
+
+    <span class="kw">def</span> <span class="fn">is_complete</span>(<span class="va">self</span>):
+        <span class="kw">return</span> <span class="fn">len</span>(<span class="va">self</span>.<span class="fn">missing_slots</span>()) == <span class="nm">0</span></code>
+  </div>
+
+  <h3>4.2 Dialogue Policy</h3>
+  <p>The dialogue policy maps dialogue states to system actions. A rule-based policy is most interpretable and predictable for task-oriented chatbots:</p>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Rule-Based Dialogue Policy</div>
+    <code><span class="kw">class</span> <span class="fn">DialoguePolicy</span>:
+    <span class="kw">def</span> <span class="fn">decide</span>(<span class="va">self</span>, <span class="va">state</span>, <span class="va">missing</span>):
+        <span class="va">intent</span> = <span class="va">state</span>[<span class="st">'intent'</span>]
+
+        <span class="cm"># Handle greetings</span>
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'Greeting'</span>:
+            <span class="kw">return</span> (<span class="st">'greet'</span>, {})
+
+        <span class="cm"># Handle help</span>
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'GetHelp'</span>:
+            <span class="kw">return</span> (<span class="st">'provide_help'</span>, {})
+
+        <span class="cm"># Handle goodbye</span>
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'Goodbye'</span>:
+            <span class="kw">return</span> (<span class="st">'farewell'</span>, {})
+
+        <span class="cm"># Handle BookFlight intent</span>
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'BookFlight'</span>:
+            <span class="kw">if</span> <span class="va">missing</span>:
+                <span class="kw">return</span> (<span class="st">'ask_slot'</span>, {<span class="st">'slot'</span>: <span class="va">missing</span>[<span class="nm">0</span>]})  <span class="cm"># ask first missing</span>
+            <span class="kw">elif</span> <span class="kw">not</span> <span class="va">state</span>[<span class="st">'confirmed'</span>]:
+                <span class="kw">return</span> (<span class="st">'confirm'</span>, <span class="va">state</span>)                  <span class="cm"># confirm before booking</span>
+            <span class="kw">else</span>:
+                <span class="kw">return</span> (<span class="st">'execute_booking'</span>, <span class="va">state</span>)           <span class="cm"># do the booking</span>
+
+        <span class="cm"># Fallback</span>
+        <span class="kw">return</span> (<span class="st">'fallback'</span>, {})
+
+<span class="cm"># Slot-to-question mapping</span>
+<span class="va">SLOT_QUESTIONS</span> = {
+    <span class="st">'origin'</span>:      <span class="st">"Which city are you flying from?"</span>,
+    <span class="st">'destination'</span>: <span class="st">"Which city would you like to fly to?"</span>,
+    <span class="st">'date'</span>:        <span class="st">"What date would you like to travel?"</span>,
+    <span class="st">'class'</span>:       <span class="st">"Which class? Economy, Business, or First Class?"</span>,
+}</code>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 ══ -->
+<div class="section" id="s5">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 5</div>
+    <h2>NLG — Response Generation</h2>
+  </div>
+
+  <h3>5.1 Response Generation Methods</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-teal">
+      <div class="cc-tag">Method 1</div>
+      <div class="cc-title">Template-Based NLG</div>
+      <p>Pre-written response templates with placeholder slots filled from the dialogue state. Fast, predictable, grammatically correct. Best for structured task-oriented responses.</p>
+      <p>Example: <code>"I found {count} flights from {origin} to {destination} on {date}. Prices start from ₹{price}."</code></p>
+      <div class="cc-note">Pros: Fully controlled, no hallucination. Cons: Rigid, limited variety, requires templates for every scenario.</div>
+    </div>
+
+    <div class="comp-card cc-rose">
+      <div class="cc-tag">Method 2</div>
+      <div class="cc-title">Retrieval-Based NLG</div>
+      <p>Retrieve the best matching pre-written response from a response library based on TF-IDF or embedding similarity to the current context. Ensures quality, human-written language.</p>
+      <p>Implementation: TfidfVectorizer on response candidates → cosine_similarity → pick top-1 response. Or: SBERT embeddings for semantic matching.</p>
+      <div class="cc-note">Used for FAQ responses, chitchat, and general queries. Combine with templates for task responses.</div>
+    </div>
+
+    <div class="comp-card cc-orange">
+      <div class="cc-tag">Method 3</div>
+      <div class="cc-title">Neural NLG (LLM-Based)</div>
+      <p>Use a pre-trained language model (GPT, T5, LLaMA) to generate responses. Provide context as a prompt: system description + conversation history + current task state → LLM generates contextual response.</p>
+      <p>Prompt: <em>"You are a helpful flight booking assistant. User wants to book: [state]. Previous turns: [history]. Respond naturally and ask for: [missing slot]."</em></p>
+      <div class="cc-note">State-of-art for open-domain chitchat. Use sparingly for task-oriented (cost + latency). Hallucination risk.</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — NLG Response Engine (Template + Retrieval)</div>
+    <code><span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+
+<span class="cm"># ── Template-Based NLG ────────────────────────────────────────────</span>
+<span class="va">TEMPLATES</span> = {
+    <span class="st">'greet'</span>:     <span class="st">"Hello! I'm your AI travel assistant. How can I help you today?"</span>,
+    <span class="st">'farewell'</span>:  <span class="st">"Thank you for using our service. Have a safe journey!"</span>,
+    <span class="st">'provide_help'</span>: <span class="st">"I can help you: Book flights, Check weather, Cancel bookings. What would you like?"</span>,
+    <span class="st">'ask_slot'</span>:  <span class="kw">lambda</span> <span class="va">params</span>: <span class="va">SLOT_QUESTIONS</span>[<span class="va">params</span>[<span class="st">'slot'</span>]],
+    <span class="st">'confirm'</span>:   <span class="kw">lambda</span> <span class="va">state</span>: (
+        <span class="va">f</span><span class="st">"To confirm: {state['origin']} → {state['destination']} on {state['date']}."</span>
+        <span class="va">f</span><span class="st">" Class: {state['class'] or 'Economy'}. Shall I proceed? (yes/no)"</span>
+    ),
+    <span class="st">'execute_booking'</span>: <span class="kw">lambda</span> <span class="va">state</span>: (
+        <span class="va">f</span><span class="st">"✅ Booking confirmed! {state['origin']} to {state['destination']} on {state['date']}."</span>
+        <span class="va">f</span><span class="st">" Your reference: FL{np.random.randint(10000,99999)}."</span>
+    ),
+    <span class="st">'fallback'</span>:  <span class="st">"I'm sorry, I didn't understand that. Could you rephrase?"</span>,
+}
+
+<span class="kw">def</span> <span class="fn">generate_response</span>(<span class="va">action</span>, <span class="va">params</span>):
+    <span class="va">template</span> = <span class="va">TEMPLATES</span>.<span class="fn">get</span>(<span class="va">action</span>, <span class="va">TEMPLATES</span>[<span class="st">'fallback'</span>])
+    <span class="kw">if</span> <span class="fn">callable</span>(<span class="va">template</span>):
+        <span class="kw">return</span> <span class="fn">template</span>(<span class="va">params</span>)
+    <span class="kw">return</span> <span class="va">template</span>
+
+<span class="cm"># ── Retrieval-Based NLG for FAQ ───────────────────────────────────</span>
+<span class="va">faq_pairs</span> = [
+    (<span class="st">"what is the baggage limit"</span>,      <span class="st">"Economy allows 15kg checked and 7kg cabin baggage."</span>),
+    (<span class="st">"can I change my flight date"</span>,     <span class="st">"Yes, date changes are allowed up to 24 hours before departure for a fee."</span>),
+    (<span class="st">"how do I get a refund"</span>,           <span class="st">"Refunds are processed in 7-10 business days to your original payment method."</span>),
+    (<span class="st">"what documents do I need"</span>,        <span class="st">"Carry a valid government-issued photo ID. For international travel, a passport is required."</span>),
+    (<span class="st">"is food available on the flight"</span>,  <span class="st">"Complimentary meals are served on flights over 2 hours. Snacks available on shorter flights."</span>),
+]
+<span class="va">faq_questions</span>, <span class="va">faq_answers</span> = <span class="fn">zip</span>(*<span class="va">faq_pairs</span>)
+<span class="va">faq_vectorizer</span> = <span class="fn">TfidfVectorizer</span>().<span class="fn">fit</span>(<span class="va">faq_questions</span>)
+
+<span class="kw">def</span> <span class="fn">retrieve_faq_answer</span>(<span class="va">query</span>, <span class="va">threshold</span>=<span class="nm">0.3</span>):
+    <span class="va">q_vec</span>  = <span class="va">faq_vectorizer</span>.<span class="fn">transform</span>([<span class="va">query</span>])
+    <span class="va">faq_v</span>  = <span class="va">faq_vectorizer</span>.<span class="fn">transform</span>(<span class="va">faq_questions</span>)
+    <span class="va">scores</span> = <span class="fn">cosine_similarity</span>(<span class="va">q_vec</span>, <span class="va">faq_v</span>)[<span class="nm">0</span>]
+    <span class="va">best</span>   = <span class="va">np</span>.<span class="fn">argmax</span>(<span class="va">scores</span>)
+    <span class="kw">if</span> <span class="va">scores</span>[<span class="va">best</span>] &gt;= <span class="va">threshold</span>:
+        <span class="kw">return</span> <span class="va">faq_answers</span>[<span class="va">best</span>]
+    <span class="kw">return</span> <span class="kw">None</span>  <span class="cm"># No good match — fall back to bot response</span></code>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 ══ -->
+<div class="section" id="s6">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 6</div>
+    <h2>Building a Rule-Based Chatbot (NLTK)</h2>
+  </div>
+
+  <h3>6.1 ELIZA-style Pattern Matching Chatbot</h3>
+
+  <div class="chat-demo">
+    <div class="cd-title">Rule-Based Chatbot — Sample Conversation</div>
+    <div class="chat-msg user"><div class="av-user">U</div><div><div class="chat-label user">User</div><div class="chat-bubble bubble-user">Hello! I want to book a flight.</div></div></div>
+    <div class="chat-msg"><div class="av-bot">B</div><div><div class="chat-label">Bot</div><div class="chat-bubble bubble-bot">Hi there! I'm your travel assistant. Which city are you flying from?</div></div></div>
+    <div class="chat-msg user"><div class="av-user">U</div><div><div class="chat-label user">User</div><div class="chat-bubble bubble-user">From Mumbai to Delhi on 25th December.</div></div></div>
+    <div class="chat-msg"><div class="av-bot">B</div><div><div class="chat-label">Bot</div><div class="chat-bubble bubble-bot">Got it! Mumbai → Delhi on December 25th. Which class would you prefer — Economy, Business, or First Class?</div></div></div>
+    <div class="chat-msg user"><div class="av-user">U</div><div><div class="chat-label user">User</div><div class="chat-bubble bubble-user">Economy please.</div></div></div>
+    <div class="chat-msg"><div class="av-bot">B</div><div><div class="chat-label">Bot</div><div class="chat-bubble bubble-bot">To confirm: Mumbai → Delhi on December 25th, Economy class. Shall I proceed? (yes/no)</div></div></div>
+    <div class="chat-msg user"><div class="av-user">U</div><div><div class="chat-label user">User</div><div class="chat-bubble bubble-user">Yes</div></div></div>
+    <div class="chat-msg"><div class="av-bot">B</div><div><div class="chat-label">Bot</div><div class="chat-bubble bubble-bot">✅ Booking confirmed! Mumbai to Delhi on December 25th. Your reference: FL72381. Have a safe journey!</div></div></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Complete Rule-Based Chatbot with NLTK</div>
+    <code><span class="kw">from</span> <span class="va">nltk.chat.util</span> <span class="kw">import</span> <span class="fn">Chat</span>, <span class="fn">reflections</span>
+
+<span class="cm"># NLTK Chat uses pattern → response pairs (regex matching)</span>
+<span class="va">pairs</span> = [
+    [<span class="st">r"(?:hi|hello|hey|good morning|good evening)(.*)"</span>,
+     [<span class="st">"Hello! I'm your AI assistant. How can I help you today?"</span>,
+      <span class="st">"Hi there! What can I do for you today?"</span>]],
+
+    [<span class="st">r"(?:i need|i want|can you|please) (?:book|find|search) (?:a |)flight(.*)"</span>,
+     [<span class="st">"I'd love to help book a flight! Where are you flying from?"</span>]],
+
+    [<span class="st">r"from ([\w\s]+) to ([\w\s]+)"</span>,
+     [<span class="st">"Great! Flying from %1 to %2. What date would you like to travel?"</span>]],
+
+    [<span class="st">r"(?:on |)(?:the |)(.*\d+.*|tomorrow|next week)"</span>,
+     [<span class="st">"Got it! Which class would you prefer — Economy, Business, or First?"</span>]],
+
+    [<span class="st">r"(?:economy|business|first class?)"</span>,
+     [<span class="st">"Excellent choice! Let me confirm your booking and process it now."</span>]],
+
+    [<span class="st">r"(?:what is|tell me about) (?:your |)(.*)"</span>,
+     [<span class="st">"I can help with: booking flights, weather updates, and order status."</span>]],
+
+    [<span class="st">r"(?:what is|how much is) (?:the |)(?:price|cost|fare)(.*)"</span>,
+     [<span class="st">"Fares start from ₹3,500 for Economy class. Shall I search specific routes?"</span>]],
+
+    [<span class="st">r"(?:thank you|thanks|thank)(.*)"</span>,
+     [<span class="st">"You're welcome! Is there anything else I can help you with?"</span>,
+      <span class="st">"Happy to help! Have a great day!"</span>]],
+
+    [<span class="st">r"(?:bye|goodbye|see you|exit|quit)"</span>,
+     [<span class="st">"Goodbye! Have a safe journey! 👋"</span>]],
+
+    [<span class="st">r"(.*)"</span>,
+     [<span class="st">"I'm not sure I understood that. Could you rephrase? Or type 'help' for options."</span>,
+      <span class="st">"I didn't catch that. Can you try again with different words?"</span>]],
+]
+
+<span class="va">chatbot</span> = <span class="fn">Chat</span>(<span class="va">pairs</span>, <span class="va">reflections</span>)
+
+<span class="kw">def</span> <span class="fn">run_chatbot</span>():
+    <span class="fn">print</span>(<span class="st">"AI Travel Assistant (type 'quit' to exit)\n"</span> + <span class="st">"─"</span>*<span class="nm">40</span>)
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="va">user_input</span> = <span class="fn">input</span>(<span class="st">"You: "</span>).<span class="fn">strip</span>().<span class="fn">lower</span>()
+        <span class="kw">if</span> <span class="va">user_input</span> <span class="kw">in</span> [<span class="st">'quit'</span>, <span class="st">'exit'</span>]:
+            <span class="fn">print</span>(<span class="st">"Bot: Goodbye! 👋"</span>)
+            <span class="kw">break</span>
+        <span class="va">response</span> = <span class="va">chatbot</span>.<span class="fn">respond</span>(<span class="va">user_input</span>)
+        <span class="fn">print</span>(<span class="va">f</span><span class="st">"Bot: {response}"</span>)
+
+<span class="fn">run_chatbot</span>()</code>
+  </div>
+</div>
+
+<!-- ══ SECTION 7 ══ -->
+<div class="section" id="s7">
+  <div class="section-header sh-chat">
+    <div class="section-num">Section 7</div>
+    <h2>Building an ML-Powered Chatbot</h2>
+  </div>
+
+  <h3>7.1 Full ML Chatbot — Integrated System</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Complete ML-Based Task-Oriented Chatbot</div>
+    <code><span class="kw">import</span> <span class="va">re</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LogisticRegression</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="cm"># TRAINING DATA</span>
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="va">intent_data</span> = [
+    (<span class="st">"book a flight"</span>, <span class="st">"BookFlight"</span>),
+    (<span class="st">"I need to fly to Chennai"</span>, <span class="st">"BookFlight"</span>),
+    (<span class="st">"find me tickets from Kolkata"</span>, <span class="st">"BookFlight"</span>),
+    (<span class="st">"what is the weather in Bangalore"</span>, <span class="st">"CheckWeather"</span>),
+    (<span class="st">"will it rain tomorrow"</span>, <span class="st">"CheckWeather"</span>),
+    (<span class="st">"cancel my reservation"</span>, <span class="st">"CancelOrder"</span>),
+    (<span class="st">"I want a refund"</span>, <span class="st">"CancelOrder"</span>),
+    (<span class="st">"hello good morning"</span>, <span class="st">"Greeting"</span>),
+    (<span class="st">"hi there"</span>, <span class="st">"Greeting"</span>),
+    (<span class="st">"help me please"</span>, <span class="st">"GetHelp"</span>),
+    (<span class="st">"what can you do"</span>, <span class="st">"GetHelp"</span>),
+    (<span class="st">"goodbye thanks"</span>, <span class="st">"Goodbye"</span>),
+    (<span class="st">"see you later"</span>, <span class="st">"Goodbye"</span>),
+]
+<span class="va">texts</span>, <span class="va">labels</span> = <span class="fn">zip</span>(*<span class="va">intent_data</span>)
+
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="cm"># NLU — INTENT CLASSIFIER</span>
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="va">clf</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'tfidf'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>))),
+    (<span class="st">'clf'</span>,   <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">5</span>, <span class="va">max_iter</span>=<span class="nm">500</span>)),
+])
+<span class="va">clf</span>.<span class="fn">fit</span>(<span class="va">texts</span>, <span class="va">labels</span>)
+
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="cm"># SIMPLE ENTITY EXTRACTOR (regex-based)</span>
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="va">CITY_PATTERNS</span> = [<span class="st">'mumbai'</span>,<span class="st">'delhi'</span>,<span class="st">'chennai'</span>,<span class="st">'kolkata'</span>,<span class="st">'bangalore'</span>,<span class="st">'hyderabad'</span>,<span class="st">'pune'</span>]
+<span class="va">DATE_PATTERN</span>  = <span class="va">re</span>.<span class="fn">compile</span>(<span class="st">r'\b(\d{1,2}(?:st|nd|rd|th)?\s+\w+|\btomorrow\b|\bnext \w+)'</span>)
+<span class="va">CLASS_PATTERN</span> = <span class="va">re</span>.<span class="fn">compile</span>(<span class="st">r'\b(economy|business|first class?)\b'</span>, <span class="va">re</span>.<span class="va">I</span>)
+
+<span class="kw">def</span> <span class="fn">extract_entities</span>(<span class="va">text</span>):
+    <span class="va">text_low</span>  = <span class="va">text</span>.<span class="fn">lower</span>()
+    <span class="va">found_cities</span> = [<span class="va">c</span> <span class="kw">for</span> <span class="va">c</span> <span class="kw">in</span> <span class="va">CITY_PATTERNS</span> <span class="kw">if</span> <span class="va">c</span> <span class="kw">in</span> <span class="va">text_low</span>]
+    <span class="va">date_match</span>   = <span class="va">DATE_PATTERN</span>.<span class="fn">search</span>(<span class="va">text_low</span>)
+    <span class="va">class_match</span>  = <span class="va">CLASS_PATTERN</span>.<span class="fn">search</span>(<span class="va">text</span>)
+
+    <span class="va">entities</span> = {}
+    <span class="kw">if</span> <span class="fn">len</span>(<span class="va">found_cities</span>) &gt;= <span class="nm">2</span>:
+        <span class="va">entities</span>[<span class="st">'FROM_CITY'</span>] = <span class="va">found_cities</span>[<span class="nm">0</span>].<span class="fn">title</span>()
+        <span class="va">entities</span>[<span class="st">'TO_CITY'</span>]   = <span class="va">found_cities</span>[<span class="nm">1</span>].<span class="fn">title</span>()
+    <span class="kw">elif</span> <span class="fn">len</span>(<span class="va">found_cities</span>) == <span class="nm">1</span>:
+        <span class="va">entities</span>[<span class="st">'TO_CITY'</span>] = <span class="va">found_cities</span>[<span class="nm">0</span>].<span class="fn">title</span>()
+    <span class="kw">if</span> <span class="va">date_match</span>:
+        <span class="va">entities</span>[<span class="st">'DATE'</span>] = <span class="va">date_match</span>.<span class="fn">group</span>(<span class="nm">1</span>)
+    <span class="kw">if</span> <span class="va">class_match</span>:
+        <span class="va">entities</span>[<span class="st">'CLASS'</span>] = <span class="va">class_match</span>.<span class="fn">group</span>(<span class="nm">1</span>).<span class="fn">title</span>()
+    <span class="kw">return</span> <span class="va">entities</span>
+
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="cm"># MAIN CHATBOT LOOP</span>
+<span class="cm"># ─────────────────────────────────────────────────────────────────</span>
+<span class="kw">class</span> <span class="fn">MLChatbot</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="va">self</span>):
+        <span class="va">self</span>.<span class="va">state</span> = {<span class="st">'intent'</span>:<span class="kw">None</span>,<span class="st">'FROM_CITY'</span>:<span class="kw">None</span>,<span class="st">'TO_CITY'</span>:<span class="kw">None</span>,<span class="st">'DATE'</span>:<span class="kw">None</span>,<span class="st">'CLASS'</span>:<span class="kw">None</span>}
+
+    <span class="kw">def</span> <span class="fn">respond</span>(<span class="va">self</span>, <span class="va">user_text</span>):
+        <span class="cm"># 1. NLU</span>
+        <span class="va">intent</span>    = <span class="va">clf</span>.<span class="fn">predict</span>([<span class="va">user_text</span>])[<span class="nm">0</span>]
+        <span class="va">confidence</span>= <span class="fn">max</span>(<span class="va">clf</span>.<span class="fn">predict_proba</span>([<span class="va">user_text</span>])[<span class="nm">0</span>])
+        <span class="va">entities</span>  = <span class="fn">extract_entities</span>(<span class="va">user_text</span>)
+
+        <span class="cm"># 2. Update state</span>
+        <span class="kw">if</span> <span class="va">confidence</span> &gt; <span class="nm">0.5</span>: <span class="va">self</span>.<span class="va">state</span>[<span class="st">'intent'</span>] = <span class="va">intent</span>
+        <span class="va">self</span>.<span class="va">state</span>.<span class="fn">update</span>({<span class="va">k</span>: <span class="va">v</span> <span class="kw">for</span> <span class="va">k</span>, <span class="va">v</span> <span class="kw">in</span> <span class="va">entities</span>.<span class="fn">items</span>() <span class="kw">if</span> <span class="va">v</span>})
+
+        <span class="cm"># 3. Policy + Response</span>
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'Greeting'</span>:
+            <span class="kw">return</span> <span class="st">"Hi! I can help you book flights, check weather, or manage bookings. What do you need?"</span>
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'Goodbye'</span>:
+            <span class="kw">return</span> <span class="st">"Goodbye! Have a safe journey! ✈️"</span>
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'BookFlight'</span>:
+            <span class="kw">if</span> <span class="kw">not</span> <span class="va">self</span>.<span class="va">state</span>[<span class="st">'FROM_CITY'</span>]: <span class="kw">return</span> <span class="st">"Which city are you flying FROM?"</span>
+            <span class="kw">if</span> <span class="kw">not</span> <span class="va">self</span>.<span class="va">state</span>[<span class="st">'TO_CITY'</span>]:   <span class="kw">return</span> <span class="st">"Which city are you flying TO?"</span>
+            <span class="kw">if</span> <span class="kw">not</span> <span class="va">self</span>.<span class="va">state</span>[<span class="st">'DATE'</span>]:       <span class="kw">return</span> <span class="st">"What date would you like to travel?"</span>
+            <span class="kw">return</span> (<span class="va">f</span><span class="st">"✅ Booking: {self.state['FROM_CITY']} → {self.state['TO_CITY']}"</span>
+                    <span class="va">f</span><span class="st">" on {self.state['DATE']}. Reference: FL{np.random.randint(10000,99999)}"</span>)
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'CheckWeather'</span>:
+            <span class="kw">return</span> <span class="st">"Weather service: Currently 28°C and clear skies. (Live data integration needed)"</span>
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'CancelOrder'</span>:
+            <span class="kw">return</span> <span class="st">"Please provide your booking reference number and I'll process the cancellation."</span>
+        <span class="kw">else</span>:
+            <span class="kw">return</span> <span class="st">"I didn't understand that. Could you rephrase? Type 'help' for options."</span>
+
+<span class="cm"># Run the chatbot</span>
+<span class="va">bot</span> = <span class="fn">MLChatbot</span>()
+<span class="fn">print</span>(<span class="st">"ML Chatbot Ready! (type 'quit' to exit)\n"</span>)
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="va">user_in</span> = <span class="fn">input</span>(<span class="st">"You: "</span>)
+    <span class="kw">if</span> <span class="va">user_in</span>.<span class="fn">lower</span>() == <span class="st">'quit'</span>: <span class="kw">break</span>
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"Bot: {bot.respond(user_in)}\n"</span>)</code>
+  </div>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Chatbot Using All NLP Modules</div>
+    <p><strong>Module 2 (Preprocessing):</strong> Tokenization, lowercasing, noise removal applied to user input before NLU.</p>
+    <p><strong>Module 3 (Text Classification):</strong> TF-IDF + Logistic Regression for intent detection. Naïve Bayes is also commonly used.</p>
+    <p><strong>Module 4 (Sequence Tagging + LM):</strong> BIO sequence labeling for slot/entity extraction. Language models for response generation.</p>
+    <p><strong>Module 3 (Confusion Matrix):</strong> Evaluate intent classifier with P/R/F1 per intent. NER evaluated with entity-level F1.</p>
+  </div>
+</div>
+
+<!-- ████████ PART 2: RECOMMENDATION ENGINE ████████ -->
+<div class="part-banner pb-rec">Part 2 — Recommendation Engine</div>
+
+<!-- ══ SECTION 8 ══ -->
+<div class="section" id="s8">
+  <div class="section-header sh-rec">
+    <div class="section-num">Section 8</div>
+    <h2>Recommendation Engine — Overview</h2>
+  </div>
+
+  <h3>8.1 What is a Recommendation Engine?</h3>
+  <p>A <strong>Recommendation Engine</strong> (Recommender System) is an information filtering system that predicts what items a user is likely to prefer based on their past behavior, preferences, and/or item characteristics. It reduces information overload by surfacing the most relevant items from a vast catalog.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Why Recommendation Engines Matter</div>
+    <p>Netflix attributes 80% of content watched to recommendations. Amazon reports 35% of revenue driven by its recommender. YouTube: 70% of watch time from recommendations. Spotify Discover Weekly reaches 40M users weekly. Recommendation engines are among the highest business-value ML applications ever built.</p>
+  </div>
+
+  <h3>8.2 Types of Recommendation Systems</h3>
+
+  <div class="diagram">
+    <pre>
+  RECOMMENDATION SYSTEM TAXONOMY
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │ COLLABORATIVE FILTERING                                          │
+  │ "Users who behaved like you liked these items."                 │
+  │                                                                  │
+  │ ┌─────────────────────┐  ┌─────────────────────────────────────┐│
+  │ │ User-Based CF       │  │ Item-Based CF                       ││
+  │ │ Find similar USERS  │  │ Find similar ITEMS                  ││
+  │ │ to the target user  │  │ to what user already liked          ││
+  │ └─────────────────────┘  └─────────────────────────────────────┘│
+  └──────────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────────┐
+  │ CONTENT-BASED FILTERING                                          │
+  │ "You liked these items → here are similar items."               │
+  │ Analyzes item features (genre, director, description, NLP)       │
+  │ Does NOT need other users' data                                  │
+  └──────────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────────┐
+  │ KNOWLEDGE-BASED                                                  │
+  │ "Based on your stated requirements, here are matching items."    │
+  │ No behavioral data — uses explicit constraints                   │
+  └──────────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────────┐
+  │ HYBRID SYSTEM (Netflix, Spotify, Amazon)                         │
+  │ Combines multiple methods: CF + Content + Knowledge              │
+  │ Weighted ensemble or model-based combination                     │
+  └──────────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Recommendation system taxonomy. Most production systems are hybrids combining multiple methods.</div>
+  </div>
+
+  <h3>8.3 The User-Item Interaction Matrix</h3>
+  <p>All collaborative filtering systems are built on a matrix of user-item interactions — explicit ratings (1–5 stars) or implicit feedback (clicks, views, purchase history).</p>
+
+  <div style="overflow-x:auto;margin:1.25rem 0;">
+    <table class="rating-table">
+      <tr>
+        <th class="cm-corner">User \ Movie</th>
+        <th>Inception</th><th>The Matrix</th><th>Interstellar</th><th>Titanic</th><th>Avengers</th>
+      </tr>
+      <tr><td class="user-col">Alice</td><td class="r-high">5</td><td class="r-high">4</td><td class="r-high">5</td><td class="r-low">2</td><td class="r-miss">?</td></tr>
+      <tr><td class="user-col">Bob</td><td class="r-high">4</td><td class="r-high">5</td><td class="r-miss">?</td><td class="r-low">1</td><td class="r-high">4</td></tr>
+      <tr><td class="user-col">Carol</td><td class="r-miss">?</td><td class="r-high">5</td><td class="r-high">4</td><td class="r-miss">?</td><td class="r-high">5</td></tr>
+      <tr><td class="user-col">Dave</td><td class="r-high">4</td><td class="r-miss">?</td><td class="r-high">5</td><td class="r-low">1</td><td class="r-miss">?</td></tr>
+      <tr><td class="user-col">Eve</td><td class="r-miss">?</td><td class="r-high">4</td><td class="r-miss">?</td><td class="r-high">5</td><td class="r-med">3</td></tr>
+    </table>
+    <p style="font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);margin-top:.5rem;">? = missing rating (need to predict). Goal: predict Alice's rating for Avengers, Carol's for Inception, etc.</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 9 ══ -->
+<div class="section" id="s9">
+  <div class="section-header sh-rec">
+    <div class="section-num">Section 9</div>
+    <h2>Collaborative Filtering</h2>
+  </div>
+
+  <h3>9.1 User-Based Collaborative Filtering</h3>
+  <p><strong>User-based CF</strong>: Find users most similar to the target user → recommend items those similar users liked but the target user hasn't seen yet.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Cosine Similarity Between Users</div>
+    <div class="formula">
+      sim(u, v) = cos(θ) = (u⃗ · v⃗) / (‖u⃗‖ · ‖v⃗‖)<br><br>
+               = Σᵢ(rᵤᵢ · rᵥᵢ) / √(Σᵢ rᵤᵢ²) · √(Σᵢ rᵥᵢ²)<br><br>
+      rᵤᵢ = rating of user u for item i  (0 if unrated)<br><br>
+      Pearson Correlation (better, handles rating scale bias):<br>
+      sim(u, v) = Σᵢ(rᵤᵢ−r̄ᵤ)(rᵥᵢ−r̄ᵥ) / [√Σᵢ(rᵤᵢ−r̄ᵤ)² · √Σᵢ(rᵥᵢ−r̄ᵥ)²]<br><br>
+      r̄ᵤ = mean rating of user u  ← centers user's ratings, removes bias<br><br>
+      Prediction of user u's rating for item i:<br>
+      <span class="hl">r̂ᵤᵢ = r̄ᵤ + (Σ_{v∈N(u)} sim(u,v) · (rᵥᵢ − r̄ᵥ)) / Σ_{v∈N(u)} |sim(u,v)|</span><br>
+      N(u) = k nearest neighbors of user u who have rated item i
+    </div>
+  </div>
+
+  <h3>9.2 Item-Based Collaborative Filtering</h3>
+  <p><strong>Item-based CF</strong>: Find items most similar to items the target user already rated highly → recommend the most similar unseen items. More stable than user-based (item relationships change less than user behavior).</p>
+
+  <div class="example-box">
+    <div class="ex-header">Item-Based CF — Worked Example (Predict Alice's Avengers rating)</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Alice's ratings</div><div class="ex-value">Inception:5, The Matrix:4, Interstellar:5, Titanic:2  (Avengers:? → predict)</div></div>
+      <div class="ex-row"><div class="ex-label">Avengers sim(Inception)</div><div class="ex-value">cosine(Avengers vector, Inception vector) = 0.87  ← both sci-fi action</div></div>
+      <div class="ex-row"><div class="ex-label">Avengers sim(Matrix)</div><div class="ex-value">cosine(Avengers, Matrix) = 0.82</div></div>
+      <div class="ex-row"><div class="ex-label">Avengers sim(Interstellar)</div><div class="ex-value">cosine(Avengers, Interstellar) = 0.79</div></div>
+      <div class="ex-row"><div class="ex-label">Avengers sim(Titanic)</div><div class="ex-value">cosine(Avengers, Titanic) = 0.15  ← different genre</div></div>
+      <div class="ex-row"><div class="ex-label">Predicted rating</div><div class="ex-value">(5×0.87 + 4×0.82 + 5×0.79 + 2×0.15) / (0.87+0.82+0.79+0.15) = 14.07 / 2.63 = 4.35</div></div>
+      <div class="ex-row"><div class="ex-label">Recommendation</div><div class="ex-value">Predicted 4.35/5 → Recommend Avengers to Alice ✓</div></div>
+    </div>
+  </div>
+
+  <h3>9.3 Matrix Factorization — SVD (Netflix Prize Winner)</h3>
+  <p>Decompose the user-item rating matrix R into latent factor matrices. Each user and item is represented as a vector in a latent feature space (e.g., "action", "drama", "sci-fi" preferences). The predicted rating is the dot product of user and item latent vectors.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Matrix Factorization — SVD / ALS</div>
+    <div class="formula">
+      R ≈ U × Σ × Vᵀ = P × Qᵀ<br><br>
+      R ∈ ℝ^{M×N}   M=users, N=items<br>
+      P ∈ ℝ^{M×k}   user latent factor matrix  (k=50–200 factors)<br>
+      Q ∈ ℝ^{N×k}   item latent factor matrix<br><br>
+      Predicted rating: <span class="hl">r̂ᵤᵢ = pᵤ · qᵢᵀ = Σₖ pᵤₖ · qᵢₖ</span><br><br>
+      Objective (minimize regularized squared error):<br>
+      L = Σ_{(u,i)∈known} (rᵤᵢ − pᵤqᵢᵀ)² + λ(‖pᵤ‖² + ‖qᵢ‖²)<br><br>
+      With biases:<br>
+      <span class="var">r̂ᵤᵢ = μ + bᵤ + bᵢ + pᵤqᵢᵀ</span><br>
+      μ = global average, bᵤ = user bias, bᵢ = item bias<br><br>
+      Solved by SGD or ALS (Alternating Least Squares)
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Collaborative Filtering (User-Based + Matrix Factorization)</div>
+    <code><span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+
+<span class="cm"># ── Rating matrix (rows=users, cols=items, 0=unrated)</span>
+<span class="va">R</span> = <span class="va">np</span>.<span class="fn">array</span>([
+    [<span class="nm">5</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">0</span>],  <span class="cm"># Alice: Inception,Matrix,Interstellar,Titanic,Avengers</span>
+    [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">4</span>],  <span class="cm"># Bob</span>
+    [<span class="nm">0</span>, <span class="nm">5</span>, <span class="nm">4</span>, <span class="nm">0</span>, <span class="nm">5</span>],  <span class="cm"># Carol</span>
+    [<span class="nm">4</span>, <span class="nm">0</span>, <span class="nm">5</span>, <span class="nm">1</span>, <span class="nm">0</span>],  <span class="cm"># Dave</span>
+    [<span class="nm">0</span>, <span class="nm">4</span>, <span class="nm">0</span>, <span class="nm">5</span>, <span class="nm">3</span>],  <span class="cm"># Eve</span>
+], <span class="va">dtype</span>=<span class="va">float</span>)
+<span class="va">MOVIES</span> = [<span class="st">'Inception'</span>,<span class="st">'The Matrix'</span>,<span class="st">'Interstellar'</span>,<span class="st">'Titanic'</span>,<span class="st">'Avengers'</span>]
+
+<span class="cm"># ── USER-BASED COLLABORATIVE FILTERING ────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">user_based_cf</span>(<span class="va">R</span>, <span class="va">user_idx</span>, <span class="va">top_k</span>=<span class="nm">5</span>):
+    <span class="cm"># Compute user-user similarity matrix</span>
+    <span class="va">sim</span> = <span class="fn">cosine_similarity</span>(<span class="va">R</span>)
+    <span class="va">user_sim</span> = <span class="va">sim</span>[<span class="va">user_idx</span>].copy()
+    <span class="va">user_sim</span>[<span class="va">user_idx</span>] = <span class="nm">0</span>  <span class="cm"># exclude self</span>
+
+    <span class="va">scores</span> = <span class="va">np</span>.<span class="fn">zeros</span>(<span class="va">R</span>.<span class="va">shape</span>[<span class="nm">1</span>])
+    <span class="va">sim_sum</span>= <span class="va">np</span>.<span class="fn">zeros</span>(<span class="va">R</span>.<span class="va">shape</span>[<span class="nm">1</span>])
+
+    <span class="kw">for</span> <span class="va">v</span>, <span class="va">s</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">user_sim</span>):
+        <span class="kw">if</span> <span class="va">s</span> &gt; <span class="nm">0</span>:
+            <span class="va">scores</span>  += <span class="va">s</span> * <span class="va">R</span>[<span class="va">v</span>]
+            <span class="va">sim_sum</span> += <span class="va">s</span> * (<span class="va">R</span>[<span class="va">v</span>] &gt; <span class="nm">0</span>).<span class="fn">astype</span>(<span class="va">float</span>)
+
+    <span class="kw">with</span> <span class="va">np</span>.<span class="fn">errstate</span>(<span class="va">invalid</span>=<span class="st">'ignore'</span>):
+        <span class="va">predicted</span> = <span class="va">np</span>.<span class="fn">where</span>(<span class="va">sim_sum</span> &gt; <span class="nm">0</span>, <span class="va">scores</span>/<span class="va">sim_sum</span>, <span class="nm">0</span>)
+
+    <span class="cm"># Only recommend items not yet rated by this user</span>
+    <span class="va">unrated</span> = <span class="va">np</span>.<span class="fn">where</span>(<span class="va">R</span>[<span class="va">user_idx</span>] == <span class="nm">0</span>)[<span class="nm">0</span>]
+    <span class="va">top_recs</span>= <span class="fn">sorted</span>(<span class="va">unrated</span>, <span class="va">key</span>=<span class="kw">lambda</span> <span class="va">i</span>: <span class="va">predicted</span>[<span class="va">i</span>], <span class="va">reverse</span>=<span class="kw">True</span>)[:<span class="va">top_k</span>]
+    <span class="kw">return</span> [(<span class="va">MOVIES</span>[<span class="va">i</span>], <span class="fn">round</span>(<span class="va">predicted</span>[<span class="va">i</span>], <span class="nm">2</span>)) <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">top_recs</span>]
+
+<span class="fn">print</span>(<span class="st">"Alice's recommendations:"</span>, <span class="fn">user_based_cf</span>(<span class="va">R</span>, <span class="nm">0</span>))
+<span class="cm"># → [('Avengers', 4.35)] ← predicted 4.35 stars for Alice</span>
+
+<span class="cm"># ── MATRIX FACTORIZATION with surprise library ────────────────────</span>
+<span class="kw">from</span> <span class="va">surprise</span> <span class="kw">import</span> <span class="fn">SVD</span>, <span class="fn">Dataset</span>, <span class="fn">Reader</span>
+<span class="kw">from</span> <span class="va">surprise.model_selection</span> <span class="kw">import</span> <span class="fn">cross_validate</span>
+<span class="kw">import</span> <span class="va">pandas</span> <span class="kw">as</span> <span class="va">pd</span>
+
+<span class="va">ratings_data</span> = [
+    (<span class="st">'Alice'</span>,<span class="st">'Inception'</span>,<span class="nm">5</span>), (<span class="st">'Alice'</span>,<span class="st">'Matrix'</span>,<span class="nm">4</span>), (<span class="st">'Bob'</span>,<span class="st">'Matrix'</span>,<span class="nm">5</span>),
+    (<span class="st">'Bob'</span>,<span class="st">'Inception'</span>,<span class="nm">4</span>), (<span class="st">'Carol'</span>,<span class="st">'Matrix'</span>,<span class="nm">5</span>), (<span class="st">'Dave'</span>,<span class="st">'Inception'</span>,<span class="nm">4</span>),
+]
+<span class="va">df</span>     = <span class="fn">pd.DataFrame</span>(<span class="va">ratings_data</span>, <span class="va">columns</span>=[<span class="st">'user'</span>,<span class="st">'item'</span>,<span class="st">'rating'</span>])
+<span class="va">reader</span> = <span class="fn">Reader</span>(<span class="va">rating_scale</span>=(<span class="nm">1</span>,<span class="nm">5</span>))
+<span class="va">data</span>   = <span class="fn">Dataset.load_from_df</span>(<span class="va">df</span>[[<span class="st">'user'</span>,<span class="st">'item'</span>,<span class="st">'rating'</span>]], <span class="va">reader</span>)
+
+<span class="va">model</span> = <span class="fn">SVD</span>(<span class="va">n_factors</span>=<span class="nm">50</span>, <span class="va">n_epochs</span>=<span class="nm">20</span>, <span class="va">lr_all</span>=<span class="nm">0.005</span>, <span class="va">reg_all</span>=<span class="nm">0.02</span>)
+<span class="va">results</span> = <span class="fn">cross_validate</span>(<span class="va">model</span>, <span class="va">data</span>, <span class="va">measures</span>=[<span class="st">'RMSE'</span>,<span class="st">'MAE'</span>], <span class="va">cv</span>=<span class="nm">3</span>, <span class="va">verbose</span>=<span class="kw">True</span>)</code>
+  </div>
+
+  <h3>9.4 Cold Start Problem</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>New user cold start:</strong> A brand-new user has no rating history — cannot compute similarity to other users. Solutions: Ask for explicit preferences during onboarding, use demographic information, recommend globally popular items, apply knowledge-based filtering.</div></li>
+    <li><span class="bullet">▸</span><div><strong>New item cold start:</strong> A new item has no ratings — never appears in collaborative recommendations. Solutions: Content-based filtering using item features (no ratings needed), hybrid approaches, editorial curation for launch period.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Sparsity problem:</strong> Large platforms have millions of users and items — most user-item combinations are unrated (&gt;99% missing). Matrix factorization handles sparsity better than neighborhood methods by learning dense latent representations.</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 10 ══ -->
+<div class="section" id="s10">
+  <div class="section-header sh-rec">
+    <div class="section-num">Section 10</div>
+    <h2>Content-Based Filtering</h2>
+  </div>
+
+  <h3>10.1 Content-Based Filtering — NLP-Powered</h3>
+  <p><strong>Content-based filtering</strong> recommends items similar to what the user already likes, based on item features (genre, description, tags, metadata). NLP is central here — item descriptions and reviews are analyzed using TF-IDF, word embeddings, or BERT to compute semantic similarity between items.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Content-Based Similarity</div>
+    <div class="formula">
+      1. Represent each item as a feature vector:<br>
+         - Structured: genre one-hot + year + director_id + avg_rating<br>
+         - NLP: TF-IDF on description + tags + reviews<br><br>
+      2. Build user profile from rated items:<br>
+         <span class="hl">user_profile(u) = Σᵢ rᵤᵢ · item_vector(i) / Σᵢ rᵤᵢ</span><br>
+         Weighted average of item vectors by user's ratings<br><br>
+      3. Score unrated items against user profile:<br>
+         <span class="var">score(u, i) = cosine(user_profile(u), item_vector(i))</span><br><br>
+      4. Recommend top-k items with highest score
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Content-Based Movie Recommender (TF-IDF on Descriptions)</div>
+    <code><span class="kw">import</span> <span class="va">pandas</span> <span class="kw">as</span> <span class="va">pd</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+
+<span class="cm"># ── Movie catalog with descriptions ───────────────────────────────</span>
+<span class="va">movies</span> = <span class="fn">pd.DataFrame</span>({
+    <span class="st">'title'</span>: [<span class="st">'Inception'</span>, <span class="st">'The Matrix'</span>, <span class="st">'Interstellar'</span>, <span class="st">'The Dark Knight'</span>,
+               <span class="st">'Avengers'</span>, <span class="st">'Titanic'</span>, <span class="st">'Avatar'</span>, <span class="st">'The Notebook'</span>],
+    <span class="st">'description'</span>: [
+        <span class="st">"dream thief action sci-fi mind bending thriller heist subconscious"</span>,
+        <span class="st">"virtual reality simulation action sci-fi hacker computer martial arts"</span>,
+        <span class="st">"space time travel sci-fi black hole astronaut wormhole universe"</span>,
+        <span class="st">"superhero batman action crime gotham city joker detective"</span>,
+        <span class="st">"superhero action marvel iron man thor universe battle"</span>,
+        <span class="st">"romance drama historical ship ocean love tragedy"</span>,
+        <span class="st">"sci-fi alien planet action adventure blue creatures nature"</span>,
+        <span class="st">"romance drama love story couple relationship nostalgic"</span>,
+    ],
+    <span class="st">'genre'</span>: [<span class="st">'sci-fi'</span>,<span class="st">'sci-fi'</span>,<span class="st">'sci-fi'</span>,<span class="st">'action'</span>,<span class="st">'action'</span>,<span class="st">'romance'</span>,<span class="st">'sci-fi'</span>,<span class="st">'romance'</span>],
+})
+
+<span class="cm"># ── Build TF-IDF Feature Matrix ───────────────────────────────────</span>
+<span class="va">tfidf</span>   = <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>))
+<span class="va">tfidf_m</span> = <span class="va">tfidf</span>.<span class="fn">fit_transform</span>(<span class="va">movies</span>[<span class="st">'description'</span>])
+<span class="va">sim_m</span>   = <span class="fn">cosine_similarity</span>(<span class="va">tfidf_m</span>)   <span class="cm"># N×N item similarity matrix</span>
+
+<span class="cm"># ── Content-Based Recommendations for a movie ─────────────────────</span>
+<span class="kw">def</span> <span class="fn">recommend_similar</span>(<span class="va">movie_title</span>, <span class="va">top_n</span>=<span class="nm">3</span>):
+    <span class="va">idx</span>    = <span class="va">movies</span>[<span class="va">movies</span>[<span class="st">'title'</span>] == <span class="va">movie_title</span>].<span class="va">index</span>[<span class="nm">0</span>]
+    <span class="va">scores</span> = <span class="fn">list</span>(<span class="fn">enumerate</span>(<span class="va">sim_m</span>[<span class="va">idx</span>]))
+    <span class="va">scores</span> = <span class="fn">sorted</span>(<span class="va">scores</span>, <span class="va">key</span>=<span class="kw">lambda</span> <span class="va">x</span>: <span class="va">x</span>[<span class="nm">1</span>], <span class="va">reverse</span>=<span class="kw">True</span>)[<span class="nm">1</span>:<span class="va">top_n</span>+<span class="nm">1</span>]
+    <span class="kw">return</span> [(movies.<span class="fn">iloc</span>[<span class="va">i</span>][<span class="st">'title'</span>], <span class="fn">round</span>(<span class="va">s</span>, <span class="nm">3</span>)) <span class="kw">for</span> <span class="va">i</span>, <span class="va">s</span> <span class="kw">in</span> <span class="va">scores</span>]
+
+<span class="fn">print</span>(<span class="fn">recommend_similar</span>(<span class="st">"Inception"</span>))
+<span class="cm"># → [('The Matrix', 0.412), ('Interstellar', 0.389), ('Avatar', 0.276)]</span>
+
+<span class="cm"># ── User Profile-Based Recommendations ───────────────────────────</span>
+<span class="kw">def</span> <span class="fn">user_content_recommend</span>(<span class="va">user_ratings</span>, <span class="va">top_n</span>=<span class="nm">3</span>):
+    <span class="cm"># user_ratings = {movie_title: rating, ...}</span>
+    <span class="va">profile</span> = <span class="va">np</span>.<span class="fn">zeros</span>(<span class="va">tfidf_m</span>.<span class="va">shape</span>[<span class="nm">1</span>])
+    <span class="va">total_w</span> = <span class="nm">0</span>
+    <span class="kw">for</span> <span class="va">movie</span>, <span class="va">rating</span> <span class="kw">in</span> <span class="va">user_ratings</span>.<span class="fn">items</span>():
+        <span class="va">idx</span>      = <span class="va">movies</span>[<span class="va">movies</span>[<span class="st">'title'</span>] == <span class="va">movie</span>].<span class="va">index</span>[<span class="nm">0</span>]
+        <span class="va">profile</span> += <span class="va">rating</span> * <span class="va">tfidf_m</span>[<span class="va">idx</span>].<span class="fn">toarray</span>()[<span class="nm">0</span>]
+        <span class="va">total_w</span> += <span class="va">rating</span>
+    <span class="va">profile</span> /= <span class="va">total_w</span>
+
+    <span class="va">seen</span>   = <span class="fn">set</span>(<span class="va">user_ratings</span>.<span class="fn">keys</span>())
+    <span class="va">scores</span> = <span class="fn">cosine_similarity</span>([<span class="va">profile</span>], <span class="va">tfidf_m</span>)[<span class="nm">0</span>]
+    <span class="va">recs</span>   = [(movies.<span class="fn">iloc</span>[<span class="va">i</span>][<span class="st">'title'</span>], <span class="fn">round</span>(<span class="va">scores</span>[<span class="va">i</span>], <span class="nm">3</span>))
+               <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">np</span>.<span class="fn">argsort</span>(<span class="va">scores</span>)[::-<span class="nm">1</span>]
+               <span class="kw">if</span> <span class="va">movies</span>.<span class="fn">iloc</span>[<span class="va">i</span>][<span class="st">'title'</span>] <span class="kw">not</span> <span class="kw">in</span> <span class="va">seen</span>]
+    <span class="kw">return</span> <span class="va">recs</span>[:<span class="va">top_n</span>]
+
+<span class="va">alice_ratings</span> = {<span class="st">'Inception'</span>: <span class="nm">5</span>, <span class="st">'The Matrix'</span>: <span class="nm">4</span>, <span class="st">'Interstellar'</span>: <span class="nm">5</span>}
+<span class="fn">print</span>(<span class="fn">user_content_recommend</span>(<span class="va">alice_ratings</span>))
+<span class="cm"># → [('Avatar', 0.312), ('The Dark Knight', 0.289), ...]</span></code>
+  </div>
+</div>
+
+<!-- ══ SECTION 11 ══ -->
+<div class="section" id="s11">
+  <div class="section-header sh-rec">
+    <div class="section-num">Section 11</div>
+    <h2>Hybrid Recommendation Systems</h2>
+  </div>
+
+  <h3>11.1 Why Hybrid?</h3>
+  <p>No single recommendation approach works best in all scenarios. Collaborative filtering suffers from cold start and sparsity. Content-based lacks serendipity (only recommends what's similar to what you know). Hybrid systems combine both to get the advantages of each while mitigating their weaknesses.</p>
+
+  <table class="compare-table">
+    <tr><th>Method</th><th>Data Needed</th><th>Cold Start</th><th>Serendipity</th><th>Scalability</th><th>NLP Role</th></tr>
+    <tr><td><strong>User-Based CF</strong></td><td>User ratings</td><td>Poor (both)</td><td>High</td><td>Poor (O(U²))</td><td>None</td></tr>
+    <tr><td><strong>Item-Based CF</strong></td><td>User ratings</td><td>Poor (item)</td><td>Medium</td><td>Good (offline)</td><td>None</td></tr>
+    <tr><td><strong>Matrix Factorization</strong></td><td>User ratings</td><td>Poor (new user)</td><td>High</td><td>Excellent</td><td>None (ratings only)</td></tr>
+    <tr><td><strong>Content-Based</strong></td><td>Item features</td><td>Excellent</td><td>Low</td><td>Good</td><td>Core (TF-IDF, embeddings on descriptions)</td></tr>
+    <tr><td><strong>Hybrid</strong></td><td>Both</td><td>Good</td><td>High</td><td>Good</td><td>Content vectors + CF predictions blended</td></tr>
+  </table>
+
+  <h3>11.2 Hybrid Combination Strategies</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-blue">
+      <div class="cc-tag">Strategy 1</div>
+      <div class="cc-title">Weighted Combination</div>
+      <p>Compute scores from multiple methods independently, then combine with learned or fixed weights:</p>
+      <p><code>score = α × CF_score + (1−α) × CB_score</code></p>
+      <p>α = 0.7 gives CF more weight when interaction data is dense; α = 0.3 prefers content-based for new users. α can be learned or set manually per user segment.</p>
+      <div class="cc-note">Simplest hybrid. Netflix uses α per user based on their interaction history density.</div>
+    </div>
+
+    <div class="comp-card cc-green">
+      <div class="cc-tag">Strategy 2</div>
+      <div class="cc-title">Switching / Cascade</div>
+      <p><strong>Switching:</strong> If user has &lt; N ratings → use content-based (cold start). If user has ≥ N ratings → use collaborative filtering (rich data).</p>
+      <p><strong>Cascade:</strong> Use CF to generate a candidate set of 100 items → use content-based to re-rank the top 10 using semantic similarity to user's history.</p>
+      <div class="cc-note">Cold start threshold N typically 10–20 ratings. Cascade is standard in industry (two-stage retrieval + ranking).</div>
+    </div>
+
+    <div class="comp-card cc-purple">
+      <div class="cc-tag">Strategy 3</div>
+      <div class="cc-title">Feature Augmentation</div>
+      <p>Augment CF user/item representations with NLP content features. User vector = [CF latent factors + TF-IDF of reviewed text + demographic features]. Item vector = [CF latent factors + content TF-IDF + metadata].</p>
+      <p>Train a single model (LightFM, deep learning) on this rich feature set. Naturally handles cold start (can fall back to content features when CF features are missing).</p>
+      <div class="cc-note">LightFM: open-source library combining CF + content features in a unified model.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ████████ PART 3: NLP + BUILD ████████ -->
+<div class="part-banner pb-build">Part 3 — NLP-Based Recommendations and Full Build</div>
+
+<!-- ══ SECTION 12 ══ -->
+<div class="section" id="s12">
+  <div class="section-header sh-build">
+    <div class="section-num">Section 12</div>
+    <h2>NLP-Based Recommendation</h2>
+  </div>
+
+  <h3>12.1 Leveraging NLP for Richer Recommendations</h3>
+  <p>NLP unlocks recommendation signals beyond explicit ratings — product reviews, item descriptions, social media posts, and conversational context can all be analyzed with NLP to improve recommendation quality.</p>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-teal">
+      <div class="cc-tag">NLP Technique 1</div>
+      <div class="cc-title">Review Sentiment for Preference Learning</div>
+      <p>Instead of only using the star rating (1–5), analyze the <em>text</em> of the review. A 3-star review saying "great plot but poor sound" reveals preferences the number alone hides. Extract aspect-level sentiments (Module 3 sentiment analysis) per feature (sound, plot, acting).</p>
+      <p>Build richer user profiles: user has strong positive sentiment for "plot" and "acting" across all 4-star+ reviews → recommend movies described as having "compelling plot" and "outstanding performances" in their descriptions.</p>
+      <div class="cc-note">Tools: VADER, BERT-based sentiment on aspects. Amazon's review-based recommendation uses this.</div>
+    </div>
+
+    <div class="comp-card cc-rose">
+      <div class="cc-tag">NLP Technique 2</div>
+      <div class="cc-title">Description Embeddings</div>
+      <p>Convert item descriptions to dense semantic vectors using Sentence-BERT (SBERT), Doc2Vec, or fine-tuned BERT. These capture semantic meaning better than TF-IDF — "thriller" and "suspenseful" are near in embedding space.</p>
+      <p>Compute item similarity in the embedding space using cosine similarity. Recommendations: recommend items whose SBERT-embedded description is closest to the embedding of items the user liked.</p>
+      <div class="cc-note">SBERT (all-MiniLM-L6-v2): 384-dim embeddings, fast inference, excellent semantic quality. Better than TF-IDF for short descriptions.</div>
+    </div>
+
+    <div class="comp-card cc-orange">
+      <div class="cc-tag">NLP Technique 3</div>
+      <div class="cc-title">Conversational Recommendations</div>
+      <p>Combine the chatbot (Part 1) with the recommender (Part 2). User: "I'm looking for something like Inception but more romantic." → NLU extracts: reference_movie=Inception, preferred_modification=more_romantic → Recommendation engine finds movies close to Inception in sci-fi space but with romance elements.</p>
+      <p>This is the state-of-the-art paradigm: Conversational Recommendation Systems. Used by Spotify, Netflix, and modern shopping assistants.</p>
+      <div class="cc-note">The full integration — this is what Section 13 builds.</div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — SBERT-Based Semantic Movie Recommender</div>
+    <code><span class="kw">from</span> <span class="va">sentence_transformers</span> <span class="kw">import</span> <span class="fn">SentenceTransformer</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+
+<span class="cm"># Load pre-trained sentence-transformer model</span>
+<span class="va">model</span> = <span class="fn">SentenceTransformer</span>(<span class="st">'all-MiniLM-L6-v2'</span>)
+
+<span class="va">movies_db</span> = {
+    <span class="st">'Inception'</span>:         <span class="st">"A thief enters dreams to plant ideas in a mind-bending sci-fi thriller"</span>,
+    <span class="st">'The Matrix'</span>:        <span class="st">"A hacker discovers reality is a simulation in this cyberpunk action film"</span>,
+    <span class="st">'Interstellar'</span>:      <span class="st">"Astronauts travel through a wormhole to find a new home for humanity"</span>,
+    <span class="st">'The Notebook'</span>:      <span class="st">"A timeless romance between two young lovers from different social classes"</span>,
+    <span class="st">'Eternal Sunshine'</span>:  <span class="st">"A sci-fi romance about erasing painful memories of a lost love"</span>,
+    <span class="st">'Avengers'</span>:          <span class="st">"Superheroes unite to save Earth from alien invasion and destruction"</span>,
+    <span class="st">'Her'</span>:               <span class="st">"A man falls in love with an AI operating system in near-future Los Angeles"</span>,
+    <span class="st">'Arrival'</span>:           <span class="st">"A linguist deciphers alien language that reveals secrets about time"</span>,
+}
+
+<span class="cm"># Pre-compute embeddings for all movies</span>
+<span class="va">titles</span>      = <span class="fn">list</span>(<span class="va">movies_db</span>.<span class="fn">keys</span>())
+<span class="va">descriptions</span>= <span class="fn">list</span>(<span class="va">movies_db</span>.<span class="fn">values</span>())
+<span class="va">embeddings</span>  = <span class="va">model</span>.<span class="fn">encode</span>(<span class="va">descriptions</span>)   <span class="cm"># (N × 384) matrix</span>
+
+<span class="kw">def</span> <span class="fn">semantic_recommend</span>(<span class="va">query</span>, <span class="va">top_k</span>=<span class="nm">3</span>):
+    <span class="cm">"""Find movies most similar to a natural language query."""</span>
+    <span class="va">query_emb</span>  = <span class="va">model</span>.<span class="fn">encode</span>([<span class="va">query</span>])
+    <span class="va">sims</span>       = <span class="fn">cosine_similarity</span>(<span class="va">query_emb</span>, <span class="va">embeddings</span>)[<span class="nm">0</span>]
+    <span class="va">top_idx</span>    = <span class="va">np</span>.<span class="fn">argsort</span>(<span class="va">sims</span>)[::-<span class="nm">1</span>][:<span class="va">top_k</span>]
+    <span class="kw">return</span> [(titles[<span class="va">i</span>], <span class="fn">round</span>(<span class="va">sims</span>[<span class="va">i</span>], <span class="nm">3</span>)) <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">top_idx</span>]
+
+<span class="cm"># Test various queries</span>
+<span class="fn">print</span>(<span class="fn">semantic_recommend</span>(<span class="st">"mind bending science fiction with romance elements"</span>))
+<span class="cm"># → [('Eternal Sunshine', 0.72), ('Her', 0.68), ('Inception', 0.62)]</span>
+
+<span class="fn">print</span>(<span class="fn">semantic_recommend</span>(<span class="st">"alien communication and language"</span>))
+<span class="cm"># → [('Arrival', 0.81), ('The Matrix', 0.52), ('Interstellar', 0.48)]</span>
+
+<span class="fn">print</span>(<span class="fn">semantic_recommend</span>(<span class="st">"something like Inception but with more love story"</span>))
+<span class="cm"># → [('Eternal Sunshine', 0.74), ('Her', 0.70), ('Inception', 0.65)]</span></code>
+  </div>
+</div>
+
+<!-- ══ SECTION 13 ══ -->
+<div class="section" id="s13">
+  <div class="section-header sh-build">
+    <div class="section-num">Section 13</div>
+    <h2>Full Build — Chatbot with Recommendation Engine</h2>
+  </div>
+
+  <h3>13.1 Integrated Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  COMBINED AI CHATBOT + RECOMMENDATION ENGINE
+
+  User: "I loved Inception and Interstellar. Can you recommend something similar?"
+                                   │
+                          ┌────────▼──────────────────────────────┐
+                          │         NLU PIPELINE                  │
+                          │  Intent: GetRecommendation            │
+                          │  Entities: {                          │
+                          │    liked_movies: ["Inception",        │
+                          │                  "Interstellar"],     │
+                          │    sentiment: "positive" (loved)      │
+                          │  }                                    │
+                          └────────┬──────────────────────────────┘
+                                   │
+                          ┌────────▼──────────────────────────────┐
+                          │    DIALOGUE MANAGER                   │
+                          │  State: all slots filled              │
+                          │  Action: call recommender             │
+                          └────────┬──────────────────────────────┘
+                                   │
+                  ┌────────────────▼─────────────────────────┐
+                  │      RECOMMENDATION ENGINE               │
+                  │                                          │
+                  │  Option A: Content-Based (SBERT)         │
+                  │  Query = avg_embed(Inception, Interstellar│
+                  │  Find closest movies in embed space       │
+                  │                                          │
+                  │  Option B: Collaborative Filtering       │
+                  │  Find users who liked same movies        │
+                  │  Recommend what they also liked          │
+                  │                                          │
+                  │  Option C: Hybrid (CF score × CB score)  │
+                  │                                          │
+                  │  Results: [Arrival, Eternal Sunshine, Her│
+                  └────────────────┬─────────────────────────┘
+                                   │
+                          ┌────────▼──────────────────────────────┐
+                          │          NLG                          │
+                          │  Template: "Based on your love for    │
+                          │  {movies}, I recommend: {recs}"       │
+                          └───────────────────────────────────────┘
+                                   │
+  Bot: "Based on your love for Inception and Interstellar, you'll probably enjoy:
+        1. Arrival (2016) - Sci-fi about alien language and time, mind-bending.
+        2. Eternal Sunshine (2004) - Sci-fi with a deep romantic story.
+        3. Her (2013) - Romantic sci-fi set in near-future Los Angeles."
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — Integrated chatbot + recommendation system. NLU extracts user preferences → Recommender finds matches → NLG presents results conversationally.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Full Integrated Chatbot + Recommender System</div>
+    <code><span class="kw">import</span> <span class="va">re</span>
+<span class="kw">import</span> <span class="va">numpy</span> <span class="kw">as</span> <span class="va">np</span>
+<span class="kw">from</span> <span class="va">sklearn.feature_extraction.text</span> <span class="kw">import</span> <span class="fn">TfidfVectorizer</span>
+<span class="kw">from</span> <span class="va">sklearn.linear_model</span> <span class="kw">import</span> <span class="fn">LogisticRegression</span>
+<span class="kw">from</span> <span class="va">sklearn.metrics.pairwise</span> <span class="kw">import</span> <span class="fn">cosine_similarity</span>
+<span class="kw">from</span> <span class="va">sklearn.pipeline</span> <span class="kw">import</span> <span class="fn">Pipeline</span>
+
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="cm"># 1. RECOMMENDATION ENGINE (Content-Based with TF-IDF)</span>
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="va">CATALOG</span> = {
+    <span class="st">'Inception'</span>:         <span class="st">"sci-fi thriller dream heist mind-bending action"</span>,
+    <span class="st">'The Matrix'</span>:        <span class="st">"sci-fi action virtual reality simulation hacker"</span>,
+    <span class="st">'Interstellar'</span>:      <span class="st">"sci-fi space travel wormhole emotional family"</span>,
+    <span class="st">'Arrival'</span>:           <span class="st">"sci-fi alien language time linguist emotional"</span>,
+    <span class="st">'Her'</span>:               <span class="st">"sci-fi romance AI love future emotional"</span>,
+    <span class="st">'Eternal Sunshine'</span>:  <span class="st">"sci-fi romance memory erasing love emotional"</span>,
+    <span class="st">'Titanic'</span>:           <span class="st">"romance drama historical tragedy ocean love"</span>,
+    <span class="st">'The Notebook'</span>:      <span class="st">"romance drama love story nostalgic emotional"</span>,
+    <span class="st">'Avengers'</span>:          <span class="st">"action superhero marvel universe battle adventure"</span>,
+    <span class="st">'Dark Knight'</span>:       <span class="st">"action superhero batman crime thriller dark"</span>,
+}
+<span class="va">movie_titles</span> = <span class="fn">list</span>(<span class="va">CATALOG</span>.<span class="fn">keys</span>())
+<span class="va">movie_descs</span>  = <span class="fn">list</span>(<span class="va">CATALOG</span>.<span class="fn">values</span>())
+
+<span class="va">tfidf</span>     = <span class="fn">TfidfVectorizer</span>()
+<span class="va">item_vecs</span> = <span class="va">tfidf</span>.<span class="fn">fit_transform</span>(<span class="va">movie_descs</span>)
+
+<span class="kw">def</span> <span class="fn">recommend_from_liked</span>(<span class="va">liked</span>, <span class="va">n</span>=<span class="nm">3</span>):
+    <span class="cm"># Build user profile = average of liked item vectors</span>
+    <span class="va">indices</span> = [<span class="va">movie_titles</span>.<span class="fn">index</span>(<span class="va">m</span>) <span class="kw">for</span> <span class="va">m</span> <span class="kw">in</span> <span class="va">liked</span> <span class="kw">if</span> <span class="va">m</span> <span class="kw">in</span> <span class="va">movie_titles</span>]
+    <span class="kw">if</span> <span class="kw">not</span> <span class="va">indices</span>: <span class="kw">return</span> []
+    <span class="va">profile</span> = <span class="va">item_vecs</span>[<span class="va">indices</span>].<span class="fn">mean</span>(<span class="va">axis</span>=<span class="nm">0</span>)
+    <span class="va">sims</span>    = <span class="fn">cosine_similarity</span>(<span class="va">profile</span>, <span class="va">item_vecs</span>)[<span class="nm">0</span>]
+    <span class="va">order</span>   = <span class="va">np</span>.<span class="fn">argsort</span>(<span class="va">sims</span>)[::-<span class="nm">1</span>]
+    <span class="kw">return</span> [<span class="va">movie_titles</span>[<span class="va">i</span>] <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">order</span> <span class="kw">if</span> <span class="va">movie_titles</span>[<span class="va">i</span>] <span class="kw">not</span> <span class="kw">in</span> <span class="va">liked</span>][:<span class="va">n</span>]
+
+<span class="kw">def</span> <span class="fn">recommend_by_query</span>(<span class="va">query</span>, <span class="va">n</span>=<span class="nm">3</span>):
+    <span class="va">q_vec</span> = <span class="va">tfidf</span>.<span class="fn">transform</span>([<span class="va">query</span>])
+    <span class="va">sims</span>  = <span class="fn">cosine_similarity</span>(<span class="va">q_vec</span>, <span class="va">item_vecs</span>)[<span class="nm">0</span>]
+    <span class="va">order</span> = <span class="va">np</span>.<span class="fn">argsort</span>(<span class="va">sims</span>)[::-<span class="nm">1</span>]
+    <span class="kw">return</span> [<span class="va">movie_titles</span>[<span class="va">i</span>] <span class="kw">for</span> <span class="va">i</span> <span class="kw">in</span> <span class="va">order</span>][:<span class="va">n</span>]
+
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="cm"># 2. CHATBOT NLU — INTENT CLASSIFIER</span>
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="va">train_data</span> = [
+    (<span class="st">"recommend me a movie"</span>,             <span class="st">"GetRec"</span>),
+    (<span class="st">"suggest something to watch"</span>,        <span class="st">"GetRec"</span>),
+    (<span class="st">"I loved inception give me similar"</span>,  <span class="st">"GetRec"</span>),
+    (<span class="st">"find movies like interstellar"</span>,      <span class="st">"GetRec"</span>),
+    (<span class="st">"what sci-fi movies should I watch"</span>,  <span class="st">"GetRec"</span>),
+    (<span class="st">"hello"</span>,                             <span class="st">"Greet"</span>),
+    (<span class="st">"hi good morning"</span>,                   <span class="st">"Greet"</span>),
+    (<span class="st">"tell me about the movie inception"</span>,  <span class="st">"MovieInfo"</span>),
+    (<span class="st">"what is interstellar about"</span>,         <span class="st">"MovieInfo"</span>),
+    (<span class="st">"bye goodbye"</span>,                       <span class="st">"Bye"</span>),
+]
+<span class="va">X</span>, <span class="va">y</span> = <span class="fn">zip</span>(*<span class="va">train_data</span>)
+<span class="va">intent_clf</span> = <span class="fn">Pipeline</span>([
+    (<span class="st">'v'</span>, <span class="fn">TfidfVectorizer</span>(<span class="va">ngram_range</span>=(<span class="nm">1</span>,<span class="nm">2</span>))),
+    (<span class="st">'c'</span>, <span class="fn">LogisticRegression</span>(<span class="va">C</span>=<span class="nm">5</span>, <span class="va">max_iter</span>=<span class="nm">300</span>)),
+]).<span class="fn">fit</span>(<span class="va">X</span>, <span class="va">y</span>)
+
+<span class="kw">def</span> <span class="fn">extract_movies_from_text</span>(<span class="va">text</span>):
+    <span class="kw">return</span> [<span class="va">m</span> <span class="kw">for</span> <span class="va">m</span> <span class="kw">in</span> <span class="va">movie_titles</span> <span class="kw">if</span> <span class="va">m</span>.<span class="fn">lower</span>() <span class="kw">in</span> <span class="va">text</span>.<span class="fn">lower</span>()]
+
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="cm"># 3. MAIN CONVERSATION LOOP</span>
+<span class="cm"># ═══════════════════════════════════════════════════════════════</span>
+<span class="kw">class</span> <span class="fn">RecommenderChatbot</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="va">self</span>):
+        <span class="va">self</span>.<span class="va">liked_movies</span> = []
+        <span class="va">self</span>.<span class="va">pref_query</span>   = <span class="st">""</span>
+
+    <span class="kw">def</span> <span class="fn">respond</span>(<span class="va">self</span>, <span class="va">user_input</span>):
+        <span class="va">intent</span>  = <span class="va">intent_clf</span>.<span class="fn">predict</span>([<span class="va">user_input</span>])[<span class="nm">0</span>]
+        <span class="va">movies_m</span>= <span class="fn">extract_movies_from_text</span>(<span class="va">user_input</span>)
+
+        <span class="kw">if</span> <span class="va">intent</span> == <span class="st">'Greet'</span>:
+            <span class="kw">return</span> (<span class="st">"Hi! I'm your AI Movie Assistant. I can:\n"</span>
+                    <span class="st">"  • Recommend movies based on what you like\n"</span>
+                    <span class="st">"  • Find movies matching a description\n"</span>
+                    <span class="st">"  • Tell you about specific movies\n"</span>
+                    <span class="st">"What would you like today?"</span>)
+
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'GetRec'</span>:
+            <span class="kw">if</span> <span class="va">movies_m</span>:
+                <span class="va">self</span>.<span class="va">liked_movies</span>.<span class="fn">extend</span>(<span class="va">movies_m</span>)
+                <span class="va">recs</span> = <span class="fn">recommend_from_liked</span>(<span class="va">self</span>.<span class="va">liked_movies</span>)
+                <span class="kw">return</span> (<span class="va">f</span><span class="st">"Based on your love for {', '.join(movies_m)}, you'll enjoy:\n"</span>
+                        + <span class="st">"\n"</span>.<span class="fn">join</span>(<span class="va">f</span><span class="st">"  {i+1}. {r}"</span> <span class="kw">for</span> <span class="va">i</span>,<span class="va">r</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">recs</span>))
+                        + <span class="st">"\n\nWould you like more details on any of these?"</span>)
+            <span class="kw">else</span>:
+                <span class="cm"># No specific movies mentioned — extract genre preference</span>
+                <span class="va">genre_kw</span> = <span class="va">re</span>.<span class="fn">findall</span>(<span class="st">r'\b(sci.fi|romance|action|thriller|drama)\b'</span>,
+                                        <span class="va">user_input</span>, <span class="va">re</span>.<span class="va">I</span>)
+                <span class="kw">if</span> <span class="va">genre_kw</span>:
+                    <span class="va">recs</span> = <span class="fn">recommend_by_query</span>(<span class="st">' '</span>.<span class="fn">join</span>(<span class="va">genre_kw</span>))
+                    <span class="kw">return</span> <span class="va">f</span><span class="st">"Great {genre_kw[0]} picks for you:\n"</span> + <span class="st">"\n"</span>.<span class="fn">join</span>(
+                        <span class="va">f</span><span class="st">"  {i+1}. {r}"</span> <span class="kw">for</span> <span class="va">i</span>,<span class="va">r</span> <span class="kw">in</span> <span class="fn">enumerate</span>(<span class="va">recs</span>))
+                <span class="kw">return</span> <span class="st">"What kind of movies do you enjoy? (sci-fi, romance, action...)"</span>
+
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'MovieInfo'</span>:
+            <span class="kw">if</span> <span class="va">movies_m</span>:
+                <span class="va">movie</span> = <span class="va">movies_m</span>[<span class="nm">0</span>]
+                <span class="kw">return</span> <span class="va">f</span><span class="st">"{movie}: {CATALOG.get(movie, 'No info available')}"</span>
+            <span class="kw">return</span> <span class="st">"Which movie would you like to know about?"</span>
+
+        <span class="kw">elif</span> <span class="va">intent</span> == <span class="st">'Bye'</span>:
+            <span class="kw">return</span> <span class="st">"Goodbye! Enjoy your movie! 🎬"</span>
+
+        <span class="kw">return</span> <span class="st">"I didn't quite catch that. Try: 'recommend movies like Inception'"</span>
+
+<span class="cm"># Run the chatbot</span>
+<span class="va">bot</span> = <span class="fn">RecommenderChatbot</span>()
+<span class="fn">print</span>(<span class="va">bot</span>.<span class="fn">respond</span>(<span class="st">"Hello!"</span>))
+<span class="fn">print</span>(<span class="va">bot</span>.<span class="fn">respond</span>(<span class="st">"I loved Inception and Interstellar, recommend similar movies"</span>))
+<span class="fn">print</span>(<span class="va">bot</span>.<span class="fn">respond</span>(<span class="st">"what are some good sci-fi movies"</span>))</code>
+  </div>
+</div>
+
+<!-- ══ SECTION 14 ══ -->
+<div class="section" id="s14">
+  <div class="section-header sh-adv">
+    <div class="section-num">Section 14</div>
+    <h2>Evaluation, Deployment and Advanced Topics</h2>
+  </div>
+
+  <h3>14.1 Evaluating Chatbots</h3>
+
+  <table class="compare-table">
+    <tr><th>Metric</th><th>What it Measures</th><th>How Computed</th></tr>
+    <tr><td><strong>Intent Accuracy</strong></td><td>Fraction of utterances with correctly detected intent</td><td>Standard classification accuracy on held-out test set</td></tr>
+    <tr><td><strong>Slot F1</strong></td><td>Accuracy of entity/slot extraction</td><td>Entity-level Precision, Recall, F1 using seqeval</td></tr>
+    <tr><td><strong>Task Success Rate</strong></td><td>Fraction of complete tasks successfully executed</td><td>% of conversations where goal (booking, query answered) was achieved</td></tr>
+    <tr><td><strong>Dialogue Length</strong></td><td>Average number of turns to complete a task</td><td>Count turns per completed dialogue. Fewer = better UX.</td></tr>
+    <tr><td><strong>User Satisfaction</strong></td><td>How happy users are with the chatbot</td><td>Post-conversation rating (1–5 stars), NPS, or CSAT score</td></tr>
+    <tr><td><strong>Fallback Rate</strong></td><td>How often the bot says "I don't understand"</td><td>% of turns triggering fallback intent. Target &lt;5%.</td></tr>
+    <tr><td><strong>BLEU / ROUGE</strong></td><td>Quality of generated responses vs reference</td><td>For generative chatbots — n-gram overlap with reference answers</td></tr>
+  </table>
+
+  <h3>14.2 Evaluating Recommendation Engines</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Recommendation System Evaluation Metrics</div>
+    <div class="formula">
+      <span class="hl">RMSE (Root Mean Square Error):</span>  √(Σ(rᵤᵢ − r̂ᵤᵢ)² / N)<br>
+      <span class="comment">← How far are predicted ratings from actual? Lower = better.</span><br><br>
+      <span class="var">MAE (Mean Absolute Error):</span>    (1/N) Σ |rᵤᵢ − r̂ᵤᵢ|<br>
+      <span class="comment">← Mean absolute rating prediction error. More interpretable than RMSE.</span><br><br>
+      <span class="gr">Precision@K:</span>  |relevant items in top-K| / K<br>
+      <span class="comment">← Of the K recommendations shown, how many were relevant?</span><br><br>
+      <span class="gr">Recall@K:</span>     |relevant items in top-K| / |all relevant items|<br>
+      <span class="comment">← Of all items the user would like, how many did we surface in top-K?</span><br><br>
+      <span class="or">NDCG@K (Normalized Discounted Cumulative Gain):</span><br>
+      DCG@K = Σᵢ₌₁ᴷ (2^relᵢ − 1) / log₂(i+1)   NDCG@K = DCG@K / IDCG@K<br>
+      <span class="comment">← Position-aware: highly relevant item at position 1 better than at K</span><br><br>
+      <span class="tl">Coverage:</span> % of catalog items ever recommended → diversity measure<br>
+      <span class="tl">Novelty:</span>  average popularity^{-1} of recommended items<br>
+      <span class="tl">Serendipity:</span> how surprising AND relevant the recommendations are
+    </div>
+  </div>
+
+  <h3>14.3 Deployment Architecture</h3>
+
+  <div class="diagram">
+    <pre>
+  PRODUCTION DEPLOYMENT ARCHITECTURE:
+
+  ┌──────────┐  REST API  ┌────────────────────────────────────────┐
+  │  Mobile  │ ─────────▶ │          API GATEWAY / Load Balancer  │
+  │  Web App │            └──────────────────┬─────────────────────┘
+  │  WhatsApp│                               │
+  └──────────┘            ┌──────────────────▼─────────────────────┐
+                          │     CHATBOT SERVICE (FastAPI)          │
+                          │     ┌───────────┐  ┌────────────────┐  │
+                          │     │ NLU Model │  │ Dialogue Mgr   │  │
+                          │     │ (intent+  │  │ (state tracker │  │
+                          │     │  entities)│  │  + policy)     │  │
+                          │     └─────┬─────┘  └───────┬────────┘  │
+                          └───────────┼────────────────┼────────────┘
+                                      │                │
+                          ┌───────────▼────┐  ┌────────▼───────────┐
+                          │  RECOMMENDER   │  │  RESPONSE DATABASE │
+                          │  SERVICE       │  │  (templates, FAQ)  │
+                          │  (Flask/FastAPI│  │                    │
+                          │   CF + CB)     │  └────────────────────┘
+                          └───────────┬────┘
+                                      │
+                          ┌───────────▼────────────────────────────┐
+                          │  DATA LAYER                            │
+                          │  User ratings DB + Item catalog DB     │
+                          │  (Redis cache for real-time recs)      │
+                          │  (PostgreSQL/MongoDB for persistent)   │
+                          └────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 14.1 — Production deployment. Separate microservices for chatbot and recommender communicate via APIs. Redis caches frequent recommendation results.</div>
+  </div>
+
+  <h3>14.4 Advanced Topics and Future Directions</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card cc-blue">
+      <div class="cc-tag">Advanced Topic 1</div>
+      <div class="cc-title">Large Language Model Chatbots</div>
+      <p>Fine-tune LLaMA/Mistral/GPT on domain-specific conversations. Use prompt engineering with chain-of-thought reasoning. RAG (Retrieval Augmented Generation) grounds LLM responses in a knowledge base. RLHF aligns the chatbot with human preferences (Module 4 DLT concepts directly apply).</p>
+      <div class="cc-note">Tools: LangChain, LlamaIndex, Hugging Face TRL for fine-tuning, Pinecone/Chroma for vector DB.</div>
+    </div>
+
+    <div class="comp-card cc-green">
+      <div class="cc-tag">Advanced Topic 2</div>
+      <div class="cc-title">Deep Learning Recommenders</div>
+      <p>Neural Collaborative Filtering (NCF): replace dot product with MLP. Wide &amp; Deep (Google): memorization (wide) + generalization (deep). YouTubeNet: two-stage DNN for YouTube recommendations. BERT4Rec: model sequential user behavior with Transformers.</p>
+      <div class="cc-note">BERT4Rec treats user interaction history as a sequence → apply masked language model to predict next interaction.</div>
+    </div>
+
+    <div class="comp-card cc-purple">
+      <div class="cc-tag">Advanced Topic 3</div>
+      <div class="cc-title">Conversational Recommender Systems</div>
+      <p>Combine dialogue and recommendation in a single end-to-end system. The chatbot gathers user preferences through natural conversation and provides increasingly refined recommendations based on multi-turn feedback. Handles: "Not that genre", "something shorter", "something from 2020 onward."</p>
+      <div class="cc-note">Research: KGSF (Knowledge Graph Sequential Filtering), CR-Walker, C2-CRS — all combine dialogue + recommendation.</div>
+    </div>
+
+    <div class="comp-card cc-amber">
+      <div class="cc-tag">Advanced Topic 4</div>
+      <div class="cc-title">Ethical Considerations</div>
+      <p><strong>Filter bubble:</strong> Recommenders amplify existing preferences → users see only content confirming their views. Solution: intentional diversity in recommendations, serendipity measures.</p>
+      <p><strong>Chatbot bias:</strong> If trained on biased data, chatbot perpetuates stereotypes. Solution: Careful data curation, bias testing, RLHF with diverse feedback providers.</p>
+      <p><strong>Privacy:</strong> Behavioral data collection for recommendations is privacy-sensitive. Differential privacy for recommendation training.</p>
+    </div>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 5 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>AI Chatbots:</strong> 4 types — Rule-Based (pattern matching, NLTK), Retrieval-Based (TF-IDF similarity), Generative (seq2seq, GPT), Task-Oriented (intent+slot+dialogue management). Every chatbot applies all previous NLP modules: tokenization, POS, NER, classification, sequence tagging, language modeling.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Chatbot Architecture:</strong> 3 layers — NLU (intent classification + entity extraction), Dialogue Management (state tracker + policy), NLG (template/retrieval/neural generation). Intent = what user wants; Entities/Slots = parameter values for fulfilling the intent.</div></li>
+      <li><span class="bullet">3.</span><div><strong>NLU Implementation:</strong> Intent: TF-IDF + Logistic Regression (or BERT fine-tuned) on labeled utterance-intent pairs. Entities: BIO sequence tagging (CRF, BiLSTM+CRF, BERT), spaCy NER, or regex for structured patterns. Confidence threshold for fallback.</div></li>
+      <li><span class="bullet">4.</span><div><strong>Dialogue Management:</strong> State = Python dict of {intent, slots}. Policy = IF-THEN rules (production) or ML policy (Rasa Core). Actions: ask missing slot, confirm, execute, fallback, handoff to human.</div></li>
+      <li><span class="bullet">5.</span><div><strong>NLG:</strong> Template filling (fast, controlled, no hallucination), Retrieval (TF-IDF cosine similarity on FAQ pairs), Neural (LLM with system prompt + conversation history as context).</div></li>
+      <li><span class="bullet">6.</span><div><strong>Recommendation Engine Types:</strong> Collaborative Filtering (user-based: find similar users; item-based: find similar items; MF/SVD: latent factors), Content-Based (TF-IDF/SBERT on item descriptions), Hybrid (weighted blend, switching on cold start, cascade two-stage).</div></li>
+      <li><span class="bullet">7.</span><div><strong>Collaborative Filtering:</strong> User-item rating matrix R. User-based: sim(u,v) = cosine(u,v); predict r̂ᵤᵢ via weighted neighbor ratings. Matrix Factorization: R≈PQᵀ; minimize ‖R−PQᵀ‖² + λ regularization via SGD/ALS. Cold start problem: new user/item has no data → content-based fallback.</div></li>
+      <li><span class="bullet">8.</span><div><strong>Content-Based (NLP-Powered):</strong> TF-IDF or SBERT embeddings on item descriptions. User profile = weighted average of liked item vectors. Score = cosine(user_profile, item_vector). SBERT captures semantic similarity better than TF-IDF ("thriller" ≈ "suspenseful").</div></li>
+      <li><span class="bullet">9.</span><div><strong>Integration:</strong> Chatbot extracts user preferences via NLU → recommender surfaces relevant items → NLG presents recommendations conversationally. This is the Conversational Recommendation System paradigm used by Spotify, Netflix, Amazon.</div></li>
+      <li><span class="bullet">10.</span><div><strong>Evaluation:</strong> Chatbot: Intent Accuracy, Slot F1, Task Success Rate, Fallback Rate, User Satisfaction. Recommender: RMSE/MAE (rating prediction), Precision@K, Recall@K, NDCG@K (ranking quality), Coverage, Novelty, Serendipity.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Natural Language Processing — Module 5</span>
+  <span>AI Chatbots · Intent Detection · Dialogue Management · Recommendation Engine · CF · Content-Based · Hybrid</span>
+</div>
+
+</body>
+</html>

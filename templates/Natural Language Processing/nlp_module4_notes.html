@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Language Processing – Module 4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg:#f5f6fa; --surface:#fff; --surface2:#eceef6;
+    --border:#d0d4e8; --border2:#b0b8d8;
+    --text:#0c1020; --text2:#282e48; --text3:#5c6080;
+    --accent:#2030a0; --accent-bg:#eaeffe; --accent-border:#9090e0;
+    --green:#145c30; --green-bg:#e8f5ec; --green-border:#88ccA0;
+    --amber:#7a4800; --amber-bg:#fef8e8; --amber-border:#e8c060;
+    --red:#8c1818; --red-bg:#fdf0f0; --red-border:#e8a8a8;
+    --purple:#481878; --purple-bg:#f2eefa; --purple-border:#c0a0e0;
+    --teal:#085450; --teal-bg:#e4f4f2; --teal-border:#80c8c0;
+    --rose:#7c1a3c; --rose-bg:#fdf0f5; --rose-border:#e8a8c0;
+    --indigo:#1c1860; --indigo-bg:#eceaf8; --indigo-border:#a0a0d8;
+    --code-bg:#e5e8f2;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--text);font-size:17px;line-height:1.75;}
+
+  .doc-header{background:linear-gradient(135deg,#060814 0%,#101840 55%,#060814 100%);color:#ecedfc;padding:3rem 4rem 2.5rem;position:relative;overflow:hidden;}
+  .doc-header .subject-tag{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6070e8;margin-bottom:.75rem;}
+  .doc-header h1{font-size:2.4rem;font-weight:300;letter-spacing:-.01em;line-height:1.2;color:#ecedfc;margin-bottom:.5rem;}
+  .doc-header h1 span{font-weight:600;}
+  .doc-header .subtitle{font-family:'Inter',sans-serif;font-size:14px;color:#2840a0;margin-top:1rem;}
+
+  .part-banner{padding:.7rem 4rem;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;}
+  .pb-lm{background:#101840;} .pb-seq{background:#1a3828;} .pb-syn{background:#3a1060;}
+  .pb-cfg{background:#5c1a00;} .pb-chunk{background:#085450;} .pb-para{background:#5c1a1a;}
+
+  .toc{background:var(--surface2);border-bottom:1px solid var(--border);padding:1.5rem 4rem;}
+  .toc h2{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.75rem;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 2rem;}
+  .toc a{font-family:'Inter',sans-serif;font-size:13px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:6px;padding:2px 0;}
+  .toc a:hover{text-decoration:underline;}
+  .toc a .num{font-weight:600;color:var(--text3);min-width:22px;}
+
+  .content{padding:3rem 4rem;max-width:980px;}
+  .section{margin-bottom:4rem;}
+  .section-header{padding-left:1.25rem;margin-bottom:2rem;}
+  .sh-lm{border-left:4px solid #101840;} .sh-seq{border-left:4px solid #1a3828;}
+  .sh-syn{border-left:4px solid #3a1060;} .sh-cfg{border-left:4px solid #5c1a00;}
+  .sh-chunk{border-left:4px solid #085450;} .sh-para{border-left:4px solid #5c1a1a;}
+  .section-header .section-num{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.25rem;}
+  .section-header h2{font-size:1.8rem;font-weight:600;line-height:1.2;}
+
+  h3{font-size:1.15rem;font-weight:600;color:var(--text);margin:2rem 0 .75rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+  h4{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin:1.5rem 0 .5rem;}
+  p{margin-bottom:1rem;color:var(--text2);}
+  p:last-child{margin-bottom:0;}
+
+  .callout{border-radius:8px;padding:1rem 1.25rem;margin:1.25rem 0;border-left:3px solid;}
+  .callout-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;}
+  .callout p{margin-bottom:.4rem;font-size:15.5px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout-key{background:var(--accent-bg);border-color:var(--accent);} .callout-key .callout-title{color:var(--accent);} .callout-key p{color:#101858;}
+  .callout-tip{background:var(--green-bg);border-color:var(--green);} .callout-tip .callout-title{color:var(--green);} .callout-tip p{color:#0c3820;}
+  .callout-warn{background:var(--amber-bg);border-color:var(--amber);} .callout-warn .callout-title{color:var(--amber);} .callout-warn p{color:#5a3400;}
+  .callout-exam{background:var(--red-bg);border-color:var(--red);} .callout-exam .callout-title{color:var(--red);} .callout-exam p{color:#6a1010;}
+  .callout-formula{background:var(--purple-bg);border-color:var(--purple);} .callout-formula .callout-title{color:var(--purple);} .callout-formula p{color:#340c54;}
+  .callout-teal{background:var(--teal-bg);border-color:var(--teal);} .callout-teal .callout-title{color:var(--teal);} .callout-teal p{color:#063434;}
+  .callout-rose{background:var(--rose-bg);border-color:var(--rose);} .callout-rose .callout-title{color:var(--rose);} .callout-rose p{color:#5c1030;}
+  .callout-indigo{background:var(--indigo-bg);border-color:var(--indigo);} .callout-indigo .callout-title{color:var(--indigo);} .callout-indigo p{color:#101040;}
+
+  .point-list{list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .point-list li{display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--border);color:var(--text2);font-size:16px;line-height:1.65;align-items:flex-start;}
+  .point-list li:last-child{border-bottom:none;}
+  .point-list li .bullet{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:var(--text3);min-width:22px;padding-top:3px;}
+  .point-list li strong{color:var(--text);font-weight:600;}
+
+  .step-list{counter-reset:steps;list-style:none;padding:0;margin:.75rem 0 1.25rem;}
+  .step-list li{counter-increment:steps;display:flex;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);align-items:flex-start;font-size:16px;color:var(--text2);line-height:1.65;}
+  .step-list li:last-child{border-bottom:none;}
+  .step-list li::before{content:counter(steps);font-family:'Inter',sans-serif;font-weight:600;font-size:13px;color:var(--surface);background:#060814;border-radius:50%;min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+  .step-list li strong{color:var(--text);}
+
+  .formula-block{background:var(--code-bg);border:1px solid var(--border2);border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .formula-block .formula-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;}
+  .formula{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);line-height:2;}
+  .formula .comment{font-size:12.5px;color:var(--text3);margin-left:.75rem;}
+  .formula .var{color:var(--purple);font-weight:500;} .formula .hl{color:var(--accent);font-weight:500;}
+  .formula .gr{color:var(--green);font-weight:500;} .formula .rd{color:var(--red);font-weight:500;}
+  .formula .or{color:#7c3800;font-weight:500;} .formula .tl{color:var(--teal);font-weight:500;}
+
+  .diagram{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;margin:1.25rem 0;overflow-x:auto;}
+  .diagram pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text2);line-height:1.7;white-space:pre;}
+  .diagram-caption{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);margin-top:.5rem;font-style:italic;}
+
+  .compare-table{width:100%;border-collapse:collapse;margin:1.25rem 0;font-size:15px;}
+  .compare-table th{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--surface2);padding:.75rem 1rem;text-align:left;border:1px solid var(--border);color:var(--text2);}
+  .compare-table td{padding:.7rem 1rem;border:1px solid var(--border);vertical-align:top;color:var(--text2);line-height:1.6;}
+  .compare-table tr:nth-child(even) td{background:var(--surface2);}
+  .compare-table td strong{color:var(--text);}
+
+  .code-block{background:#060c18;border-radius:8px;padding:1rem 1.5rem;margin:1rem 0;overflow-x:auto;}
+  .code-block .code-lang{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#3040a0;margin-bottom:.5rem;}
+  .code-block code{font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.8;white-space:pre;display:block;}
+  .code-block .kw{color:#6080f0;} .code-block .fn{color:#80c8f0;} .code-block .st{color:#90e0a0;}
+  .code-block .cm{color:#303860;} .code-block .nm{color:#f0d060;} .code-block .va{color:#d0d8f8;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:1.25rem 0;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;}
+  .card .card-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:.4rem;}
+  .card p{font-size:14px;line-height:1.6;}
+
+  /* ── TAG VISUAL ── */
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:.75rem 0;}
+  .tag-unit{display:inline-flex;flex-direction:column;align-items:center;}
+  .tag-word{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;padding:3px 10px;border-radius:5px 5px 0 0;border:1px solid;border-bottom:none;}
+  .tag-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:0 0 5px 5px;border:1px solid;border-top:none;}
+  .t-nn{color:#101858;background:#d8e0fc;border-color:#9090e0;} .t-nn-l{background:#101858;color:#fff;border-color:#101858;}
+  .t-vb{color:#145c30;background:#d8f0e4;border-color:#88cca0;} .t-vb-l{background:#145c30;color:#fff;border-color:#145c30;}
+  .t-jj{color:#481878;background:#eee0f8;border-color:#c0a0e0;} .t-jj-l{background:#481878;color:#fff;border-color:#481878;}
+  .t-in{color:#5c1a00;background:#fce8d8;border-color:#e0a860;} .t-in-l{background:#5c1a00;color:#fff;border-color:#5c1a00;}
+  .t-dt{color:#085450;background:#d8f0ee;border-color:#80c8c0;} .t-dt-l{background:#085450;color:#fff;border-color:#085450;}
+  .t-rb{color:#7c1a3c;background:#fce0ec;border-color:#e8a8c0;} .t-rb-l{background:#7c1a3c;color:#fff;border-color:#7c1a3c;}
+  .t-cd{color:#1c1860;background:#eceaf8;border-color:#a0a0d8;} .t-cd-l{background:#1c1860;color:#fff;border-color:#1c1860;}
+
+  /* ── BIO TAG ── */
+  .bio-row{display:flex;flex-wrap:wrap;gap:6px;margin:.75rem 0;}
+  .bio-unit{display:inline-flex;flex-direction:column;align-items:center;}
+  .bio-word{font-family:'JetBrains Mono',monospace;font-size:14px;padding:3px 10px;border-radius:5px 5px 0 0;border:1px solid;border-bottom:none;}
+  .bio-tag{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:0 0 5px 5px;border:1px solid;border-top:none;}
+  .b-B-NP{color:#fff;background:#101858;border-color:#101858;} .w-B-NP{background:#d8e0fc;color:#101858;border-color:#9090e0;}
+  .b-I-NP{color:#fff;background:#3050b0;border-color:#3050b0;} .w-I-NP{background:#dce4fd;color:#3050b0;border-color:#a0b0e8;}
+  .b-B-VP{color:#fff;background:#145c30;border-color:#145c30;} .w-B-VP{background:#d8f0e4;color:#145c30;border-color:#88cca0;}
+  .b-I-VP{color:#fff;background:#207040;border-color:#207040;} .w-I-VP{background:#dcf4e8;color:#207040;border-color:#a0d0b0;}
+  .b-B-PP{color:#fff;background:#5c1a00;border-color:#5c1a00;} .w-B-PP{background:#fce8d8;color:#5c1a00;border-color:#e0a860;}
+  .b-I-PP{color:#fff;background:#804020;border-color:#804020;} .w-I-PP{background:#fdeee0;color:#804020;border-color:#e8b888;}
+  .b-O{color:#606060;background:#f0f0f0;border-color:#c0c0c0;} .w-O{background:#f8f8f8;color:#606060;border-color:#d0d0d0;}
+
+  /* ── CHUNK BOX ── */
+  .chunk-sent{font-family:'Source Serif 4',serif;font-size:16px;line-height:2.4;margin:1rem 0;}
+  .chunk-np{display:inline;background:#d8e0fc;border:1px solid #9090e0;border-radius:4px;padding:2px 6px;margin:1px;}
+  .chunk-np-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#101858;vertical-align:super;margin-left:2px;}
+  .chunk-vp{display:inline;background:#d8f0e4;border:1px solid #88cca0;border-radius:4px;padding:2px 6px;margin:1px;}
+  .chunk-vp-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#145c30;vertical-align:super;margin-left:2px;}
+  .chunk-pp{display:inline;background:#fce8d8;border:1px solid #e0a860;border-radius:4px;padding:2px 6px;margin:1px;}
+  .chunk-pp-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#5c1a00;vertical-align:super;margin-left:2px;}
+
+  /* ── EXAMPLE BOX ── */
+  .example-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;margin:1.5rem 0;overflow:hidden;}
+  .example-box .ex-header{background:#060814;color:#a0a8d8;padding:.6rem 1.25rem;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:.04em;}
+  .example-box .ex-body{padding:1rem 1.25rem;}
+  .example-box .ex-row{display:flex;gap:1rem;padding:.45rem 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+  .example-box .ex-row:last-child{border-bottom:none;}
+  .example-box .ex-label{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);min-width:130px;padding-top:2px;}
+  .example-box .ex-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);line-height:1.7;}
+
+  /* ── CFG CARD ── */
+  .cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:1.5rem 0;}
+  .cfg-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.3rem 1.5rem;position:relative;overflow:hidden;}
+  .cfg-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:12px 0 0 12px;}
+  .cfgc-blue::before{background:#101840;} .cfgc-green::before{background:#145c30;}
+  .cfgc-purple::before{background:#481878;} .cfgc-amber::before{background:#7a4800;}
+  .cfgc-teal::before{background:#085450;} .cfgc-rose::before{background:#7c1a3c;}
+  .cfg-card .cc-tag{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem;}
+  .cfg-card .cc-title{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:.7rem;}
+  .cfg-card p{font-size:14.5px;line-height:1.65;color:var(--text2);margin-bottom:.5rem;}
+  .cfg-card p:last-child{margin-bottom:0;}
+  .cfg-card .cc-note{font-family:'Inter',sans-serif;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:.5rem;margin-top:.75rem;}
+
+  .summary-box{background:var(--surface);border:1.5px solid var(--border2);border-radius:10px;padding:1.5rem 2rem;margin:2rem 0;}
+  .summary-box h4{margin-top:0;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text3);margin-bottom:1rem;}
+
+  code{font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--code-bg);border-radius:3px;padding:1px 5px;color:var(--purple);}
+  hr{border:none;border-top:1px solid var(--border);margin:3rem 0;}
+  .doc-footer{background:var(--surface2);border-top:1px solid var(--border);padding:1.5rem 4rem;font-family:'Inter',sans-serif;font-size:13px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;}
+
+  @media(max-width:700px){
+    .doc-header,.toc,.content{padding-left:1.5rem;padding-right:1.5rem;}
+    .doc-header h1{font-size:1.8rem;} .part-banner{padding-left:1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="subject-tag">M.Tech · Natural Language Processing — Module 4</div>
+  <h1><span>Module 4:</span> Sentence Structure, Sequence Tagging &amp; Language Modeling</h1>
+  <div class="subtitle">Language Modeling · Sequence Tagging · Syntax Trees · Context-Free Grammars · Chunking · Chinking · Automatic Paraphrasing</div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a href="#s1"><span class="num">1.</span> Language Modeling — N-gram Models</a>
+    <a href="#s2"><span class="num">2.</span> Neural Language Models</a>
+    <a href="#s3"><span class="num">3.</span> Sequence Tagging — Concepts</a>
+    <a href="#s4"><span class="num">4.</span> Predicting Sequence of Tags</a>
+    <a href="#s5"><span class="num">5.</span> BIO Tagging and Sequence Tasks</a>
+    <a href="#s6"><span class="num">6.</span> HMM for Sequence Tagging</a>
+    <a href="#s7"><span class="num">7.</span> Syntax Trees — Constituency Parsing</a>
+    <a href="#s8"><span class="num">8.</span> Dependency Parsing</a>
+    <a href="#s9"><span class="num">9.</span> Context-Free Grammars (CFG)</a>
+    <a href="#s10"><span class="num">10.</span> CFG Parsing Algorithms</a>
+    <a href="#s11"><span class="num">11.</span> Chunking</a>
+    <a href="#s12"><span class="num">12.</span> Chinking</a>
+    <a href="#s13"><span class="num">13.</span> Automatic Paraphrasing</a>
+    <a href="#s14"><span class="num">14.</span> Applications and Summary</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ████████ PART 1: LANGUAGE MODELING ████████ -->
+<div class="part-banner pb-lm">Part 1 — Language Modeling</div>
+
+<!-- ══ SECTION 1 ══ -->
+<div class="section" id="s1">
+  <div class="section-header sh-lm">
+    <div class="section-num">Section 1</div>
+    <h2>Language Modeling — N-gram Models</h2>
+  </div>
+
+  <h3>1.1 What is a Language Model?</h3>
+  <p>A <strong>Language Model (LM)</strong> is a probability distribution over sequences of words. Given a sequence of words, it assigns a probability that this sequence is a plausible, grammatically valid, and meaningful sentence in a given language. Language models are the foundation of all modern NLP — from speech recognition to text generation to machine translation.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Language Model — Core Function</div>
+    <p>A language model answers two questions: <strong>(1) Scoring:</strong> How probable is sentence W = w₁w₂...wₙ? → P(W). Used in speech recognition to pick the most likely transcript. <strong>(2) Generation:</strong> Given a prefix w₁...wₖ, what is the most likely next word wₖ₊₁? → argmax_w P(w | w₁...wₖ). Used in autocomplete, text generation, machine translation decoding.</p>
+  </div>
+
+  <h3>1.2 The Chain Rule of Probability</h3>
+  <p>The joint probability of a sentence is decomposed into a product of conditional probabilities using the chain rule:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Chain Rule Decomposition</div>
+    <div class="formula">
+      P(w₁, w₂, ..., wₙ) = P(w₁) · P(w₂|w₁) · P(w₃|w₁,w₂) · ... · P(wₙ|w₁,...,wₙ₋₁)<br><br>
+      = Π_{i=1}^{n}  P(wᵢ | w₁, w₂, ..., wᵢ₋₁)<br><br>
+      Example: P("The cat sat on the mat")<br>
+        = P(The) × P(cat|The) × P(sat|The cat) × P(on|The cat sat)<br>
+          × P(the|The cat sat on) × P(mat|The cat sat on the)<br><br>
+      Problem: P(wₙ|w₁,...,wₙ₋₁) requires seeing every possible prefix<br>
+      → Combinatorial explosion → impossible to estimate from data
+    </div>
+  </div>
+
+  <h3>1.3 The Markov Assumption — N-gram Models</h3>
+  <p>To make language modeling tractable, we apply the <strong>Markov assumption</strong>: each word depends only on the previous N-1 words (not the entire history). This gives us the N-gram language model family:</p>
+
+  <div class="formula-block">
+    <div class="formula-label">N-gram Language Model — Probability Estimation</div>
+    <div class="formula">
+      <span class="hl">Unigram (N=1):</span>   P(wᵢ | w₁...wᵢ₋₁) ≈ P(wᵢ)<br>
+      <span class="comment">← word frequency only; ignores all context</span><br><br>
+      <span class="var">Bigram (N=2):</span>    P(wᵢ | w₁...wᵢ₋₁) ≈ P(wᵢ | wᵢ₋₁)<br>
+      <span class="comment">← depends only on PREVIOUS word</span><br><br>
+      <span class="gr">Trigram (N=3):</span>   P(wᵢ | w₁...wᵢ₋₁) ≈ P(wᵢ | wᵢ₋₂, wᵢ₋₁)<br>
+      <span class="comment">← depends on previous TWO words</span><br><br>
+      General N-gram: P(wᵢ | wᵢ₋ₙ₊₁, ..., wᵢ₋₁)<br><br>
+      Maximum Likelihood Estimation (MLE) of bigram probability:<br>
+      <span class="hl">P(wᵢ | wᵢ₋₁) = C(wᵢ₋₁, wᵢ) / C(wᵢ₋₁)</span><br><br>
+      C(wᵢ₋₁, wᵢ) = count of bigram (wᵢ₋₁, wᵢ) in training corpus<br>
+      C(wᵢ₋₁)     = count of unigram (wᵢ₋₁) in training corpus
+    </div>
+  </div>
+
+  <h3>1.4 Computing Sentence Probability — Worked Example</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Bigram LM — Probability of "the cat sat on the mat"</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Training data</div><div class="ex-value">Small corpus: 3 sentences about cats and dogs</div></div>
+      <div class="ex-row"><div class="ex-label">P(the)</div><div class="ex-value">0.10  ← 10% of all words are "the"</div></div>
+      <div class="ex-row"><div class="ex-label">P(cat|the)</div><div class="ex-value">C(the,cat)/C(the) = 4/20 = 0.20</div></div>
+      <div class="ex-row"><div class="ex-label">P(sat|cat)</div><div class="ex-value">C(cat,sat)/C(cat) = 3/5  = 0.60</div></div>
+      <div class="ex-row"><div class="ex-label">P(on|sat)</div><div class="ex-value">C(sat,on)/C(sat)  = 3/4  = 0.75</div></div>
+      <div class="ex-row"><div class="ex-label">P(the|on)</div><div class="ex-value">C(on,the)/C(on)   = 3/3  = 1.00</div></div>
+      <div class="ex-row"><div class="ex-label">P(mat|the)</div><div class="ex-value">C(the,mat)/C(the) = 2/20 = 0.10</div></div>
+      <div class="ex-row"><div class="ex-label">P(sentence)</div><div class="ex-value">0.10 × 0.20 × 0.60 × 0.75 × 1.00 × 0.10 = 0.000900</div></div>
+      <div class="ex-row"><div class="ex-label">Log P</div><div class="ex-value">log(0.10)+log(0.20)+log(0.60)+log(0.75)+log(1)+log(0.10) = −7.02 bits</div></div>
+    </div>
+  </div>
+
+  <h3>1.5 Perplexity — Evaluating Language Models</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Perplexity — The Standard LM Evaluation Metric</div>
+    <div class="formula">
+      <span class="hl">PP(W) = P(w₁w₂...wₙ)^{−1/N}</span><br>
+           = ⁿ√(1 / P(w₁w₂...wₙ))<br>
+           = 2^{H(W)}   where H(W) = −(1/N)·Σ log₂ P(wᵢ|context)<br><br>
+      Lower perplexity = better model (more confident, less "perplexed")<br><br>
+      Interpretation: Average branching factor — how many words could<br>
+      plausibly follow at each position according to the model.<br><br>
+      Benchmarks on WSJ (Wall Street Journal) corpus:<br>
+      Unigram LM:  PP ≈ 962   ← very confused<br>
+      Bigram LM:   PP ≈ 170<br>
+      Trigram LM:  PP ≈  74   ← better but still uncertain<br>
+      Neural LM:   PP &lt; 40   ← near state-of-art<br>
+      GPT-3:       PP ≈  20   ← excellent<br><br>
+      Random model (V=50,000): PP = 50,000  (maximally confused)
+    </div>
+  </div>
+
+  <h3>1.6 Smoothing Methods for Language Models</h3>
+
+  <table class="compare-table">
+    <tr><th>Method</th><th>Formula</th><th>Idea</th><th>Strength</th></tr>
+    <tr>
+      <td><strong>Add-1 (Laplace)</strong></td>
+      <td>P(wᵢ|wᵢ₋₁) = (C(wᵢ₋₁,wᵢ)+1)/(C(wᵢ₋₁)+V)</td>
+      <td>Add 1 to every bigram count</td>
+      <td>Simple; tends to over-smooth</td>
+    </tr>
+    <tr>
+      <td><strong>Add-k Smoothing</strong></td>
+      <td>Replace +1 with +k (e.g. k=0.01)</td>
+      <td>Less aggressive than Add-1</td>
+      <td>Tunable; better than Laplace</td>
+    </tr>
+    <tr>
+      <td><strong>Backoff</strong></td>
+      <td>If trigram not seen → use bigram × α</td>
+      <td>Fall back to lower-order N-grams</td>
+      <td>Simple; Stupid Backoff used by Google at scale</td>
+    </tr>
+    <tr>
+      <td><strong>Interpolation</strong></td>
+      <td>P = λ₃P₃ + λ₂P₂ + λ₁P₁ (Σλ=1)</td>
+      <td>Blend tri, bi, unigram models</td>
+      <td>Better than backoff; λ tuned on held-out</td>
+    </tr>
+    <tr>
+      <td><strong>Kneser-Ney</strong></td>
+      <td>Uses continuation probability (how many contexts a word appears in)</td>
+      <td>Novel word seen in many contexts should be more likely</td>
+      <td>State-of-the-art for N-gram LMs</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══ SECTION 2 ══ -->
+<div class="section" id="s2">
+  <div class="section-header sh-lm">
+    <div class="section-num">Section 2</div>
+    <h2>Neural Language Models</h2>
+  </div>
+
+  <h3>2.1 From N-gram to Neural Models</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Limitation of N-gram LMs:</strong> Sparsity — most N-grams never appear in training data. Fixed context window — trigrams only see 2 previous words. No generalization — "The cat sat" and "The feline rested" have no connection in a trigram model despite similar meaning.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Feedforward Neural LM (Bengio 2003):</strong> Words are represented as dense vectors (embeddings). The neural network inputs the embeddings of the previous N-1 words and outputs a probability distribution over the vocabulary. Similar words get similar embeddings → generalization across synonyms.</div></li>
+    <li><span class="bullet">▸</span><div><strong>RNN Language Models:</strong> Replace the fixed N-gram window with a recurrent hidden state hₜ = f(hₜ₋₁, xₜ). Theoretically unlimited context (in practice, vanishing gradient limits effective range). LSTM/GRU extend this with gating mechanisms.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Transformer Language Models:</strong> Self-attention over all previous tokens simultaneously. O(1) path between any two positions (vs O(n) for RNNs). Parallelizable. GPT, LLaMA use causal (left-to-right) attention for autoregressive LM. BERT uses bidirectional masked LM.</div></li>
+  </ul>
+
+  <h3>2.2 Language Modeling Applications</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Text Generation</div>
+      <p>Sample from P(wₜ|w₁...wₜ₋₁) repeatedly to generate coherent text. Temperature controls randomness. GPT-4, Claude, LLaMA use this.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Speech Recognition</div>
+      <p>Acoustic model → multiple hypotheses → LM scores each → pick highest P(words)×P(acoustics|words). LM corrects acoustic errors using word-level constraints.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Machine Translation</div>
+      <p>Target LM score guides decoder — ensures output is fluent in the target language even when translation model is uncertain about word order.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Spell & Grammar Check</div>
+      <p>Low LM probability for a word in context → likely wrong. "I eated the apple" → P(eated|I) ≪ P(ate|I). Flags as error, suggests correction.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Autocomplete</div>
+      <p>P(w | previous words) → suggest most probable next word. Phone keyboard, Gmail Smart Compose, GitHub Copilot all use LM predictions.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Pretrained Representations</div>
+      <p>BERT, GPT learn rich word representations by predicting masked/next tokens. These representations transfer to all downstream NLP tasks.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ████████ PART 2: SEQUENCE TAGGING ████████ -->
+<div class="part-banner pb-seq">Part 2 — Sequence Tagging and Sequence Tasks</div>
+
+<!-- ══ SECTION 3 ══ -->
+<div class="section" id="s3">
+  <div class="section-header sh-seq">
+    <div class="section-num">Section 3</div>
+    <h2>Sequence Tagging — Concepts</h2>
+  </div>
+
+  <h3>3.1 What is Sequence Tagging?</h3>
+  <p><strong>Sequence tagging</strong> (also called sequence labeling) is the task of assigning a label to each token in an input sequence. Unlike document-level classification (which assigns one label to the whole input), sequence tagging assigns one label per token — recognizing local structure, boundaries, and roles within the text.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Sequence Tagging vs Text Classification</div>
+    <p><strong>Text Classification:</strong> INPUT: "Apple is a great company." OUTPUT: one label → Positive (sentiment for the whole sentence).</p>
+    <p><strong>Sequence Tagging:</strong> INPUT: "Apple is a great company." OUTPUT: one label per token → [B-ORG, O, O, O, O] (Apple = Organization entity).</p>
+    <p>Sequence tagging requires understanding not just what is in the text, but where it is and what role each token plays.</p>
+  </div>
+
+  <h3>3.2 Common Sequence Tagging Tasks</h3>
+
+  <table class="compare-table">
+    <tr><th>Task</th><th>Input</th><th>Output per Token</th><th>Example</th></tr>
+    <tr>
+      <td><strong>POS Tagging</strong></td>
+      <td>Sentence</td>
+      <td>Part-of-speech tag (NN, VB, JJ...)</td>
+      <td>"The/DT cat/NN sat/VBD on/IN the/DT mat/NN"</td>
+    </tr>
+    <tr>
+      <td><strong>Named Entity Recognition (NER)</strong></td>
+      <td>Sentence</td>
+      <td>BIO entity tags (B-PER, I-ORG, O...)</td>
+      <td>"Barack/B-PER Obama/I-PER visited/O Paris/B-LOC"</td>
+    </tr>
+    <tr>
+      <td><strong>Chunking</strong></td>
+      <td>POS-tagged sentence</td>
+      <td>BIO chunk tags (B-NP, I-VP, O...)</td>
+      <td>"[NP The cat] [VP sat] [PP on the mat]"</td>
+    </tr>
+    <tr>
+      <td><strong>Semantic Role Labeling</strong></td>
+      <td>Sentence + predicate</td>
+      <td>Argument roles (A0=agent, A1=patient...)</td>
+      <td>John/A0 gave/V Mary/A2 a book/A1</td>
+    </tr>
+    <tr>
+      <td><strong>Word Segmentation</strong></td>
+      <td>Character sequence</td>
+      <td>Word boundary tags (B, I)</td>
+      <td>Chinese/Japanese text → word boundaries</td>
+    </tr>
+    <tr>
+      <td><strong>Slot Filling</strong></td>
+      <td>User utterance</td>
+      <td>Slot tags (B-city, I-city, B-date...)</td>
+      <td>"Fly me to/O Mumbai/B-city tomorrow/B-date"</td>
+    </tr>
+  </table>
+
+  <h3>3.3 POS Tagging — Detailed</h3>
+  <p>Part-of-Speech (POS) tagging assigns a grammatical category to each token. It is the most foundational sequence tagging task and a prerequisite for most syntactic analysis.</p>
+
+  <div class="tag-row">
+    <div class="tag-unit"><span class="tag-word t-dt">The</span><span class="tag-label t-dt-l">DT</span></div>
+    <div class="tag-unit"><span class="tag-word t-jj">quick</span><span class="tag-label t-jj-l">JJ</span></div>
+    <div class="tag-unit"><span class="tag-word t-jj">brown</span><span class="tag-label t-jj-l">JJ</span></div>
+    <div class="tag-unit"><span class="tag-word t-nn">fox</span><span class="tag-label t-nn-l">NN</span></div>
+    <div class="tag-unit"><span class="tag-word t-vb">jumps</span><span class="tag-label t-vb-l">VBZ</span></div>
+    <div class="tag-unit"><span class="tag-word t-in">over</span><span class="tag-label t-in-l">IN</span></div>
+    <div class="tag-unit"><span class="tag-word t-dt">the</span><span class="tag-label t-dt-l">DT</span></div>
+    <div class="tag-unit"><span class="tag-word t-jj">lazy</span><span class="tag-label t-jj-l">JJ</span></div>
+    <div class="tag-unit"><span class="tag-word t-nn">dog</span><span class="tag-label t-nn-l">NN</span></div>
+  </div>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Ambiguity is the core challenge:</strong> "Book" can be NN (noun: "Read the book") or VB (verb: "Book a ticket"). "Bank" can be NN-financial or NN-geographical or VB. Context determines the correct tag. This is why sequence models are needed — isolated word→tag mapping fails.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Penn Treebank tagset:</strong> 45 tags for English. Universal Dependencies (UD): 17 universal tags that work across 100+ languages. Coarse tagsets (NOUN, VERB, ADJ...) vs fine-grained (VBD, VBG, VBN, VBP, VBZ for verb forms).</div></li>
+    <li><span class="bullet">▸</span><div><strong>Modern accuracy:</strong> BERT-based taggers achieve ~97–98% on Wall Street Journal Penn Treebank. Remaining errors are mostly genuinely ambiguous cases even humans disagree on.</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 4 ══ -->
+<div class="section" id="s4">
+  <div class="section-header sh-seq">
+    <div class="section-num">Section 4</div>
+    <h2>Predicting Sequence of Tags</h2>
+  </div>
+
+  <h3>4.1 The Sequence Tagging Problem — Formal</h3>
+  <p>Given an input sequence X = (x₁, x₂, ..., xₙ), find the output tag sequence Y = (y₁, y₂, ..., yₙ) that maximizes the joint probability P(Y|X). The critical insight is that tags are not independent — neighboring tags are strongly correlated (a DT is almost always followed by NN or JJ, never by VBD).</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Sequence Tagging — Structured Prediction</div>
+    <div class="formula">
+      Naive approach: y*ᵢ = argmax_y P(y | xᵢ)   ← classify each token independently<br>
+      <span class="comment">← ignores dependencies between adjacent tags</span><br><br>
+      Better approach (structured prediction):<br>
+      <span class="hl">Y* = argmax_Y P(Y | X) = argmax_Y P(y₁,...,yₙ | x₁,...,xₙ)</span><br><br>
+      Factored using Markov assumption on tags:<br>
+      <span class="var">P(Y|X) ≈ Π_{i=1}^{n} P(yᵢ | yᵢ₋₁, X)</span><br><br>
+      This captures tag-to-tag transitions (label dependencies):<br>
+      DT → JJ/NN    (high probability)<br>
+      DT → VBD      (very low probability)<br>
+      VBZ → NN/DT   (sentence object follows)<br>
+      IN → DT/NN    (preposition takes noun phrase object)
+    </div>
+  </div>
+
+  <h3>4.2 Approaches to Sequence Tag Prediction</h3>
+
+  <div class="cfg-grid">
+    <div class="cfg-card cfgc-blue">
+      <div class="cc-tag">Classical Probabilistic</div>
+      <div class="cc-title">Hidden Markov Model (HMM)</div>
+      <p>Generative model with: <strong>Transition probability</strong> P(yᵢ|yᵢ₋₁) — how likely is tag yᵢ after yᵢ₋₁? <strong>Emission probability</strong> P(xᵢ|yᵢ) — how likely is word xᵢ given tag yᵢ? Viterbi decoding finds optimal tag sequence.</p>
+      <p>Learns from labeled data by counting transition and emission frequencies. First practical POS tagger. Accuracy ~96% on Penn Treebank.</p>
+      <div class="cc-note">Covered in depth in Section 6.</div>
+    </div>
+    <div class="cfg-card cfgc-green">
+      <div class="cc-tag">Discriminative Sequence</div>
+      <div class="cc-title">Conditional Random Field (CRF)</div>
+      <p>Discriminative model: directly models P(Y|X) without generating X. Can use arbitrary overlapping features (word shape, suffix, prefix, surrounding words). Avoids the label-bias problem of MEMMs. Uses Viterbi for decoding.</p>
+      <p>BiLSTM-CRF was the gold standard for NER from 2016–2018. The CRF layer enforces valid BIO sequences (prevents I-PER appearing after B-ORG).</p>
+      <div class="cc-note">Loss = negative log-likelihood of correct tag sequence, computed via forward algorithm.</div>
+    </div>
+    <div class="cfg-card cfgc-purple">
+      <div class="cc-tag">Deep Learning</div>
+      <div class="cc-title">BiLSTM + CRF</div>
+      <p>Bidirectional LSTM generates context-rich token representations from both left and right context. CRF layer on top models tag dependencies. Character CNN captures morphological features (capitalization, suffix -ing, prefix un-).</p>
+      <p>End-to-end trainable. No feature engineering. ~91% NER F1 on CoNLL-2003 benchmark. Previously state-of-the-art; now superseded by BERT.</p>
+      <div class="cc-note">Architecture: Char CNN → word embedding → BiLSTM → CRF → BIO tags per token.</div>
+    </div>
+    <div class="cfg-card cfgc-amber">
+      <div class="cc-tag">Transformer-Based</div>
+      <div class="cc-title">BERT Fine-tuning for Tagging</div>
+      <p>Fine-tune BERT with a token classification head: each subword token's output embedding → Linear(hidden_size, num_tags) → Softmax → predicted tag. For multi-subword words, use the FIRST subword's prediction.</p>
+      <p>BERT achieves ~93% NER F1 on CoNLL-2003 — surpassing BiLSTM-CRF by ~2%. Domain-specific BERT (BioBERT, LegalBERT) further improves on domain-specific NER.</p>
+      <div class="cc-note">Optional CRF on top of BERT further improves by enforcing valid BIO sequences.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 ══ -->
+<div class="section" id="s5">
+  <div class="section-header sh-seq">
+    <div class="section-num">Section 5</div>
+    <h2>BIO Tagging Scheme and Sequence Tasks</h2>
+  </div>
+
+  <h3>5.1 The BIO Tagging Scheme</h3>
+  <p>The BIO (Beginning-Inside-Outside) tagging scheme encodes entity or chunk spans as token-level labels. Every token in the sentence gets exactly one BIO label.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">BIO / BIOES Tagging Schemes</div>
+    <div class="formula">
+      <span class="hl">BIO:</span><br>
+      B-TYPE = Beginning of entity/chunk of TYPE  ← first token of span<br>
+      I-TYPE = Inside/continuation of TYPE        ← subsequent tokens of span<br>
+      O      = Outside (not part of any span)     ← non-entity token<br><br>
+      <span class="var">BIOES (extended):</span><br>
+      B-TYPE = Beginning of multi-token span<br>
+      I-TYPE = Inside of multi-token span<br>
+      O      = Outside<br>
+      E-TYPE = End of multi-token span<br>
+      S-TYPE = Single-token span (alone)<br><br>
+      Constraint: I-TYPE can only follow B-TYPE or I-TYPE of SAME type.<br>
+      Invalid: I-PER after B-ORG  (enforced by CRF layer)
+    </div>
+  </div>
+
+  <h3>5.2 BIO Tagging — Visual Example</h3>
+  <p>Sentence: <em>"Barack Obama visited New York City on Monday for the UN summit."</em></p>
+
+  <div class="bio-row">
+    <div class="bio-unit"><span class="bio-word w-B-NP">Barack</span><span class="bio-tag b-B-NP">B-PER</span></div>
+    <div class="bio-unit"><span class="bio-word w-I-NP">Obama</span><span class="bio-tag b-I-NP">I-PER</span></div>
+    <div class="bio-unit"><span class="bio-word w-O">visited</span><span class="bio-tag b-O">O</span></div>
+    <div class="bio-unit"><span class="bio-word w-B-VP">New</span><span class="bio-tag b-B-VP">B-LOC</span></div>
+    <div class="bio-unit"><span class="bio-word w-I-VP">York</span><span class="bio-tag b-I-VP">I-LOC</span></div>
+    <div class="bio-unit"><span class="bio-word w-I-VP">City</span><span class="bio-tag b-I-VP">I-LOC</span></div>
+    <div class="bio-unit"><span class="bio-word w-O">on</span><span class="bio-tag b-O">O</span></div>
+    <div class="bio-unit"><span class="bio-word w-B-PP">Monday</span><span class="bio-tag b-B-PP">B-DATE</span></div>
+    <div class="bio-unit"><span class="bio-word w-O">for</span><span class="bio-tag b-O">O</span></div>
+    <div class="bio-unit"><span class="bio-word w-O">the</span><span class="bio-tag b-O">O</span></div>
+    <div class="bio-unit"><span class="bio-word w-B-NP">UN</span><span class="bio-tag b-B-NP">B-ORG</span></div>
+    <div class="bio-unit"><span class="bio-word w-O">summit</span><span class="bio-tag b-O">O</span></div>
+  </div>
+
+  <h3>5.3 Span Extraction from BIO Tags</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Extracting Entities from BIO Tag Sequence</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Tag sequence</div><div class="ex-value">B-PER I-PER O B-LOC I-LOC I-LOC O B-DATE O O B-ORG O</div></div>
+      <div class="ex-row"><div class="ex-label">Entity: PER</div><div class="ex-value">Tokens [0,1] → "Barack Obama" (B-PER starts span, I-PER continues)</div></div>
+      <div class="ex-row"><div class="ex-label">Entity: LOC</div><div class="ex-value">Tokens [3,4,5] → "New York City" (B-LOC + 2 × I-LOC)</div></div>
+      <div class="ex-row"><div class="ex-label">Entity: DATE</div><div class="ex-value">Tokens [7] → "Monday" (B-DATE, next token is O → single-token span)</div></div>
+      <div class="ex-row"><div class="ex-label">Entity: ORG</div><div class="ex-value">Tokens [10] → "UN" (B-ORG, next token is O → single-token span)</div></div>
+      <div class="ex-row"><div class="ex-label">Rule</div><div class="ex-value">Span starts at B-TYPE. Span continues while I-TYPE (same TYPE). Span ends when O or B-TYPE (any) is seen.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 ══ -->
+<div class="section" id="s6">
+  <div class="section-header sh-seq">
+    <div class="section-num">Section 6</div>
+    <h2>Hidden Markov Model (HMM) for Sequence Tagging</h2>
+  </div>
+
+  <h3>6.1 HMM Architecture</h3>
+  <p>The <strong>Hidden Markov Model (HMM)</strong> models sequence tagging as a generative process: the hidden states (POS tags) generate the observed tokens (words). We want to infer the most likely hidden state sequence given the observations.</p>
+
+  <div class="diagram">
+    <pre>
+  HMM for POS Tagging:
+
+  HIDDEN STATES (tags):  y₁      y₂      y₃      y₄      y₅
+                          DT  →   JJ  →   NN  →   VBZ →   IN
+                          ↓       ↓       ↓       ↓       ↓
+  OBSERVATIONS (words):  The   quick   cat    jumps   over
+                         x₁      x₂     x₃      x₄      x₅
+
+  Two probability tables:
+  ┌──────────────────────────────────────────────────────────────┐
+  │ TRANSITION MATRIX A: P(yᵢ | yᵢ₋₁)                         │
+  │                                                              │
+  │        DT    JJ    NN    VBZ   IN    ...                    │
+  │ DT  [  0.05  0.30  0.55  0.02  0.02  ]  ← after DT: NN, JJ│
+  │ JJ  [  0.00  0.10  0.75  0.05  0.00  ]  ← after JJ: NN    │
+  │ NN  [  0.01  0.00  0.10  0.35  0.15  ]  ← after NN: VBZ   │
+  │ VBZ [  0.20  0.05  0.20  0.00  0.20  ]  ← after VBZ: DT,IN│
+  │ ...                                                          │
+  └──────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────┐
+  │ EMISSION MATRIX B: P(xᵢ | yᵢ)                              │
+  │                                                              │
+  │        "The"  "cat"  "quick" "jumps" "over" ...            │
+  │ DT   [  0.40   0.00   0.00    0.00    0.00  ]               │
+  │ JJ   [  0.00   0.00   0.08    0.00    0.00  ]               │
+  │ NN   [  0.00   0.12   0.01    0.01    0.00  ]               │
+  │ VBZ  [  0.00   0.00   0.00    0.05    0.00  ]               │
+  │ IN   [  0.00   0.00   0.00    0.00    0.07  ]               │
+  └──────────────────────────────────────────────────────────────┘
+    </pre>
+    <div class="diagram-caption">Figure 6.1 — HMM for POS Tagging. Hidden states = POS tags, Observations = words. A = transition matrix, B = emission matrix.</div>
+  </div>
+
+  <h3>6.2 HMM Training — Parameter Estimation</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">HMM Parameters — MLE from Labeled Corpus</div>
+    <div class="formula">
+      <span class="hl">Transition probability:</span><br>
+      P(yᵢ = t₂ | yᵢ₋₁ = t₁) = C(t₁, t₂) / C(t₁)<br>
+      C(t₁, t₂) = count of tag bigram (t₁→t₂) in training corpus<br>
+      C(t₁)     = count of tag t₁ in training corpus<br><br>
+      <span class="var">Emission probability:</span><br>
+      P(xᵢ = w | yᵢ = t) = C(w, t) / C(t)<br>
+      C(w, t) = count of word w tagged as t in training corpus<br>
+      C(t)    = count of tag t in training corpus<br><br>
+      <span class="gr">Initial probability:</span><br>
+      P(y₁ = t) = C(t at sentence start) / total sentences<br><br>
+      Add Laplace smoothing to avoid zero probabilities:<br>
+      P(w|t) = (C(w,t) + 1) / (C(t) + |V|)
+    </div>
+  </div>
+
+  <h3>6.3 Viterbi Algorithm — Decoding</h3>
+  <p>The <strong>Viterbi algorithm</strong> is a dynamic programming algorithm that finds the most likely tag sequence Y* = argmax_Y P(Y|X). It computes the best path through the HMM trellis efficiently in O(|T|² × n) instead of the brute-force O(|T|ⁿ).</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Viterbi Algorithm</div>
+    <div class="formula">
+      vᵢ(t) = max_{t' ∈ T} [vᵢ₋₁(t') · P(t|t') · P(xᵢ|t)]<br><br>
+      vᵢ(t) = probability of the most likely tag sequence ending in tag t at position i<br>
+      P(t|t') = transition from previous tag t' to current tag t<br>
+      P(xᵢ|t) = emission of word xᵢ from tag t<br><br>
+      Backpointer: bᵢ(t) = argmax_{t'} [vᵢ₋₁(t') · P(t|t')]<br><br>
+      Initialization: v₁(t) = P(y₁=t) · P(x₁|t) for each tag t<br>
+      Forward pass: fill viterbi table left-to-right, O(|T|² × n)<br>
+      Backward pass: trace back pointers from final state to recover Y*
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="ex-header">Viterbi — Small Example: "The cat sat" (simplified)</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Tags</div><div class="ex-value">T = {DT, NN, VBD}  (simplified tagset)</div></div>
+      <div class="ex-row"><div class="ex-label">v₁(DT) for "The"</div><div class="ex-value">P(DT|START) × P("The"|DT) = 0.40 × 0.40 = 0.160</div></div>
+      <div class="ex-row"><div class="ex-label">v₁(NN) for "The"</div><div class="ex-value">P(NN|START) × P("The"|NN) = 0.30 × 0.00 = 0.000</div></div>
+      <div class="ex-row"><div class="ex-label">v₂(NN) for "cat"</div><div class="ex-value">max(v₁(DT)×P(NN|DT), v₁(NN)×P(NN|NN)) × P("cat"|NN)</div></div>
+      <div class="ex-row"><div class="ex-label"></div><div class="ex-value">= max(0.160×0.60, 0) × 0.12 = 0.096 × 0.12 = 0.01152</div></div>
+      <div class="ex-row"><div class="ex-label">v₃(VBD) for "sat"</div><div class="ex-value">max(v₂(NN)×P(VBD|NN)) × P("sat"|VBD) = best path</div></div>
+      <div class="ex-row"><div class="ex-label">Best path</div><div class="ex-value">DT → NN → VBD  (decoded via backpointers)</div></div>
+      <div class="ex-row"><div class="ex-label">Tag sequence</div><div class="ex-value">"The"/DT  "cat"/NN  "sat"/VBD  ✓</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ████████ PART 3: SYNTAX TREES ████████ -->
+<div class="part-banner pb-syn">Part 3 — Syntax Trees and Sentence Structure</div>
+
+<!-- ══ SECTION 7 ══ -->
+<div class="section" id="s7">
+  <div class="section-header sh-syn">
+    <div class="section-num">Section 7</div>
+    <h2>Syntax Trees — Constituency Parsing</h2>
+  </div>
+
+  <h3>7.1 What is a Syntax Tree?</h3>
+  <p>A <strong>syntax tree</strong> (parse tree) is a hierarchical representation of a sentence's grammatical structure. It shows how words group into phrases, and how phrases combine to form the complete sentence. Syntax trees reveal the grammatical relationships and compositional meaning structure of language.</p>
+
+  <h3>7.2 Constituency Parse Tree</h3>
+  <p>A <strong>constituency parse tree</strong> organizes the sentence into nested phrase constituents. Each internal node is a phrase type (NP, VP, PP), each leaf is a POS-tagged word.</p>
+
+  <div class="diagram">
+    <pre>
+  Sentence: "The quick fox sat on the mat"
+
+                          S
+                    ┌─────┴──────────┐
+                   NP               VP
+              ┌────┼────┐       ┌────┴──────┐
+             DT   JJ   NN     VBD          PP
+             │    │    │       │       ┌────┴────┐
+            The quick fox    sat      IN        NP
+                                      │      ┌───┴───┐
+                                     on     DT      NN
+                                            │       │
+                                           the     mat
+
+  Phrase types:
+  S   = Sentence       (the whole sentence)
+  NP  = Noun Phrase    (the quick fox, the mat)
+  VP  = Verb Phrase    (sat on the mat)
+  PP  = Prepositional Phrase (on the mat)
+  DT  = Determiner    (the, a)
+  JJ  = Adjective     (quick)
+  NN  = Noun          (fox, mat)
+  VBD = Past tense VB (sat)
+  IN  = Preposition   (on)
+    </pre>
+    <div class="diagram-caption">Figure 7.1 — Constituency parse tree. Hierarchical phrase structure. Every leaf is a word; every internal node is a phrase or clause category.</div>
+  </div>
+
+  <h3>7.3 Constituency vs Dependency Trees</h3>
+
+  <table class="compare-table">
+    <tr><th>Aspect</th><th>Constituency Tree</th><th>Dependency Tree</th></tr>
+    <tr><td><strong>What it shows</strong></td><td>Hierarchical phrase structure — which words group into phrases</td><td>Binary grammatical relations — which word modifies/depends on which</td></tr>
+    <tr><td><strong>Nodes</strong></td><td>Phrase types (NP, VP, PP) + POS leaves</td><td>Only words; edges are labeled relations (nsubj, dobj, amod...)</td></tr>
+    <tr><td><strong>Root</strong></td><td>S (Sentence)</td><td>Main verb of the sentence</td></tr>
+    <tr><td><strong>Grammar basis</strong></td><td>Context-Free Grammars (CFG)</td><td>Dependency grammar</td></tr>
+    <tr><td><strong>Uses</strong></td><td>Grammar checking, chunking, information extraction</td><td>Semantic understanding, coreference, relation extraction</td></tr>
+    <tr><td><strong>Tools</strong></td><td>Stanford Parser, Berkeley Neural Parser</td><td>Stanford CoreNLP, SpaCy, UDPipe</td></tr>
+  </table>
+
+  <div class="callout callout-exam">
+    <div class="callout-title">Exam Point — Structural Ambiguity in Parse Trees</div>
+    <p>Sentences can be syntactically ambiguous — having two valid parse trees with different meanings. "I saw the man with the telescope" has two parses: (1) [VP saw [NP the man [PP with the telescope]]] — the man has the telescope; (2) [VP saw [NP the man] [PP with the telescope]] — I used the telescope to see. Resolving such ambiguity requires semantic and world knowledge beyond syntax.</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 8 ══ -->
+<div class="section" id="s8">
+  <div class="section-header sh-syn">
+    <div class="section-num">Section 8</div>
+    <h2>Dependency Parsing</h2>
+  </div>
+
+  <h3>8.1 Dependency Grammar</h3>
+  <p>In dependency grammar, every word (except the root) depends on exactly one other word — called its <strong>head</strong>. The labeled directed arc from head to dependent encodes the grammatical relation between them (subject, object, modifier, etc.).</p>
+
+  <div class="diagram">
+    <pre>
+  Sentence: "The quick fox sat on the mat"
+
+    ┌─────────────────nsubj──────────────────┐
+    │         ┌─det──┐     ┌─amod──┐         │
+    │         │      │     │       │         │
+   sat ←─────fox ←─The   fox ←──quick      sat
+    │                                        │
+    └────prep─────── on ──── pobj ───── mat ─┘
+                               │
+                            ┌──┘
+                           mat ←─det── the
+
+  Universal Dependency Relations:
+  nsubj  = nominal subject (fox is subject of sat)
+  det    = determiner (The modifies fox; the modifies mat)
+  amod   = adjectival modifier (quick modifies fox)
+  prep   = prepositional modifier (on modifies sat)
+  pobj   = prepositional object (mat is object of on)
+
+  ROOT: sat (the main predicate)
+  Every other word has exactly one head.
+    </pre>
+    <div class="diagram-caption">Figure 8.1 — Dependency parse. Arrows from head → dependent. Labels show the grammatical relation. Root = main verb.</div>
+  </div>
+
+  <h3>8.2 Universal Dependency Relations</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>nsubj (nominal subject):</strong> The nominal subject of a verb. "The cat chased the dog" → cat is nsubj of chased.</div></li>
+    <li><span class="bullet">▸</span><div><strong>dobj (direct object):</strong> The direct object of a verb. "She ate the apple" → apple is dobj of ate.</div></li>
+    <li><span class="bullet">▸</span><div><strong>amod (adjectival modifier):</strong> An adjective modifying a noun. "quick fox" → quick is amod of fox.</div></li>
+    <li><span class="bullet">▸</span><div><strong>advmod (adverbial modifier):</strong> An adverb modifying a verb or adjective. "runs quickly" → quickly is advmod of runs.</div></li>
+    <li><span class="bullet">▸</span><div><strong>prep (prepositional modifier):</strong> A preposition modifying a verb/noun. "sat on the mat" → on is prep of sat.</div></li>
+    <li><span class="bullet">▸</span><div><strong>det (determiner):</strong> A determiner modifying a noun. "the cat" → the is det of cat.</div></li>
+    <li><span class="bullet">▸</span><div><strong>conj (conjunct):</strong> Two words connected by a conjunction. "cats and dogs" → dogs is conj of cats.</div></li>
+    <li><span class="bullet">▸</span><div><strong>cc (coordinating conjunction):</strong> The conjunction itself. "cats and dogs" → and is cc of cats.</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 4: CFG ████████ -->
+<div class="part-banner pb-cfg">Part 4 — Context-Free Grammars</div>
+
+<!-- ══ SECTION 9 ══ -->
+<div class="section" id="s9">
+  <div class="section-header sh-cfg">
+    <div class="section-num">Section 9</div>
+    <h2>Context-Free Grammars (CFG)</h2>
+  </div>
+
+  <h3>9.1 Formal Definition of CFG</h3>
+  <p>A <strong>Context-Free Grammar (CFG)</strong> is a formal grammar system that captures the hierarchical structure of natural language (and programming languages). It defines a set of production rules specifying how symbols can be rewritten.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">CFG Formal Definition</div>
+    <p>A CFG is a 4-tuple G = (N, Σ, R, S) where:</p>
+    <p><strong>N</strong> = set of non-terminal symbols (phrase types: S, NP, VP, PP, N, V...)</p>
+    <p><strong>Σ</strong> = set of terminal symbols (actual words: the, cat, sat, on...)</p>
+    <p><strong>R</strong> = set of production rules of form A → α where A ∈ N and α ∈ (N ∪ Σ)*</p>
+    <p><strong>S</strong> = start symbol (always S, representing a complete sentence)</p>
+    <p>"Context-free" means: the left-hand side A can be rewritten to α regardless of the surrounding context — only A itself matters, not what surrounds it.</p>
+  </div>
+
+  <h3>9.2 Example CFG for English</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">A Simple English CFG — Production Rules</div>
+    <div class="formula">
+      <span class="hl">Phrasal Rules (non-terminal → sequence of non-terminals):</span><br>
+      S   → NP VP              <span class="comment">← sentence = noun phrase + verb phrase</span><br>
+      S   → NP VP PP           <span class="comment">← sentence with prepositional modifier</span><br>
+      NP  → DT N               <span class="comment">← noun phrase = determiner + noun</span><br>
+      NP  → DT JJ N            <span class="comment">← noun phrase with adjective</span><br>
+      NP  → NP PP              <span class="comment">← noun phrase with prepositional phrase</span><br>
+      VP  → V                  <span class="comment">← intransitive verb</span><br>
+      VP  → V NP               <span class="comment">← transitive verb + object</span><br>
+      VP  → V NP PP            <span class="comment">← verb + object + prep phrase</span><br>
+      VP  → VP PP              <span class="comment">← VP with prepositional modifier</span><br>
+      PP  → P NP               <span class="comment">← prep phrase = preposition + noun phrase</span><br><br>
+      <span class="var">Lexical Rules (non-terminal → terminal word):</span><br>
+      DT  → "the" | "a" | "an" | "this" | "that"<br>
+      N   → "cat" | "dog" | "mat" | "fox" | "table"<br>
+      JJ  → "quick" | "big" | "lazy" | "brown"<br>
+      V   → "sat" | "chased" | "put" | "saw"<br>
+      P   → "on" | "in" | "over" | "under" | "with"
+    </div>
+  </div>
+
+  <h3>9.3 Deriving a Sentence from CFG</h3>
+
+  <div class="example-box">
+    <div class="ex-header">CFG Derivation — "The quick fox sat on the mat"</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Step 1</div><div class="ex-value">S  →  NP  VP                        (apply S → NP VP)</div></div>
+      <div class="ex-row"><div class="ex-label">Step 2</div><div class="ex-value">NP VP  →  DT JJ N  VP               (apply NP → DT JJ N)</div></div>
+      <div class="ex-row"><div class="ex-label">Step 3</div><div class="ex-value">DT JJ N VP  →  "The" JJ N  VP       (apply DT → "The")</div></div>
+      <div class="ex-row"><div class="ex-label">Step 4</div><div class="ex-value">"The" JJ N VP  →  "The" "quick" N VP (apply JJ → "quick")</div></div>
+      <div class="ex-row"><div class="ex-label">Step 5</div><div class="ex-value">"The" "quick" N VP → "The" "quick" "fox" VP (apply N → "fox")</div></div>
+      <div class="ex-row"><div class="ex-label">Step 6</div><div class="ex-value">...VP → VP PP → V PP → "sat" PP     (apply VP → V, V → "sat")</div></div>
+      <div class="ex-row"><div class="ex-label">Step 7</div><div class="ex-value">PP → P NP → "on" NP → "on" DT N → "on" "the" "mat"</div></div>
+      <div class="ex-row"><div class="ex-label">Result</div><div class="ex-value">"The quick fox sat on the mat"  ✓  (valid derivation from S)</div></div>
+    </div>
+  </div>
+
+  <h3>9.4 Probabilistic CFG (PCFG)</h3>
+  <p>A CFG with a single sentence can often have multiple parse trees (structural ambiguity). A <strong>Probabilistic CFG (PCFG)</strong> assigns a probability to each rule. The probability of a parse tree is the product of all rule probabilities used, and the most probable parse tree is preferred.</p>
+
+  <div class="formula-block">
+    <div class="formula-label">Probabilistic Context-Free Grammar (PCFG)</div>
+    <div class="formula">
+      Each rule A → α has a probability P(A → α)<br>
+      Constraint: For each A, Σ_{α} P(A → α) = 1  ← probabilities sum to 1<br><br>
+      Example probabilities:<br>
+      P(NP → DT N)    = 0.50<br>
+      P(NP → DT JJ N) = 0.30<br>
+      P(NP → NP PP)   = 0.20<br>
+      (must sum to 1.00 for NP rules)<br><br>
+      Parse tree probability:<br>
+      <span class="hl">P(tree) = Π_{rules used} P(A → α)</span><br><br>
+      Best parse: Y* = argmax_{trees} P(tree)<br>
+      Computed efficiently by CYK algorithm (O(n³|G|))
+    </div>
+  </div>
+
+  <h3>9.5 CFG Limitations for Natural Language</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Independence assumption:</strong> CFG rules expand non-terminals independently of context. But "NP → DT N" fires the same way whether the NP is a subject or object — but subject NPs prefer pronouns while objects prefer full NPs. Context matters.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Lexical dependency blindness:</strong> "Ate spaghetti with a fork" (manner) vs "Ate spaghetti with meatballs" (ingredient) — the PP attaches differently based on the object, not the VP structure. CFG doesn't capture this lexical preference.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Combinator explosion:</strong> Accurate natural language grammars have thousands of rules. Parsing is O(n³|G|) — grows with grammar size.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Solutions:</strong> Lexicalized PCFGs (attach head word to each non-terminal). Neural parsers (directly learn to parse from trees without explicit grammar rules).</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 10 ══ -->
+<div class="section" id="s10">
+  <div class="section-header sh-cfg">
+    <div class="section-num">Section 10</div>
+    <h2>CFG Parsing Algorithms</h2>
+  </div>
+
+  <h3>10.1 CYK Algorithm (Cocke-Younger-Kasami)</h3>
+  <p>The <strong>CYK algorithm</strong> is a bottom-up dynamic programming parser for CFGs in <strong>Chomsky Normal Form (CNF)</strong>. It fills a triangular chart (parse table) to determine all possible parse trees for a sentence.</p>
+
+  <div class="callout callout-indigo">
+    <div class="callout-title">Chomsky Normal Form (CNF) — Required for CYK</div>
+    <p>Every production must have one of two forms: <strong>A → BC</strong> (two non-terminals) or <strong>A → a</strong> (one terminal). Any CFG can be converted to CNF without changing the language it generates. CNF conversion: eliminate unit rules (A→B), eliminate ε-rules, binarize rules with 3+ symbols on RHS.</p>
+  </div>
+
+  <div class="formula-block">
+    <div class="formula-label">CYK Algorithm — Bottom-Up Chart Parsing</div>
+    <div class="formula">
+      Input: sentence w₁w₂...wₙ,  Grammar G in CNF<br>
+      Table: table[i][j] = set of non-terminals that can span wᵢ...wⱼ<br><br>
+      Initialization (span of 1):<br>
+      for each word wᵢ:<br>
+        table[i][i] = {A : A → wᵢ is a rule in G}<br><br>
+      Fill table (span length 2 to n):<br>
+      for length = 2 to n:<br>
+        for start = 1 to n-length+1:<br>
+          end = start + length - 1<br>
+          for split = start to end-1:<br>
+            for each rule A → BC in G:<br>
+              if B ∈ table[start][split] AND C ∈ table[split+1][end]:<br>
+                table[start][end] += {A}<br><br>
+      Accept if S ∈ table[1][n]   ← S spans the whole sentence<br>
+      Complexity: O(n³ |G|)  ← cubic in sentence length
+    </div>
+  </div>
+
+  <div class="example-box">
+    <div class="ex-header">CYK Table — "The cat sat" (simplified CNF grammar)</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">Rules</div><div class="ex-value">S→NP VP | NP→DT NN | VP→V | DT→"The" | NN→"cat" | V→"sat"</div></div>
+      <div class="ex-row"><div class="ex-label">table[1][1]</div><div class="ex-value">{DT}  ← "The" → DT</div></div>
+      <div class="ex-row"><div class="ex-label">table[2][2]</div><div class="ex-value">{NN}  ← "cat" → NN</div></div>
+      <div class="ex-row"><div class="ex-label">table[3][3]</div><div class="ex-value">{V}   ← "sat" → V</div></div>
+      <div class="ex-row"><div class="ex-label">table[1][2]</div><div class="ex-value">{NP}  ← NP → DT NN  (DT∈[1,1], NN∈[2,2]) ✓</div></div>
+      <div class="ex-row"><div class="ex-label">table[2][3]</div><div class="ex-value">{VP}  ← VP → V alone? Need CNF — VP → V only if V is a terminal rule</div></div>
+      <div class="ex-row"><div class="ex-label">table[1][3]</div><div class="ex-value">{S}   ← S → NP VP  (NP∈[1,2], VP∈[3,3]) ✓</div></div>
+      <div class="ex-row"><div class="ex-label">Result</div><div class="ex-value">S ∈ table[1][3]  → sentence is grammatical ✓</div></div>
+    </div>
+  </div>
+
+  <h3>10.2 Earley Algorithm</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Advantage over CYK:</strong> Works on any CFG (not just CNF). Top-down with bottom-up dynamic programming. O(n³) in general, O(n²) for unambiguous grammars, O(n) for LR(1) grammars.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Earley items:</strong> Dotted rules [A → α • β, i] meaning "we've matched α starting at position i, and are looking for β next." Items advance as each word is processed.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Three operations:</strong> Scanner (match a word against the next expected token), Predictor (add items for rules that could apply next), Completer (when a constituent is complete, advance all waiting items).</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 5: CHUNKING ████████ -->
+<div class="part-banner pb-chunk">Part 5 — Chunking and Chinking</div>
+
+<!-- ══ SECTION 11 ══ -->
+<div class="section" id="s11">
+  <div class="section-header sh-chunk">
+    <div class="section-num">Section 11</div>
+    <h2>Chunking — Shallow Parsing</h2>
+  </div>
+
+  <h3>11.1 What is Chunking?</h3>
+  <p><strong>Chunking</strong> (also called <strong>shallow parsing</strong> or <strong>partial parsing</strong>) identifies flat, non-recursive phrase-level constituents in a sentence without producing a full parse tree. It groups adjacent POS-tagged tokens into non-overlapping chunks based on regex-like patterns over POS tags.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Chunking vs Full Parsing</div>
+    <p><strong>Full Parsing (deep):</strong> Produces a complete hierarchical tree (recursive NPs inside PPs inside VPs). Expensive, error-prone for complex sentences. Required for full semantic interpretation.</p>
+    <p><strong>Chunking (shallow):</strong> Produces flat, non-recursive noun phrases, verb phrases, and prepositional phrases. Fast, robust, sufficient for many information extraction tasks. Does NOT capture recursive embedding (no NP inside PP inside NP).</p>
+  </div>
+
+  <h3>11.2 Noun Phrase (NP) Chunking</h3>
+  <p>The most common chunking task. NP chunks are simple noun phrases — typically DT? JJ* NN+ (optional determiner, zero or more adjectives, one or more nouns).</p>
+
+  <p>Sentence: <em>"The quick brown fox jumped over a lazy dog"</em></p>
+  <div class="chunk-sent">
+    <span class="chunk-np">The quick brown fox<span class="chunk-np-label">NP</span></span>
+    jumped over
+    <span class="chunk-np">a lazy dog<span class="chunk-np-label">NP</span></span>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — NLTK RegexpParser for Chunking</div>
+    <code><span class="kw">import</span> <span class="va">nltk</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">RegexpParser</span>, <span class="fn">pos_tag</span>, <span class="fn">word_tokenize</span>
+
+<span class="va">sentence</span> = <span class="st">"The quick brown fox jumped over a lazy dog near the river"</span>
+<span class="va">tokens</span>   = <span class="fn">word_tokenize</span>(<span class="va">sentence</span>)
+<span class="va">pos_tags</span> = <span class="fn">pos_tag</span>(<span class="va">tokens</span>)
+<span class="fn">print</span>(<span class="va">pos_tags</span>)
+<span class="cm"># → [('The','DT'),('quick','JJ'),('brown','JJ'),('fox','NN'),('jumped','VBD'),...]</span>
+
+<span class="cm"># ── Define chunk grammar using regex over POS tags ──────────────</span>
+<span class="va">grammar</span> = <span class="st">"""
+  NP: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN&gt;+}      # optional DT, 0+ JJ, 1+ NN
+      {&lt;NNP&gt;+}               # proper nouns together
+  PP: {&lt;IN&gt;&lt;NP&gt;}              # preposition + NP
+  VP: {&lt;VB.*&gt;&lt;NP|PP|CLAUSE&gt;+} # verb followed by NP or PP
+"""</span>
+
+<span class="va">chunker</span> = <span class="fn">RegexpParser</span>(<span class="va">grammar</span>)
+<span class="va">tree</span>    = <span class="va">chunker</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+
+<span class="cm"># Display the parse tree</span>
+<span class="fn">print</span>(<span class="va">tree</span>)
+<span class="va">tree</span>.<span class="fn">draw</span>()      <span class="cm"># opens graphical tree view</span>
+
+<span class="cm"># Extract NP chunks as text</span>
+<span class="kw">for</span> <span class="va">subtree</span> <span class="kw">in</span> <span class="va">tree</span>.<span class="fn">subtrees</span>(<span class="va">filter</span>=<span class="kw">lambda</span> <span class="va">t</span>: <span class="va">t</span>.<span class="fn">label</span>() == <span class="st">'NP'</span>):
+    <span class="fn">print</span>(<span class="st">"NP:"</span>, <span class="st">' '</span>.<span class="fn">join</span>(<span class="va">word</span> <span class="kw">for</span> <span class="va">word</span>, <span class="va">tag</span> <span class="kw">in</span> <span class="va">subtree</span>.<span class="fn">leaves</span>()))
+<span class="cm"># → NP: The quick brown fox</span>
+<span class="cm"># → NP: a lazy dog</span>
+<span class="cm"># → NP: the river</span></code>
+  </div>
+
+  <h3>11.3 Chunk Grammar — Pattern Syntax</h3>
+
+  <table class="compare-table">
+    <tr><th>Pattern</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><code>&lt;DT&gt;</code></td><td>Match exactly one DT token</td><td>Matches "the", "a", "an"</td></tr>
+    <tr><td><code>&lt;DT&gt;?</code></td><td>DT is optional (0 or 1)</td><td>Matches with or without determiner</td></tr>
+    <tr><td><code>&lt;JJ&gt;*</code></td><td>Zero or more JJ tokens</td><td>Matches "", "big", "big red"</td></tr>
+    <tr><td><code>&lt;JJ&gt;+</code></td><td>One or more JJ tokens</td><td>Matches "big", "big red" (not empty)</td></tr>
+    <tr><td><code>&lt;NN.*&gt;</code></td><td>Any tag starting with NN (NN, NNS, NNP, NNPS)</td><td>Any noun form</td></tr>
+    <tr><td><code>&lt;VB.*&gt;</code></td><td>Any tag starting with VB</td><td>VB, VBD, VBG, VBN, VBP, VBZ</td></tr>
+    <tr><td><code>{pattern}</code></td><td>Define what TO include in the chunk</td><td>Positive chunking rule</td></tr>
+    <tr><td><code>}&lt;VBD&gt;{</code></td><td>Define what to EXCLUDE from chunk (chinking)</td><td>Remove matching from existing chunks</td></tr>
+  </table>
+
+  <h3>11.4 Multi-phrase Chunking — NP, VP, PP Together</h3>
+
+  <p>Full shallow parsing identifies multiple phrase types. A chunked version of <em>"The quick fox sat on a red mat"</em>:</p>
+  <div class="chunk-sent">
+    <span class="chunk-np">The quick fox<span class="chunk-np-label">NP</span></span>
+    <span class="chunk-vp">sat<span class="chunk-vp-label">VP</span></span>
+    <span class="chunk-pp">on <span class="chunk-np">a red mat<span class="chunk-np-label">NP</span></span><span class="chunk-pp-label">PP</span></span>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Chunk Trees and IOB Tags</div>
+    <code><span class="kw">from</span> <span class="va">nltk.chunk</span> <span class="kw">import</span> <span class="fn">tree2conlltags</span>
+
+<span class="va">grammar</span> = <span class="st">"""
+  NP: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN&gt;+}
+  VP: {&lt;VB.*&gt;}
+  PP: {&lt;IN&gt;&lt;NP&gt;}
+"""</span>
+<span class="va">chunker</span> = <span class="fn">RegexpParser</span>(<span class="va">grammar</span>)
+<span class="va">tree</span>    = <span class="va">chunker</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+
+<span class="cm"># Convert tree back to IOB tags</span>
+<span class="va">iob_tags</span> = <span class="fn">tree2conlltags</span>(<span class="va">tree</span>)
+<span class="kw">for</span> <span class="va">word</span>, <span class="va">pos</span>, <span class="va">chunk</span> <span class="kw">in</span> <span class="va">iob_tags</span>:
+    <span class="fn">print</span>(<span class="va">f</span><span class="st">"{word:12} {pos:6} {chunk}"</span>)
+<span class="cm"># The          DT     B-NP</span>
+<span class="cm"># quick        JJ     I-NP</span>
+<span class="cm"># brown        JJ     I-NP</span>
+<span class="cm"># fox          NN     I-NP</span>
+<span class="cm"># jumped       VBD    B-VP</span>
+<span class="cm"># over         IN     B-PP</span>
+<span class="cm"># a            DT     B-NP</span>
+<span class="cm"># lazy         JJ     I-NP</span>
+<span class="cm"># dog          NN     I-NP</span>
+
+<span class="cm"># Evaluate chunker on CoNLL-2000 dataset</span>
+<span class="kw">from</span> <span class="va">nltk.corpus</span> <span class="kw">import</span> <span class="va">conll2000</span>
+<span class="fn">print</span>(<span class="va">chunker</span>.<span class="fn">accuracy</span>(<span class="va">conll2000</span>.<span class="fn">chunked_sents</span>(<span class="st">'test.txt'</span>)))</code>
+  </div>
+</div>
+
+<!-- ══ SECTION 12 ══ -->
+<div class="section" id="s12">
+  <div class="section-header sh-chunk">
+    <div class="section-num">Section 12</div>
+    <h2>Chinking — Excluding Tokens from Chunks</h2>
+  </div>
+
+  <h3>12.1 What is Chinking?</h3>
+  <p><strong>Chinking</strong> is the complement of chunking — it defines what to <em>exclude</em> from an existing chunk, rather than what to include. A chink is a sequence of tokens that is split or removed from a chunk. Chinking is used to refine chunks by removing specific word types that should not be part of the chunk.</p>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">Chunking vs Chinking — The Key Distinction</div>
+    <p><strong>Chunking (positive rule with {}):</strong> Specifies what tokens to GROUP INTO a chunk. "Find all DT JJ* NN sequences and call them NP chunks."</p>
+    <p><strong>Chinking (negative rule with }{):</strong> Specifies what tokens to SPLIT OUT of an existing chunk. "Within the chunks found above, remove any VBD or IN tokens, splitting the chunk at those points."</p>
+    <p>Chinking is useful when it's easier to define what should NOT be in a chunk than what should be. You first create a large chunk (perhaps the whole sentence) and then remove specific token types.</p>
+  </div>
+
+  <h3>12.2 Chinking — How it Works</h3>
+
+  <div class="formula-block">
+    <div class="formula-label">Chinking Syntax in NLTK RegexpParser</div>
+    <div class="formula">
+      Chunking rule (include):  NP: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN&gt;+}<br>
+      Chinking rule (exclude):  NP: }&lt;VBD|IN&gt;{<br><br>
+      A chinking rule uses REVERSED BRACES: }&lt;pattern&gt;{<br>
+      This removes tokens matching the pattern from any existing chunk.<br><br>
+      Combined example:<br>
+      CLAUSE: {&lt;.*&gt;+}         ← first, chunk EVERYTHING into one big clause<br>
+               }&lt;VBD|IN&gt;{    ← then REMOVE all VBD and IN tokens from chunks<br><br>
+      Effect on "The big fox sat on the mat":<br>
+      Before: {The big fox sat on the mat}    ← one chunk<br>
+      After:  {The big fox} sat {on} {the mat}<br>
+              ← "sat"(VBD) splits the chunk; "on"(IN) splits a sub-chunk
+    </div>
+  </div>
+
+  <h3>12.3 Chinking Worked Example</h3>
+
+  <div class="example-box">
+    <div class="ex-header">Chinking — Step by Step: "The cat quickly sat on a mat"</div>
+    <div class="ex-body">
+      <div class="ex-row"><div class="ex-label">POS tags</div><div class="ex-value">The/DT  cat/NN  quickly/RB  sat/VBD  on/IN  a/DT  mat/NN</div></div>
+      <div class="ex-row"><div class="ex-label">Step 1: Chunk ALL</div><div class="ex-value">{The/DT cat/NN quickly/RB sat/VBD on/IN a/DT mat/NN}  ← one big chunk</div></div>
+      <div class="ex-row"><div class="ex-label">Chink rule</div><div class="ex-value">}&lt;VBD|RB|IN&gt;{  ← remove VBD, RB, and IN tokens from chunks</div></div>
+      <div class="ex-row"><div class="ex-label">Remove "sat" (VBD)</div><div class="ex-value">{The/DT cat/NN quickly/RB} sat/VBD {on/IN a/DT mat/NN}</div></div>
+      <div class="ex-row"><div class="ex-label">Remove "quickly" (RB)</div><div class="ex-value">{The/DT cat/NN} quickly/RB sat/VBD {on/IN a/DT mat/NN}</div></div>
+      <div class="ex-row"><div class="ex-label">Remove "on" (IN)</div><div class="ex-value">{The/DT cat/NN} quickly/RB sat/VBD on/IN {a/DT mat/NN}</div></div>
+      <div class="ex-row"><div class="ex-label">Final chunks</div><div class="ex-value">[NP: The cat] quickly sat on [NP: a mat]</div></div>
+    </div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Chinking with NLTK RegexpParser</div>
+    <code><span class="kw">import</span> <span class="va">nltk</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">RegexpParser</span>, <span class="fn">pos_tag</span>, <span class="fn">word_tokenize</span>
+
+<span class="va">sentence</span> = <span class="st">"The cat quickly sat on a comfortable mat near the river"</span>
+<span class="va">tokens</span>   = <span class="fn">word_tokenize</span>(<span class="va">sentence</span>)
+<span class="va">pos_tags</span> = <span class="fn">pos_tag</span>(<span class="va">tokens</span>)
+
+<span class="cm"># Grammar with CHUNKING + CHINKING combined</span>
+<span class="va">grammar</span> = <span class="st">"""
+  NP:
+    {&lt;.*&gt;+}        # Step 1: chunk everything
+    }&lt;VBD|VBZ|VBN|VBG|VBP|RB|IN|CC|DT&gt;{
+                   # Step 2: chink (remove) verbs, adverbs, preps, conj, det
+"""</span>
+
+<span class="va">chunker</span> = <span class="fn">RegexpParser</span>(<span class="va">grammar</span>)
+<span class="va">tree</span>    = <span class="va">chunker</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+<span class="fn">print</span>(<span class="va">tree</span>)
+<span class="cm"># (S</span>
+<span class="cm">#   (NP The/DT cat/NN)</span>
+<span class="cm">#   quickly/RB</span>
+<span class="cm">#   sat/VBD</span>
+<span class="cm">#   on/IN</span>
+<span class="cm">#   (NP comfortable/JJ mat/NN)    ← "a" chinking removed DT</span>
+<span class="cm">#   near/IN</span>
+<span class="cm">#   (NP river/NN))                ← "the" chinking removed DT</span>
+
+<span class="cm"># Compare: pure chunking approach</span>
+<span class="va">grammar2</span> = <span class="st">"""
+  NP: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN&gt;+}       # pure chunking: include DT JJ* NN+
+"""</span>
+<span class="va">chunker2</span> = <span class="fn">RegexpParser</span>(<span class="va">grammar2</span>)
+<span class="va">tree2</span>    = <span class="va">chunker2</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+<span class="fn">print</span>(<span class="va">tree2</span>)  <span class="cm"># Different result: includes DT inside NP</span></code>
+  </div>
+
+  <h3>12.4 Chunking and Chinking — Applications</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Information Extraction:</strong> NP chunks = candidate entities. VP chunks = candidate relations/events. PP chunks = location/time/manner information. Chunked text can be searched for patterns without full parsing.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Keyword/Keyphrase Extraction:</strong> NP chunks are the best candidates for topic keywords. "machine learning algorithms" is a much better keyword extracted as one NP chunk than individually as "machine", "learning", "algorithms".</div></li>
+    <li><span class="bullet">▸</span><div><strong>Named Entity Extraction (rule-based):</strong> Chunked NPs that contain capitalized words and are followed by certain contexts are often named entities. Chunking + patterns is faster than full NER for restricted domains.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Text Summarization (extractive):</strong> Important NP chunks (high TF-IDF NPs) can be extracted as keyphrases for document summary. Avoids extracting grammatically fragmented key terms.</div></li>
+  </ul>
+</div>
+
+<!-- ████████ PART 6: PARAPHRASING ████████ -->
+<div class="part-banner pb-para">Part 6 — Automatic Paraphrasing of Texts</div>
+
+<!-- ══ SECTION 13 ══ -->
+<div class="section" id="s13">
+  <div class="section-header sh-para">
+    <div class="section-num">Section 13</div>
+    <h2>Automatic Paraphrasing of Texts</h2>
+  </div>
+
+  <h3>13.1 What is Automatic Paraphrasing?</h3>
+  <p><strong>Automatic paraphrasing</strong> is the task of generating a new text that expresses the same meaning as the original using different words, phrases, or syntactic structures. The paraphrase must preserve the semantic content while varying the surface form — changing vocabulary, word order, or grammatical structure.</p>
+
+  <div class="callout callout-key">
+    <div class="callout-title">Paraphrasing — The Semantic Equivalence Requirement</div>
+    <p>A valid paraphrase preserves meaning: "The dog chased the cat" ↔ "The cat was chased by the dog" (active/passive transformation — same meaning, different syntax). But "The cat chased the dog" is NOT a paraphrase despite identical words (agent and patient swapped — different meaning). Paraphrasing operates at the semantic level, not just lexical substitution.</p>
+  </div>
+
+  <h3>13.2 Types of Paraphrases</h3>
+
+  <div class="cfg-grid">
+    <div class="cfg-card cfgc-blue">
+      <div class="cc-tag">Type 1</div>
+      <div class="cc-title">Lexical Paraphrases</div>
+      <p><strong>Word substitution:</strong> Replace words with synonyms or semantically equivalent phrases. "The automobile broke down" → "The car stopped working." "She is intelligent" → "She is smart/clever/bright."</p>
+      <p><strong>Sources:</strong> WordNet synonym sets, word embedding similarity (word2vec, GloVe), contextual embeddings (BERT masked prediction for synonym suggestions).</p>
+      <div class="cc-note">Challenge: Synonyms are context-dependent. "Large" and "big" are synonyms in most contexts but not "large-scale" vs "big-scale".</div>
+    </div>
+    <div class="cfg-card cfgc-green">
+      <div class="cc-tag">Type 2</div>
+      <div class="cc-title">Syntactic Paraphrases</div>
+      <p><strong>Structural transformation:</strong> Change grammatical structure while preserving meaning. Active ↔ Passive: "The police arrested the suspect" ↔ "The suspect was arrested by the police." Nominalization: "He decided to leave" ↔ "His decision was to leave."</p>
+      <p><strong>Methods:</strong> CFG-based transformation rules applied to parse trees. TreeSubstitutionGrammar. Synchronous CFGs that map source to target syntactic structures.</p>
+      <div class="cc-note">Requires full parse tree. Transformations must be semantics-preserving (not all syntactic changes preserve meaning).</div>
+    </div>
+    <div class="cfg-card cfgc-purple">
+      <div class="cc-tag">Type 3</div>
+      <div class="cc-title">Phrasal Paraphrases</div>
+      <p><strong>Multi-word to multi-word:</strong> Replace idioms, collocations, or multi-word expressions with equivalents. "kick the bucket" → "pass away." "blow one's top" → "become angry." "in spite of" → "despite."</p>
+      <p><strong>Extraction:</strong> Paraphrase databases (PPDB — Paraphrase Database, 100M+ paraphrase pairs extracted via bilingual pivoting). MultiParaphrase Corpus. Wikipedia sentence alignment.</p>
+      <div class="cc-note">PPDB provides scored paraphrase pairs at word, phrase, and sentence level.</div>
+    </div>
+    <div class="cfg-card cfgc-amber">
+      <div class="cc-tag">Type 4</div>
+      <div class="cc-title">Discourse Paraphrases</div>
+      <p><strong>Sentence restructuring:</strong> Combine or split sentences while preserving overall meaning. "She was tired. She went to bed early." ↔ "Because she was tired, she went to bed early." "Despite being exhausted, she worked late" ↔ "She was exhausted. Nevertheless, she worked late."</p>
+      <p>Requires understanding of discourse structure, coherence relations, and sentence boundaries.</p>
+      <div class="cc-note">Most complex form of paraphrasing. Requires coreference resolution and discourse parsing.</div>
+    </div>
+  </div>
+
+  <h3>13.3 Bilingual Pivoting for Paraphrase Extraction</h3>
+  <p>The most powerful automatic method for extracting paraphrase pairs uses multilingual resources: if two English phrases translate to the same phrase in another language (the "pivot"), they are likely paraphrases of each other.</p>
+
+  <div class="diagram">
+    <pre>
+  BILINGUAL PIVOTING (using French as pivot language):
+
+  English Phrase A         French (pivot)         English Phrase B
+  "automobile"     →  →   "voiture"   ←  ←   "car"
+  "begin"          →  →   "commencer" ←  ←   "start"
+  "kick the bucket"→  →   "décéder"   ←  ←   "pass away"
+
+  Logic: If English_A and English_B both translate to the same French_pivot,
+         then English_A ≈ English_B (they express the same meaning)
+
+  Sources: Parallel corpora (EuroParl, UN corpus), translation memories
+  PPDB (Paraphrase Database): extracted this way from 23 language pairs
+  Result: "automobile" and "car" are identified as paraphrases
+          "in the vicinity of" and "near" are identified as paraphrases
+    </pre>
+    <div class="diagram-caption">Figure 13.1 — Bilingual pivoting. Two source phrases that map to the same translation are candidate paraphrases.</div>
+  </div>
+
+  <h3>13.4 Neural Paraphrasing Methods</h3>
+
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Seq2Seq paraphrasing:</strong> Train an encoder-decoder Transformer on pairs of paraphrases (from PPDB, Quora Question Pairs, Twitter URL pairs). At inference: encode source → decode to paraphrase. Can generate diverse paraphrases by beam search or sampling.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Round-trip translation:</strong> Translate English → French → back to English. The re-translation is often a natural paraphrase of the original. Multiple pivot languages produce diverse paraphrases. Used extensively in NLP data augmentation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>PEGASUS / T5 for paraphrasing:</strong> Fine-tune sequence-to-sequence models on paraphrase pairs. The model learns to generate meaning-equivalent reformulations. Controllable paraphrasing: prefix with "Formal:", "Casual:", "Technical:" to guide the style.</div></li>
+    <li><span class="bullet">▸</span><div><strong>GPT-based paraphrasing:</strong> Prompt: "Paraphrase the following sentence: [sentence]". In-context examples guide style. LLMs like GPT-4 produce high-quality, diverse paraphrases across levels (lexical, syntactic, discourse) in a single model.</div></li>
+  </ul>
+
+  <h3>13.5 Applications of Automatic Paraphrasing</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Data augmentation:</strong> Generate additional training examples for low-resource NLP tasks. A classifier trained on "Is this spam?" also learns from "Is this unsolicited email?" if augmented with paraphrases. Particularly valuable for question answering, NLI, and text classification.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Plagiarism detection:</strong> Detect paraphrased plagiarism (where students rewrite source text). Match not just word overlap but semantic similarity using paraphrase-aware models.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Question generation:</strong> Generate multiple rephrasings of the same question for diverse FAQ systems, quiz generation, and dialogue variation.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Readability simplification:</strong> Generate simpler paraphrases of complex sentences (reduce reading level, explain technical jargon). "The patient exhibited febrile symptoms" → "The patient had a fever."</div></li>
+    <li><span class="bullet">▸</span><div><strong>Machine translation evaluation:</strong> METEOR score uses paraphrase matching to evaluate MT output more flexibly than BLEU's exact n-gram matching. Paraphrase pairs allow partial credit for semantically equivalent translations.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Adversarial testing:</strong> Generate paraphrases of test inputs to check model robustness. A robust NLU model should give the same prediction for all paraphrases of a sentence.</div></li>
+  </ul>
+
+  <h3>13.6 Paraphrase Evaluation</h3>
+  <ul class="point-list">
+    <li><span class="bullet">▸</span><div><strong>Automatic metrics:</strong> BLEU (n-gram overlap with reference paraphrases), METEOR (synonym-aware n-gram), BERTScore (contextual embedding similarity), ROUGE (recall-oriented n-gram overlap). All imperfect — high BLEU doesn't guarantee semantic equivalence.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Semantic similarity:</strong> Cosine similarity of sentence embeddings (SBERT, InferSent). A good paraphrase should have high similarity (&gt;0.85) to the original in embedding space.</div></li>
+    <li><span class="bullet">▸</span><div><strong>Human evaluation:</strong> Adequacy (does it mean the same?) + Fluency (is it grammatical and natural?) + Diversity (how different is the wording?). The gold standard — automatic metrics remain approximations.</div></li>
+  </ul>
+</div>
+
+<!-- ══ SECTION 14 ══ -->
+<div class="section" id="s14">
+  <div class="section-header sh-para">
+    <div class="section-num">Section 14</div>
+    <h2>Applications and Module Integration</h2>
+  </div>
+
+  <h3>14.1 How All Module Concepts Connect</h3>
+
+  <div class="diagram">
+    <pre>
+  MODULE 4 CONCEPT MAP:
+
+  Raw Sentence
+      │
+      ▼
+  LANGUAGE MODEL ────────────────── assigns P(sentence), generates text
+      │
+      ▼
+  TOKENIZATION + POS TAGGING ─────── assigns grammatical category to each token
+      │
+      ▼
+  SEQUENCE TAGGING (BIO) ─────────── labels token spans for NER, chunking, slots
+      │
+      │
+      ├──► CHUNKING (shallow) ─────── groups flat phrase constituents (NP, VP, PP)
+      │       │
+      │       └── CHINKING ────────── refines chunks by removing unwanted tokens
+      │
+      └──► FULL PARSING (deep) ─────── builds complete syntax tree
+              │
+              ├── CONSTITUENCY TREE ── hierarchical phrase structure (CFG-based)
+              │       │
+              │       └── CFG ──────── formal grammar rules; CYK/Earley parsing
+              │
+              └── DEPENDENCY TREE ──── binary head-modifier relations
+                                       (SpaCy, Stanford Parser)
+      │
+      ▼
+  SEMANTIC UNDERSTANDING ──────────── meaning, roles, coreference
+      │
+      ▼
+  PARAPHRASING ───────────────────── generate semantically equivalent restatements
+                                      (back-translation, seq2seq, GPT)
+    </pre>
+    <div class="diagram-caption">Figure 14.1 — Complete Module 4 concept integration. Each component builds on previous processing steps.</div>
+  </div>
+
+  <h3>14.2 Complete NLTK Pipeline Code</h3>
+
+  <div class="code-block">
+    <div class="code-lang">Python — Full Sentence Structure Analysis Pipeline</div>
+    <code><span class="kw">import</span> <span class="va">nltk</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">word_tokenize</span>, <span class="fn">pos_tag</span>, <span class="fn">ne_chunk</span>
+<span class="kw">from</span> <span class="va">nltk</span> <span class="kw">import</span> <span class="fn">RegexpParser</span>
+
+<span class="va">text</span> = <span class="st">"Barack Obama visited New York City to attend the UN summit in September"</span>
+
+<span class="cm"># ── Step 1: Tokenize ─────────────────────────────────────────────</span>
+<span class="va">tokens</span> = <span class="fn">word_tokenize</span>(<span class="va">text</span>)
+<span class="fn">print</span>(<span class="st">"Tokens:"</span>, <span class="va">tokens</span>)
+
+<span class="cm"># ── Step 2: POS Tagging ───────────────────────────────────────────</span>
+<span class="va">pos_tags</span> = <span class="fn">pos_tag</span>(<span class="va">tokens</span>)
+<span class="fn">print</span>(<span class="st">"POS Tags:"</span>, <span class="va">pos_tags</span>)
+
+<span class="cm"># ── Step 3: NER (sequence tagging) ───────────────────────────────</span>
+<span class="va">ner_tree</span> = <span class="fn">ne_chunk</span>(<span class="va">pos_tags</span>, <span class="va">binary</span>=<span class="kw">False</span>)  <span class="cm"># binary=False → typed NER</span>
+<span class="fn">print</span>(<span class="st">"NER Tree:"</span>)
+<span class="kw">for</span> <span class="va">chunk</span> <span class="kw">in</span> <span class="va">ner_tree</span>:
+    <span class="kw">if</span> <span class="fn">hasattr</span>(<span class="va">chunk</span>, <span class="st">'label'</span>):
+        <span class="fn">print</span>(<span class="va">f</span><span class="st">"  {chunk.label():10}: {' '.join(w for w,t in chunk.leaves())}"</span>)
+<span class="cm"># PERSON    : Barack Obama</span>
+<span class="cm"># GPE       : New York City</span>
+<span class="cm"># ORGANIZATION: UN</span>
+
+<span class="cm"># ── Step 4: Chunking (NP + chinking) ─────────────────────────────</span>
+<span class="va">grammar</span> = <span class="st">"""
+  NP: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN.*&gt;+}       # NP chunk: DT? JJ* NN+
+      {&lt;NNP&gt;+}                   # Proper noun sequences
+  VP: {&lt;VB.*&gt;&lt;NP&gt;?}              # VP: verb + optional NP
+  PP: {&lt;IN&gt;&lt;NP&gt;}                 # PP: prep + NP
+"""</span>
+<span class="va">chunker</span> = <span class="fn">RegexpParser</span>(<span class="va">grammar</span>)
+<span class="va">chunk_tree</span> = <span class="va">chunker</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+<span class="fn">print</span>(<span class="st">"\nChunk Tree:"</span>)
+<span class="fn">print</span>(<span class="va">chunk_tree</span>)
+
+<span class="cm"># Extract all NP chunks</span>
+<span class="va">np_chunks</span> = []
+<span class="kw">for</span> <span class="va">subtree</span> <span class="kw">in</span> <span class="va">chunk_tree</span>.<span class="fn">subtrees</span>(<span class="va">filter</span>=<span class="kw">lambda</span> <span class="va">t</span>: <span class="va">t</span>.<span class="fn">label</span>() == <span class="st">'NP'</span>):
+    <span class="va">np_chunks</span>.<span class="fn">append</span>(<span class="st">' '</span>.<span class="fn">join</span>(<span class="va">w</span> <span class="kw">for</span> <span class="va">w</span>, <span class="va">t</span> <span class="kw">in</span> <span class="va">subtree</span>.<span class="fn">leaves</span>()))
+<span class="fn">print</span>(<span class="st">"NP Chunks:"</span>, <span class="va">np_chunks</span>)
+<span class="cm"># → ['Barack Obama', 'New York City', 'the UN summit', 'September']</span>
+
+<span class="cm"># ── Chinking example ─────────────────────────────────────────────</span>
+<span class="va">chink_grammar</span> = <span class="st">"""
+  NP:
+    {&lt;.*&gt;+}            # start: chunk everything
+    }&lt;VBD|VBZ|VBN|VBP|VBG|IN|CC&gt;{   # chink: remove verbs, preps, conj
+"""</span>
+<span class="va">chinker</span>    = <span class="fn">RegexpParser</span>(<span class="va">chink_grammar</span>)
+<span class="va">chink_tree</span> = <span class="va">chinker</span>.<span class="fn">parse</span>(<span class="va">pos_tags</span>)
+<span class="fn">print</span>(<span class="st">"\nAfter Chinking:"</span>)
+<span class="fn">print</span>(<span class="va">chink_tree</span>)</code>
+  </div>
+
+  <!-- FINAL SUMMARY -->
+  <div class="summary-box">
+    <h4>Module 4 — Complete Summary</h4>
+    <ul class="point-list">
+      <li><span class="bullet">1.</span><div><strong>Language Modeling:</strong> Assigns P(sentence). N-gram LM: P(wₙ|context) ≈ P(wₙ|wₙ₋ₙ₊₁...wₙ₋₁) = C(context,wₙ)/C(context). Perplexity = P(W)^{−1/N}: lower = better. Smoothing handles zero counts (Add-1, Kneser-Ney). Neural LMs (RNN, LSTM, Transformer) outperform N-gram LMs significantly.</div></li>
+      <li><span class="bullet">2.</span><div><strong>Sequence Tagging:</strong> Assigns one label per token (not one per document). Tasks: POS tagging, NER, chunking, slot filling. Challenge: tags depend on adjacent tags — must predict the best joint tag sequence Y* = argmax P(Y|X), not just token-by-token argmax.</div></li>
+      <li><span class="bullet">3.</span><div><strong>BIO Scheme:</strong> B-TYPE = beginning of entity span, I-TYPE = inside span, O = not an entity. BIOES extends with E (end) and S (single-token). Span extraction: B starts span, I continues, O or new B ends span. Enforced as constraint by CRF layer.</div></li>
+      <li><span class="bullet">4.</span><div><strong>HMM for Tagging:</strong> Two tables: A (transitions P(yᵢ|yᵢ₋₁)) and B (emissions P(xᵢ|yᵢ)). Trained by counting tag bigrams and word-tag pairs from labeled corpus (with Laplace smoothing). Viterbi: O(|T|²×n) DP finds optimal tag sequence via backtracking.</div></li>
+      <li><span class="bullet">5.</span><div><strong>Syntax Trees:</strong> Constituency tree: hierarchical phrase structure (S→NP VP, NP→DT JJ NN). Dependency tree: binary head→modifier relations (nsubj, dobj, amod, prep). Ambiguity: one sentence can have multiple parse trees with different meanings.</div></li>
+      <li><span class="bullet">6.</span><div><strong>CFG:</strong> G=(N,Σ,R,S). Production rules: A→BC (binary branching) or A→a (lexical). CYK algorithm: bottom-up DP in O(n³|G|) on CNF grammars. PCFG: each rule has probability; P(tree)=Π P(rules). Most probable parse resolves structural ambiguity.</div></li>
+      <li><span class="bullet">7.</span><div><strong>Chunking:</strong> Shallow/partial parsing — identifies flat, non-recursive NP, VP, PP constituents using regex patterns over POS tags. NLTK RegexpParser: {&lt;DT&gt;?&lt;JJ&gt;*&lt;NN&gt;+} includes token sequences; BIO tags encode chunk boundaries. Faster and more robust than full parsing for IE tasks.</div></li>
+      <li><span class="bullet">8.</span><div><strong>Chinking:</strong> Complement of chunking — specifies what to EXCLUDE from chunks using reversed braces }&lt;pattern&gt;{. Process: (1) chunk everything into one large chunk, (2) chink removes specified POS types (verbs, prepositions, conjunctions), splitting the chunk at those points. Produces the same result as chunking but defined negatively.</div></li>
+      <li><span class="bullet">9.</span><div><strong>Automatic Paraphrasing:</strong> Generate semantically equivalent text with different surface form. Types: Lexical (synonym substitution), Syntactic (active↔passive, nominalization), Phrasal (multi-word substitution), Discourse (sentence restructuring). Methods: bilingual pivoting (PPDB), round-trip translation, seq2seq models, LLM prompting. Applications: data augmentation, plagiarism detection, readability simplification.</div></li>
+    </ul>
+  </div>
+
+</div>
+</div><!-- end content -->
+
+<div class="doc-footer">
+  <span>M.Tech Natural Language Processing — Module 4</span>
+  <span>Language Modeling · Sequence Tagging · Syntax Trees · CFG · Chunking · Chinking · Paraphrasing</span>
+</div>
+
+</body>
+</html>
